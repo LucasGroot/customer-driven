@@ -60,7 +60,7 @@ def extract_all_question_embeddings(xlsx_path, file_name, sheet, column,
     with open("embeddings/question_embeddings.pkl", "wb") as file:
         pickle.dump(question_dicts, file)
 
-    return question_embeddings
+    return question_dicts
 
 
 # In this main block, you can change variables like the model name and paths to the routines and questions
