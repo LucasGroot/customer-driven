@@ -1,7 +1,7 @@
 ##################################################
 # Title (max 50 characters)
 # Format : <type>:<subject>
-# type : feat, fix, refactor, style, docs, test, ci, build, wip (desc at the end)
+# type : feat, fix, refactor, style, docs, test, ci, build, wip... (desc at the end)
 ##################################################
 
 
@@ -39,6 +39,14 @@
 # ci : continous integration configuration
 # build : build process or dependency changes
 # wip : work in progress
+#######################################################################
+# Branch name convention
+# feat/: for new features (feat/extract-data)
+# bugfix/: for bug fixes (bugfix/fix-reading-pdf)
+# hotfix/: for urgent fixes (hotfix/security-pages)
+# release/: for branches preparing a release (release/v1.1)
+# chores/: for non-code tasks (chore/update-dependency)
+# see https://conventionalbranch.org/ for more information
 #######################################################################
 # Inspired by : brayandiazc, lisawolderksen and joelparkenhenderson
 #######################################################################
