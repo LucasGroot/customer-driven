@@ -2,3 +2,4 @@
 *.xlsx
 *.zip
 *.pkl
+__pycache__/
