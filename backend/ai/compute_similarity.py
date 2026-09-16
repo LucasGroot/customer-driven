@@ -66,6 +66,7 @@ def compute_uncovered_questions(question_embeddings, chunk_embeddings, top_k=3):
     question_vectors = np.array([q["embedding"] for q in question_embeddings])
 
     chunk_texts = [c["text"] for c in chunk_embeddings]
+    chunk_sources = [c.get("source_pdf", "") for c in chunk_embeddings]
     chunk_vectors = np.array([c["embedding"] for c in chunk_embeddings])
 
     # (num_questions, num_chunks) similarity matrix
@@ -76,11 +77,12 @@ def compute_uncovered_questions(question_embeddings, chunk_embeddings, top_k=3):
         top_k_idx = np.argsort(row)[-top_k:][::-1]
         top_k_scores = row[top_k_idx]
         top_k_chunks = [chunk_texts[j] for j in top_k_idx]
+        top_k_sources = [chunk_sources[j] for j in top_k_idx]
 
         results.append({
             "question": question_texts[i],
             "score_sum": float(top_k_scores.sum()),
-            "top_chunks": list(zip(top_k_chunks, top_k_scores.tolist())),
+            "top_chunks": list(zip(top_k_chunks, top_k_scores.tolist(), top_k_sources)),
         })
 
     results.sort(key=lambda r: r["score_sum"])
@@ -91,8 +93,8 @@ def uncovered_to_html(results, top_k=3, out_path="visualizations/uncovered_quest
     rows_html = ""
     for r in results:
         chunks_html = "".join(
-            f"<li><span class='score'>{score:.3f}</span> {html.escape(chunk_text[:200])}...</li>"
-            for chunk_text, score in r["top_chunks"][:top_k]
+            f"<li><span class='score'>{score:.3f}</span> <span class='source'>[{html.escape(source)}]</span> {html.escape(chunk_text[:200])}...</li>"
+            for chunk_text, score, source in r["top_chunks"][:top_k]
         )
         rows_html += f"""
         <tr>
@@ -117,6 +119,7 @@ def uncovered_to_html(results, top_k=3, out_path="visualizations/uncovered_quest
             .question {{ font-weight: 600; width: 30%; }}
             .score-sum {{ text-align: center; width: 8%; }}
             .score {{ color: #888; font-family: monospace; margin-right: 6px; }}
+            .source {{ color: #06c; font-weight: 600; margin-right: 6px; }}
             ul {{ margin: 0; padding-left: 1.2rem; }}
         </style>
     </head>
