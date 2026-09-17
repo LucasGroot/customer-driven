@@ -1,6 +1,6 @@
 # Project context for AI agents
 
-Read [AI-FRAMEWORK.md](AI-FRAMEWORK.md) first — it's the team's policy on how AI agents are used on this project. This file is the operational counterpart: what an agent working in this repo needs to know day to day.
+Read [AI-FRAMEWORK.md](docs/AI-FRAMEWORK.md) first — it's the team's policy on how AI agents are used on this project. This file is the operational counterpart: what an agent working in this repo needs to know day to day.
 
 ## What this project is
 
@@ -19,7 +19,8 @@ No frontend exists yet (`frontend/` is empty).
 ## Conventions
 
 - Everything is in English: code (variable/function names, comments, docstrings, commit messages) and team-facing docs alike — the team includes international colleagues. This applies regardless of what language the request comes in.
-- Comments explain *why*, not *what* (see [chunker.py](backend/ai/chunker.py) for the existing style) — don't add explanatory docstrings/comments beyond that.
+- Naming must be intuitive enough that the code reads without needing a comment to explain it — e.g. `chunk_by_headings`, `is_bold`, `split_into_word_chunks`. No abbreviations, no vague names when a specific one is available. If a name needs a comment to be understood, rename it instead of commenting it.
+- Comments explain *why*, not *what*. Only write one for something genuinely non-obvious from the code itself — a hidden constraint, a workaround for a specific bug, a subtle invariant. Never write a comment that just restates what the next line already says, and never add a comment to compensate for an unclear name or unclear structure — fix the name/structure instead.
 - No speculative abstractions, error handling, or config beyond what's asked — this is a small student project, not a platform.
 - Branch naming and commit message format follow [CONTRIBUTING.md](CONTRIBUTING.md).
 - License is GPL-3.0 — don't introduce dependencies with incompatible licenses.
