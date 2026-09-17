@@ -26,3 +26,4 @@ Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ran
 - [AI-FRAMEWORK.md](docs/AI-FRAMEWORK.md) — how the group uses AI agents on this project.
 - [AGENTS.md](AGENTS.md) — project context for AI coding agents.
 - [CONTRIBUTING.md](CONTRIBUTING.md) — commit message and branch naming conventions.
+- [CODE-STYLE.md](CODE-STYLE.md) — code style best practices and conventions.
