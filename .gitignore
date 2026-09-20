@@ -2,4 +2,9 @@
 *.xlsx
 *.zip
 *.pkl
+<<<<<<< HEAD
 __pycache__/
+=======
+visualizations/*.html
+__pycache__
+>>>>>>> 4b2da3114a8f9a15eeaa146e1935708f95d0e238

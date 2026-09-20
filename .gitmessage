@@ -1,0 +1,52 @@
+##################################################
+# Title (max 50 characters)
+# Format : <type>:<subject>
+# type : feat, fix, refactor, style, docs, test, ci, build, wip... (desc at the end)
+##################################################
+
+
+#######################################################################
+# Message body (max 72 characters per line)
+# Explain 'what' was changed and 'why'
+#######################################################################
+
+
+#######################################################################
+# (Optional) explain 'how' (name of algorithm, spec)
+#######################################################################
+
+
+#######################################################################
+# (Optional) related Jira Issue
+#######################################################################
+
+
+#######################################################################
+# (Optional) co-authorship
+# Co-authored-by : Full Name <email@example.com>
+#######################################################################
+
+
+
+#######################################################################
+# Description of type
+# feat : new feature
+# fix : fix bug
+# refactor : code refactoring
+# style : formating changes without affecting logic (missing comma...)
+# docs : documentation update
+# test : add or improve tests
+# ci : continous integration configuration
+# build : build process or dependency changes
+# wip : work in progress
+#######################################################################
+# Branch name convention
+# feat/: for new features (feat/extract-data)
+# bugfix/: for bug fixes (bugfix/fix-reading-pdf)
+# hotfix/: for urgent fixes (hotfix/security-pages)
+# release/: for branches preparing a release (release/v1.1)
+# chores/: for non-code tasks (chore/update-dependency)
+# see https://conventionalbranch.org/ for more information
+#######################################################################
+# Inspired by : brayandiazc, lisawolderksen and joelparkenhenderson
+#######################################################################
