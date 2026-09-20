@@ -1,4 +1,6 @@
 *.pdf
 *.xlsx
 *.zip
+*.pkl
+visualizations/*.html
 __pycache__
