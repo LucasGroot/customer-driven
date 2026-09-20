@@ -1,0 +1,4 @@
+ipykernel
+pdfplumber
+matplotlib
+statistics
