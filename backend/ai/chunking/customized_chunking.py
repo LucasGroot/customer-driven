@@ -1,7 +1,7 @@
 from math import ceil
 
-from fixed_chunking import DEFAULT_CHUNK_SIZE, chunk_by_fixed_size
-from heading_sections import split_into_sections
+from .fixed_chunking import DEFAULT_CHUNK_SIZE, chunk_by_fixed_size
+from .heading_sections import split_into_sections
 
 def chunk_by_layout(words, source_pdf, max_chunk_size=DEFAULT_CHUNK_SIZE):
     """Chunks a document along its headings; sections longer than max_chunk_size are split further by size."""

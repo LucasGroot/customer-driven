@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-import pdfplumber
-
-def read_words(pdf_path):
-    """Reads a PDF and returns all words, as well as their font info."""
-    words = []
-    with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages:
-            words.extend(page.extract_words(extra_attrs=["fontname"]))
-    return words
-=======
 import os
 
 import pdfplumber
@@ -36,4 +25,3 @@ def read_all_pdfs(folder_path):
         words = read_words(os.path.join(folder_path, filename))
         documents.append({"source_pdf": filename, "words": words})
     return documents
->>>>>>> 4b2da3114a8f9a15eeaa146e1935708f95d0e238
