@@ -128,9 +128,7 @@ def top_k_per_routine(chunk_scores, corpus, k):
     scores = np.full((chunk_scores.shape[0], len(corpus.routine_names)), np.nan)
     start = 0
     for i, count in enumerate(corpus.chunk_counts):
-        if count == 0:
-            print(f"WARNING: no chunks for {corpus.routine_names[i]}")
-        else:
+        if count > 0:
             routine_scores = chunk_scores[:, start:start + count]
             scores[:, i] = np.sort(routine_scores, axis=1)[:, -k:].mean(axis=1)
         start += count
