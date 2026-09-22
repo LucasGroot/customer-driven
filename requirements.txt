@@ -2,3 +2,8 @@ ipykernel
 pdfplumber
 matplotlib
 statistics
+rank_bm25
+scikit-learn
+sentence-transformers
+pandas
+openpyxl
