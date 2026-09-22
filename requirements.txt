@@ -1,4 +1,9 @@
 ipykernel
 pdfplumber
 matplotlib
-statistics
+numpy
+rank_bm25
+scikit-learn
+sentence-transformers
+pandas
+openpyxl

@@ -4,3 +4,4 @@
 *.pkl
 visualizations/*.html
 __pycache__
+*.png

@@ -27,7 +27,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # install dependancies
       - name: install dependencies
@@ -37,11 +37,7 @@ jobs:
       - name: install dependencies
         run : python -m pip install --upgrade pip setuptools wheel
 
-      - name: set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: install dependencies
+      - name: install project dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -51,8 +47,6 @@ jobs:
         with:
           python-version: '3.12'
           cache: 'pip'
-      - run: pip install -r requirements.txt
-      - run: pip test
 
 
       # Runs a single command using the runners shell
