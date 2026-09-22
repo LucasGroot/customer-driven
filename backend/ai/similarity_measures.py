@@ -51,21 +51,15 @@ def extract_all_chunk_embeddings(folder_path="data/raw/kvaliteket", chunker=chun
     with chunk_by_fixed_size instead.
     Returns a list of {"filename": str, "chunks": list[str]} entries, one per PDF.
     """
- 
+
     all_chunks = []
     documents = read_all_pdfs(folder_path)
     for document in documents:
         words, source = document["words"], document["source_pdf"]
         chunks = chunker(words, source, max_chunk_size=DEFAULT_CHUNK_SIZE) or []
- 
-        has_text = any(c["text"].strip() for c in chunks)
-        if not has_text and chunker is not chunk_by_fixed_size:
-            name = getattr(chunker, "__name__", "chunker")
-            print(f"NOTE: {name} returned no chunks for {source}, falling back to chunk_by_fixed_size")
-            chunks = chunk_by_fixed_size(words, source, chunk_size=DEFAULT_CHUNK_SIZE) or []
- 
+
         all_chunks.append({"filename": source, "chunks": chunks})
- 
+
     return all_chunks
 
 
@@ -84,7 +78,8 @@ def extract_questions(xlsx_path, sheet=0, column="Beskrivelse"):
 def load_corpus(questions_path, routines_path, chunker=chunk_by_layout):
     """
     Loads questions and chunks every routine, dropping blank chunks.
-    Shared by all three scoring methods so they see exactly the same input.
+    Reads and chunks the PDFs exactly once; the resulting Corpus is shared by
+    all three scoring methods so they see exactly the same input.
     Raises ValueError if there are no questions or no usable chunks at all.
     """
 
@@ -103,6 +98,16 @@ def load_corpus(questions_path, routines_path, chunker=chunk_by_layout):
 
     if not chunk_texts:
         raise ValueError(f"No non-empty chunks found in {routines_path}")
+
+    empty_routines = [
+        name for name, count in zip(routine_names, chunk_counts) if count == 0
+    ]
+
+    if empty_routines:
+        print(f"WARNING: no usable text extracted from {len(empty_routines)} document(s):")
+        for name in empty_routines:
+            print(f"  - {name}")
+
 
     return Corpus(questions, routine_names, chunk_counts, chunk_texts)
 
@@ -133,17 +138,17 @@ def top_k_per_routine(chunk_scores, corpus, k):
     return pd.DataFrame(scores, index=corpus.questions, columns=corpus.routine_names)
 
 
-def tf_idf_similarity(questions_path, routines_path, chunker=chunk_by_layout, k=3):
+def tf_idf_similarity(corpus, k=3):
     """
     Scores each question against each routine using tf-idf cosine similarity.
     The vectorizer is fit on all routine chunks (so idf is computed over chunks),
     then questions are transformed into the same vocabulary. Each chunk is scored
     individually and a routine's score is the mean of its k highest chunk scores.
-    Returns a DataFrame of shape questions x routines.
+    Takes an already-built Corpus (see load_corpus). Returns a DataFrame of shape
+    questions x routines.
     """
 
     _check_k(k)
-    corpus = load_corpus(questions_path, routines_path, chunker)
 
     vectorizer = TfidfVectorizer(tokenizer=tokenize, lowercase=False, token_pattern=None)
     chunk_matrix = vectorizer.fit_transform(corpus.chunk_texts)
@@ -153,17 +158,17 @@ def tf_idf_similarity(questions_path, routines_path, chunker=chunk_by_layout, k=
     return top_k_per_routine(chunk_scores, corpus, k)
 
 
-def bm25_similarity(questions_path, routines_path, chunker=chunk_by_layout, k=3):
+def bm25_similarity(corpus, k=3):
     """
     Scores each question against each routine using BM25 over routine chunks.
     Each chunk is scored individually and a routine's score is the mean of its
     k highest chunk scores. Note that BM25 scores are unbounded, so they are only
     comparable within a method, not against tf-idf or cosine values.
-    Returns a DataFrame of shape questions x routines.
+    Takes an already-built Corpus (see load_corpus). Returns a DataFrame of shape
+    questions x routines.
     """
 
     _check_k(k)
-    corpus = load_corpus(questions_path, routines_path, chunker)
 
     bm25 = BM25Okapi([tokenize(text) for text in corpus.chunk_texts])
     chunk_scores = np.vstack([bm25.get_scores(tokenize(q)) for q in corpus.questions])
@@ -171,20 +176,19 @@ def bm25_similarity(questions_path, routines_path, chunker=chunk_by_layout, k=3)
     return top_k_per_routine(chunk_scores, corpus, k)
 
 
-def cosine_similarity(questions_path, routines_path,
+def cosine_similarity(corpus,
                        model_name="sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
-                       chunker=chunk_by_layout,
                        k=3):
     """
     Scores each question against each routine using embedding cosine similarity.
     Each chunk is embedded and scored individually, then a routine's score is
     the mean of its k highest chunk similarities. Routines with fewer than k
     chunks average over all the chunks they have.
-    Returns a DataFrame of shape questions x routines.
+    Takes an already-built Corpus (see load_corpus). Returns a DataFrame of shape
+    questions x routines.
     """
 
     _check_k(k)
-    corpus = load_corpus(questions_path, routines_path, chunker)
 
     model = SentenceTransformer(model_name)
     question_embeddings = model.encode(corpus.questions, normalize_embeddings=True)
@@ -194,32 +198,32 @@ def cosine_similarity(questions_path, routines_path,
     return top_k_per_routine(chunk_scores, corpus, k)
 
 
-def main():
+def main(questions_path = "data/raw/questions/HR_HMS related questions in ServiceNow january - june 2026.xlsx",
+         routines_path = "data/raw/kvaliteket"):
     """
-    Runs all three similarity methods on the same questions and routines,
-    asserts each result has shape questions x routines, and prints the
-    top match per question for each method as a sanity check.
+    Reads the PDFs and builds the corpus once, then runs all three similarity
+    methods on that same corpus, asserts each result has shape
+    questions x routines, and prints the top match per question for each
+    method as a sanity check.
     """
- 
-    questions_path = "data/raw/questions/HR_HMS related questions in ServiceNow january - june 2026.xlsx"
-    routines_path = "data/raw/kvaliteket"
- 
-    num_questions = len(extract_questions(questions_path))
-    num_routines = len(extract_all_chunk_embeddings(routines_path))
- 
+
+    corpus = load_corpus(questions_path, routines_path)
+    num_questions = len(corpus.questions)
+    num_routines = len(corpus.routine_names)
+
     methods = {
         "tf-idf": tf_idf_similarity,
         "bm25": bm25_similarity,
         "cosine": cosine_similarity,
     }
- 
+
     for name, method in methods.items():
-        scores = method(questions_path, routines_path)
+        scores = method(corpus)
         assert scores.shape == (num_questions, num_routines), \
             f"{name}: expected shape {(num_questions, num_routines)}, got {scores.shape}"
         empty = list(scores.columns[scores.isna().any()])
         if empty:
-            f"{name}: NaN scores for {empty}"
+            print(f"{name}: NaN scores for {empty}")
 
 
 if __name__ == "__main__":
