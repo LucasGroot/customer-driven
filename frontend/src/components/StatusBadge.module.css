@@ -1,0 +1,27 @@
+.badge {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.update {
+  background: var(--color-status-update-bg);
+  color: var(--color-status-update-fg);
+}
+
+.covered {
+  background: var(--color-status-covered-bg);
+  color: var(--color-status-covered-fg);
+}
+
+.unchanged {
+  background: var(--color-status-none-bg);
+  color: var(--color-status-none-fg);
+}
+
+.undecided {
+  background: var(--color-status-new-bg);
+  color: var(--color-status-new-fg);
+}
