@@ -1,0 +1,161 @@
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table th {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  text-align: left;
+}
+
+.table th:first-child,
+.table td:first-child {
+  padding-left: 20px;
+}
+
+.table th:last-child,
+.table td:last-child {
+  padding-right: 20px;
+  text-align: right;
+}
+
+.table td {
+  padding: 15px 10px;
+  border-bottom: 1px solid var(--color-border-row);
+  vertical-align: middle;
+}
+
+.row {
+  cursor: pointer;
+}
+
+.row:hover,
+.row:focus-within {
+  background: var(--color-surface-muted);
+}
+
+.rank {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-text-dim);
+}
+
+.topicButton {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+.topicButton:hover {
+  text-decoration: underline;
+}
+
+.nearest {
+  font-size: 12.5px;
+  color: var(--color-text-soft);
+  line-height: 1.45;
+  margin-top: 4px;
+}
+
+.coverage {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.coverageLabel {
+  font-size: 12.5px;
+}
+
+.tickets {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.ticketCount {
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+.trend {
+  font-size: 11.5px;
+}
+
+
+.score {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.scoreValue {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.bandMarker {
+  width: 6px;
+  height: 26px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.empty {
+  padding: 28px 20px;
+  font-size: 13px;
+  color: var(--color-text-soft);
+}
+
+@media (max-width: 900px) {
+  .panel {
+    overflow-x: auto;
+  }
+
+  .table {
+    min-width: 760px;
+  }
+}
+
+.colRank {
+  width: 56px;
+}
+
+.colCoverage {
+  width: 136px;
+}
+
+.colTickets {
+  width: 112px;
+}
+
+.colStatus {
+  width: 140px;
+}
+
+.colScore {
+  width: 96px;
+}
