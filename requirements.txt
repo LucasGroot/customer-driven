@@ -2,3 +2,6 @@ ipykernel
 pdfplumber
 matplotlib
 statistics
+sentence-transformers
+pandas
+openpyxl
