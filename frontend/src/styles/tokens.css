@@ -1,0 +1,62 @@
+/*
+ * Design tokens for the knowledge-gap dashboard. Every colour, font and radius
+ * used by a component is named here so a component never hard-codes a hex value.
+ */
+
+:root {
+  --color-canvas: #f6f5f2;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fbfaf7;
+  --color-surface-quote: #f4f1ea;
+
+  --color-border: #e4e2db;
+  --color-border-soft: #f1efe9;
+  --color-border-row: #efede7;
+  --color-border-input: #dad7cf;
+  --color-track: #edebe4;
+
+  --color-text: #1d2321;
+  --color-text-strong: #2b302a;
+  --color-text-body: #3f443d;
+  --color-text-muted: #4c514a;
+  --color-text-subtle: #5c6159;
+  --color-text-soft: #6b7069;
+  --color-text-faint: #83887f;
+  --color-text-dim: #9a9e95;
+  --color-text-disabled: #a8aba3;
+
+  --color-accent: #1f4e79;
+  --color-accent-hover: #16385a;
+  --color-accent-surface: #eef2f7;
+  --color-accent-surface-hover: #f1f5f9;
+  --color-accent-border: #c6d4e1;
+  --color-accent-rule: #dce6ef;
+  --color-accent-chart-idle: #c9d6e3;
+
+  /* Priority bands, also reused for coverage quality and trend direction. */
+  --color-band-high: #9c4221;
+  --color-band-medium: #b0762a;
+  --color-band-low: #2f6b4f;
+
+  --color-status-update-bg: #fdf0e4;
+  --color-status-update-fg: #8a4218;
+  --color-status-covered-bg: #e8f0ea;
+  --color-status-covered-fg: #2f6b4f;
+  --color-status-none-bg: #e9eff6;
+  --color-status-none-fg: #1f4e79;
+  --color-status-new-bg: #efede7;
+  --color-status-new-fg: #6b7069;
+
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius-sm: 5px;
+  --radius-md: 7px;
+  --radius-lg: 9px;
+  --radius-xl: 11px;
+  --radius-pill: 99px;
+
+  --focus-ring: 2px solid var(--color-accent);
+  --focus-offset: 2px;
+}
