@@ -17,9 +17,11 @@ Identify which topics and questions raised through ServiceNow have the lowest se
 3. [`backend/ai/embedding_extract.py`](backend/ai/embedding_extract.py) generates embeddings for both routine chunks and ServiceNow questions using a multilingual sentence-transformer model, and caches them to `embeddings/*.pkl`.
 4. [`backend/ai/compute_similarity.py`](backend/ai/compute_similarity.py) computes cosine similarity between every question and every routine chunk, and ranks questions by their summed top-k similarity — the lowest-scoring questions are the least represented in the current routines — and renders the result as an HTML report.
 
+5. [`frontend/`](frontend/) presents the result as a dashboard: the gaps ranked by priority, why each one ranks where it does, and what HR decided to do about it.
+
 ## Status
 
-Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. No frontend yet.
+Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data.
 
 ## Documentation
 
