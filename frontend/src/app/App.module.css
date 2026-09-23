@@ -1,0 +1,26 @@
+.layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(196px, 228px) minmax(0, 1fr);
+}
+
+.main {
+  padding: 34px 38px 72px;
+  max-width: 1160px;
+}
+
+.message {
+  padding: 34px 38px;
+  font-size: 14px;
+  color: var(--color-text-subtle);
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .main {
+    padding: 24px 20px 56px;
+  }
+}
