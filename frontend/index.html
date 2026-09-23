@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      Fonts are self-hosted under /fonts, so no external origin is needed for
+      anything. 'unsafe-inline' is required only for style-src: the coverage and
+      weighting meters set their width through an inline style attribute.
+      frame-ancestors is ignored in a meta tag and must be sent as a real
+      response header in production - see README.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Kunnskapsgap — ServiceNow × Kvaliteket</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Denne siden krever JavaScript.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
