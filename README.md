@@ -23,6 +23,17 @@ Identify which topics and questions raised through ServiceNow have the lowest se
 
 Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data.
 
+## Running the frontend
+
+Requires Node.js 22.12 or newer. From `frontend/`:
+
+```bash
+npm install     # once, and again after dependencies change
+npm run dev     # start the dashboard
+npm test        # run the tests in watch mode (press q to quit)
+npx vitest run  # run the tests once, e.g. before committing
+```
+
 ## Documentation
 
 - [AI-FRAMEWORK.md](docs/AI-FRAMEWORK.md) — how the group uses AI agents on this project.

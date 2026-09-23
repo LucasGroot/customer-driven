@@ -8,10 +8,10 @@ Trondheim kommune (HR department) gets a high volume of repetitive HR/HMS suppor
 
 Pipeline: `backend/ai/pdf_reader.py` extracts words+fonts from Kvaliteket PDFs → `chunker.py` splits them into sections by bold headings → `embedding_extract.py` embeds both routine chunks and ServiceNow questions (`sentence-transformers/paraphrase-multilingual-mpnet-base-v2`, cached to `embeddings/*.pkl`) → `compute_similarity.py` ranks questions by summed top-k cosine similarity to routines (lowest = least covered) and renders `visualizations/uncovered_questions.html`.
 
-`frontend/` is a React + TypeScript + Vite dashboard (Norwegian UI, English code) showing the ranked gaps. It is UI only and reads the mock snapshot in `frontend/src/mocks/` directly; wiring it to the backend means replacing that one import. Scoring rules live in `frontend/src/domain/priority.ts`.
+`frontend/` is a React + TypeScript + Vite dashboard (Norwegian UI, English code) showing the ranked gaps. 
 
 Two frontend decisions that are easy to undo by accident:
-- Fonts are self-hosted in `frontend/public/fonts` — don't swap them for a Google Fonts link. Beyond the tighter CSP, it avoids sending visitor IPs to Google, which a kommune should not do.
+- Fonts are self-hosted in `frontend/public/fonts` — don't swap them for a Google Fonts link. Beyond the tighter CSP, as it avoids sending visitor IPs to Google, which a municipality should not do.
 - `frontend/vite.config.ts` carries the security headers, including the production CSP that must be sent as a real response header (`frame-ancestors` is ignored in the `<meta>` tag in `index.html`).
 
 ## Data handling — non-negotiable
