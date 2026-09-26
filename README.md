@@ -56,4 +56,14 @@ Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ran
 |-- LICENSE
 |-- README.MD
 |-- requirements.txt
+|-- pyproject.toml
 ```
+
+## How to install
+
+```bash
+pip install -r requirements.txt
+pip install -e .
+```
+
+Installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
