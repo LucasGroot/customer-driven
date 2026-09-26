@@ -12,10 +12,10 @@ Identify which topics and questions raised through ServiceNow have the lowest se
 
 ## How it works
 
-1. [`backend/ai/pdf_reader.py`](backend/ai/pdf_reader.py) extracts words and font info from Kvaliteket routine PDFs.
-2. [`backend/ai/chunker.py`](backend/ai/chunker.py) splits each PDF into sections by bold headings.
-3. [`backend/ai/embedding_extract.py`](backend/ai/embedding_extract.py) generates embeddings for both routine chunks and ServiceNow questions using a multilingual sentence-transformer model, and caches them to `embeddings/*.pkl`.
-4. [`backend/ai/compute_similarity.py`](backend/ai/compute_similarity.py) computes cosine similarity between every question and every routine chunk, and ranks questions by their summed top-k similarity — the lowest-scoring questions are the least represented in the current routines — and renders the result as an HTML report.
+1. [`src/backend/ai/pdf_reader.py`](src/backend/ai/pdf_reader.py) extracts words and font info from Kvaliteket routine PDFs.
+2. [`src/backend/ai/chunker.py`](src/backend/ai/chunker.py) splits each PDF into sections by bold headings.
+3. [`src/backend/ai/embedding_extract.py`](src/backend/ai/embedding_extract.py) generates embeddings for both routine chunks and ServiceNow questions using a multilingual sentence-transformer model, and caches them to `embeddings/*.pkl`.
+4. [`src/backend/ai/compute_similarity.py`](src/backend/ai/compute_similarity.py) computes cosine similarity between every question and every routine chunk, and ranks questions by their summed top-k similarity — the lowest-scoring questions are the least represented in the current routines — and renders the result as an HTML report.
 
 ## Status
 
@@ -27,3 +27,33 @@ Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ran
 - [AGENTS.md](AGENTS.md) — project context for AI coding agents.
 - [CONTRIBUTING.md](CONTRIBUTING.md) — commit message and branch naming conventions.
 - [CODE-STYLE.md](CODE-STYLE.md) — code style best practices and conventions.
+
+### Project organization
+
+```
+|--.github
+|   |-- workflow
+|   |   |-- ci.yml
+|-- assets
+|-- docs
+|-- src
+|   |-- backend
+|   |   |-- chunking
+|   |   |   |-- customized_chunking.py
+|   |   |   |-- fixed_chunking.py
+|   |   |   |-- heading_section.py
+|   |   |-- pdf_reader.py
+|   |-- frontend
+|-- tests
+|   |-- visualization
+|   |   |-- customized_chunking.ipynb
+|   |   |-- fixed_chunking.ipynb
+|-- .gitignore
+|-- .gitmessage
+|-- AGENTS.md
+|-- CODING-STYLE.md
+|-- CONTRIBUTING.md
+|-- LICENSE
+|-- README.MD
+|-- requirements.txt
+```

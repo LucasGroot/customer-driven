@@ -4,3 +4,7 @@
 *.pkl
 visualizations/*.html
 __pycache__
+
+# ignoring dev environment
+/venv
+/env
