@@ -3,7 +3,7 @@ from backend.ai.similarity_metrics.bm25_similarity import bm25_similarity
 from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
 from backend.ai.similarity_metrics.cosine_similarity import cosine_similarity
 
-def main(questions_path = "data/raw/questions/HR_HMS related questions in ServiceNow january - june 2026.xlsx",
+def main(questions_path = "data/raw/serviceNow/serviceNow_questions.xlsx",
          routines_path = "data/raw/kvaliteket"):
     """
     Reads the PDFs and builds the corpus once, then runs all three similarity
