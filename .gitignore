@@ -4,6 +4,7 @@
 *.pkl
 visualizations/*.html
 __pycache__
+*.egg-info/
 
 # ignoring dev environment
 /venv
