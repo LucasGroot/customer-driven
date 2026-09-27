@@ -1,21 +1,23 @@
+import { useId } from "react";
 import { Button } from "../../components/Button";
 import { FilterPill } from "../../components/FilterPill";
 import { PageIntro } from "../../components/PageIntro";
 import { StatCard } from "../../components/StatCard";
-import { rankGaps, totalUnmatchedTickets } from "../../domain/priority";
+import { rankGaps } from "../../domain/priority";
 import type { AnalysisSnapshot, KnowledgeGapId, PriorityWeights } from "../../domain/types";
 import type { GapReview } from "../../hooks/useGapReview";
-import { GAP_FILTERS, filterGaps, type GapFilter } from "./gapFilters";
+import { GAP_FILTERS, filterGaps, hideWellCovered, type GapFilter } from "./gapFilters";
 import { GapTable } from "./GapTable";
 import styles from "./OverviewView.module.css";
 
 interface OverviewViewProps {
   snapshot: AnalysisSnapshot;
   weights: PriorityWeights;
-  thresholdPercent: number;
   review: GapReview;
   filter: GapFilter;
   onFilterChange: (filter: GapFilter) => void;
+  hideAbovePercent: number;
+  onHideAboveChange: (percent: number) => void;
   onOpenGap: (gapId: KnowledgeGapId) => void;
   onOpenSettings: () => void;
   onOpenExport: () => void;
@@ -24,27 +26,29 @@ interface OverviewViewProps {
 export function OverviewView({
   snapshot,
   weights,
-  thresholdPercent,
   review,
   filter,
   onFilterChange,
+  hideAbovePercent,
+  onHideAboveChange,
   onOpenGap,
   onOpenSettings,
   onOpenExport,
 }: OverviewViewProps) {
-  const scored = rankGaps(snapshot.gaps, weights);
-  const visible = filterGaps(scored, filter, review.decisionOf);
-  const highPriorityCount = scored.filter((entry) => entry.band === "high").length;
-  const undecided = review.undecidedCount(snapshot.gaps.map((gap) => gap.id));
-  const unmatched = totalUnmatchedTickets(snapshot, thresholdPercent);
-  const unmatchedPercent = Math.round((unmatched / snapshot.totalTickets) * 100);
+  const hideAboveFieldId = useId();
+  const ranked = rankGaps(snapshot.gaps, weights);
+  const shown = hideWellCovered(ranked, hideAbovePercent);
+  const hiddenCount = ranked.length - shown.length;
+  const visible = filterGaps(shown, filter, review.statusOf);
+  const highPriorityCount = shown.filter((entry) => entry.band === "high").length;
+  const newCount = filterGaps(shown, "new", review.statusOf).length;
 
   return (
     <section className={styles.view}>
       <div className={styles.header}>
         <PageIntro
-          title="Oversikt"
-          lead="Tabellen nedenfor viser en prioritert liste over hvilke rutiner som bør oppdateres i Kvaliteket, basert på henvendelser sendt i ServiceNow. For å endre prioriteringsvekten, gå til Analyseinnstillinger og kjør analysen på nytt."
+          title="Rutiner som bør oppdateres først"
+          lead="Hvert punkt under er et spørsmål stilt direkte i ServiceNow, satt opp mot rutiner i Kvaliteket. Øverst ligger temaene flest spør om, men der dokumentasjonen gir dårligst eller ingen svar."
         />
         <Button variant="primary" onClick={onOpenSettings}>
           Kjør ny analyse
@@ -53,49 +57,67 @@ export function OverviewView({
 
       <div className={styles.stats}>
         <StatCard
-          label="Temaer funnet"
-          value={String(snapshot.gaps.length)}
-          note={`basert på ${String(snapshot.totalTickets)} henvendelser`}
+          label="Temaer vist"
+          value={String(shown.length)}
+          note={`fra ${String(snapshot.totalTickets)} henvendelser`}
         />
         <StatCard
           label="Høy prioritet"
           value={String(highPriorityCount)}
-          note="bør oppdateres snarlig"
+          note="bør tas denne måneden"
         />
-        <StatCard
-          label="Uten treff"
-          value={`${String(unmatchedPercent)} %`}
-          note={`${String(unmatched)} av ${String(snapshot.totalTickets)} henvendelser fant ingen match i Kvaliteket`}
-        />
-        <StatCard label="Status mangler" value={String(undecided)} note="venter på HR" />
+        <StatCard label="Nye" value={String(newCount)} note="ikke behandlet ennå" />
       </div>
 
       <div className={styles.filters}>
-        <span className={styles.filtersLabel}>Vis:</span>
         {GAP_FILTERS.map((option) => (
           <FilterPill
             key={option.key}
-            label={option.label}
+            label={`${option.label} · ${String(filterGaps(shown, option.key, review.statusOf).length)}`}
             selected={filter === option.key}
             onSelect={() => {
               onFilterChange(option.key);
             }}
           />
         ))}
-        <span className={styles.exportLink}>
-          <Button variant="link" onClick={onOpenExport}>
-            Eksporter listen
-          </Button>
-        </span>
+        <div className={styles.hideAbove}>
+          <label htmlFor={hideAboveFieldId}>Skjul temaer med dekning over</label>
+          <input
+            id={hideAboveFieldId}
+            className={styles.hideAboveInput}
+            type="number"
+            min={0}
+            max={100}
+            step={5}
+            value={hideAbovePercent}
+            onChange={(event) => {
+              const percent = Number(event.target.value);
+              onHideAboveChange(Math.min(100, Math.max(0, percent)));
+            }}
+          />
+          <span>%</span>
+        </div>
       </div>
 
-      <GapTable rows={visible} decisionOf={review.decisionOf} onOpenGap={onOpenGap} />
+      {hiddenCount > 0 ? (
+        <p className={styles.hiddenNote}>
+          {hiddenCount} {hiddenCount === 1 ? "tema er" : "temaer er"} skjult fordi rutinene
+          allerede dekker dem over {hideAbovePercent} %.
+        </p>
+      ) : null}
+
+      <GapTable rows={visible} statusOf={review.statusOf} onOpenGap={onOpenGap} />
 
       <p className={styles.footnote}>
         Prioritet 0–100 bygger på fire ting: hvor mange som spør, hvor dårlig nærmeste rutine
         treffer, om temaet øker, og hvor lenge siden dokumentet ble revidert. Klikk på et tema for
         å se regnestykket i klartekst.
       </p>
+      <div>
+        <Button variant="link" onClick={onOpenExport}>
+          Eksporter listen
+        </Button>
+      </div>
     </section>
   );
 }

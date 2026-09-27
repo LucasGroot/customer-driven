@@ -5,7 +5,7 @@
  */
 
 import type { CoverageBand, PriorityBand } from "./priority";
-import type { GapDecision } from "./types";
+import type { GapStatus } from "./types";
 
 export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {
   high: "Høy prioritet",
@@ -19,15 +19,13 @@ const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
   good: "God",
 };
 
-export const DECISION_LABEL: Record<GapDecision, string> = {
-  update: "Skal oppdateres",
-  covered: "Dekket annet sted",
-  unchanged: "Skal ikke endres",
+export const STATUS_LABEL: Record<GapStatus, string> = {
+  new: "Ny",
+  updating: "Under oppdatering",
+  done: "Behandlet",
 };
 
-export const UNDECIDED_LABEL = "Status mangler";
-
-export const DECISION_OPTIONS: GapDecision[] = ["update", "covered", "unchanged"];
+export const STATUS_OPTIONS: GapStatus[] = ["new", "updating", "done"];
 
 export function formatPercent(fraction: number): string {
   return `${String(Math.round(fraction * 100))} %`;
@@ -37,13 +35,7 @@ export function formatCoverage(coverage: number, band: CoverageBand): string {
   return `${COVERAGE_BAND_LABEL[band]} · ${formatPercent(coverage)}`;
 }
 
-export function formatTrend(trendPercent: number): string {
-  if (trendPercent > 0) return `↑ ${String(trendPercent)} %`;
-  if (trendPercent < 0) return `↓ ${String(Math.abs(trendPercent))} %`;
-  return "–";
-}
-
-/** Screen-reader wording for a trend, since the arrow alone does not read well. */
+/** Plain wording for a trend, used where the priority score is explained. */
 export function describeTrend(trendPercent: number): string {
   if (trendPercent > 0) return `Økt ${String(trendPercent)} prosent siden forrige måned`;
   if (trendPercent < 0)

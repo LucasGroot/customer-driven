@@ -13,9 +13,3 @@ export const COVERAGE_BAND_COLOR: Record<CoverageBand, string> = {
   partial: "var(--color-band-medium)",
   good: "var(--color-band-low)",
 };
-
-export function trendColor(trendPercent: number): string {
-  if (trendPercent > 15) return "var(--color-band-high)";
-  if (trendPercent < 0) return "var(--color-band-low)";
-  return "var(--color-text-faint)";
-}

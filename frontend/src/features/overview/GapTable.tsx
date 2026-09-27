@@ -1,18 +1,18 @@
 import { MeterBar } from "../../components/MeterBar";
 import { StatusBadge } from "../../components/StatusBadge";
-import { COVERAGE_BAND_COLOR, PRIORITY_BAND_COLOR, trendColor } from "../../components/bandColors";
-import { describeTrend, formatCoverage, formatTrend } from "../../domain/labels";
+import { COVERAGE_BAND_COLOR, PRIORITY_BAND_COLOR } from "../../components/bandColors";
+import { formatCoverage } from "../../domain/labels";
 import { coverageBand, type ScoredGap } from "../../domain/priority";
-import type { GapDecision, KnowledgeGapId } from "../../domain/types";
+import type { GapStatus, KnowledgeGapId } from "../../domain/types";
 import styles from "./GapTable.module.css";
 
 interface GapTableProps {
   rows: ScoredGap[];
-  decisionOf: (gapId: KnowledgeGapId) => GapDecision | undefined;
+  statusOf: (gapId: KnowledgeGapId) => GapStatus;
   onOpenGap: (gapId: KnowledgeGapId) => void;
 }
 
-export function GapTable({ rows, decisionOf, onOpenGap }: GapTableProps) {
+export function GapTable({ rows, statusOf, onOpenGap }: GapTableProps) {
   return (
     <div className={styles.panel}>
       <table className={styles.table}>
@@ -31,8 +31,8 @@ export function GapTable({ rows, decisionOf, onOpenGap }: GapTableProps) {
           <tr>
             <th scope="col">#</th>
             <th scope="col">Tema fra henvendelser</th>
-            <th scope="col">Dekning</th>
-            <th scope="col">Antall</th>
+            <th scope="col">Dekning i rutine</th>
+            <th scope="col">Henvendelser</th>
             <th scope="col">Status</th>
             <th scope="col">Prioritet</th>
           </tr>
@@ -72,19 +72,10 @@ export function GapTable({ rows, decisionOf, onOpenGap }: GapTableProps) {
                   </div>
                 </td>
                 <td>
-                  <div className={styles.tickets}>
-                    <span className={styles.ticketCount}>{gap.ticketCount}</span>
-                    <span
-                      className={styles.trend}
-                      style={{ color: trendColor(gap.trendPercent) }}
-                      title={describeTrend(gap.trendPercent)}
-                    >
-                      {formatTrend(gap.trendPercent)}
-                    </span>
-                  </div>
+                  <span className={styles.ticketCount}>{gap.ticketCount}</span>
                 </td>
                 <td>
-                  <StatusBadge decision={decisionOf(gap.id)} />
+                  <StatusBadge status={statusOf(gap.id)} />
                 </td>
                 <td>
                   <div className={styles.score}>

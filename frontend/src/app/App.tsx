@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { GapDetailView } from "../features/detail/GapDetailView";
 import { ExportView } from "../features/export/ExportView";
-import type { GapFilter } from "../features/overview/gapFilters";
+import { DEFAULT_HIDE_ABOVE_PERCENT, type GapFilter } from "../features/overview/gapFilters";
 import { OverviewView } from "../features/overview/OverviewView";
+import { SearchView } from "../features/search/SearchView";
 import { AnalysisSettingsView } from "../features/settings/AnalysisSettingsView";
 import { TrendsView } from "../features/trends/TrendsView";
 import { useAnalysisRun } from "../hooks/useAnalysisRun";
 import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
 import { useGapReview } from "../hooks/useGapReview";
 import type { KnowledgeGapId } from "../domain/types";
-import { MOCK_DECISIONS, MOCK_SNAPSHOT } from "../mocks/analysisSnapshot";
+import { MOCK_SNAPSHOT, MOCK_STATUSES } from "../mocks/analysisSnapshot";
 import { Sidebar } from "./Sidebar";
-import type { ViewName } from "./views";
+import type { ViewName, ViewerRole } from "./views";
 import styles from "./App.module.css";
 
 // Until the backend serves an analysis, the dashboard runs on the mock
@@ -22,8 +23,10 @@ export function App() {
   const [view, setView] = useState<ViewName>("list");
   const [selectedGapId, setSelectedGapId] = useState<KnowledgeGapId | null>(null);
   const [filter, setFilter] = useState<GapFilter>("all");
+  const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
+  const [role, setRole] = useState<ViewerRole>("user");
   const settings = useAnalysisSettings();
-  const review = useGapReview(MOCK_DECISIONS);
+  const review = useGapReview(MOCK_STATUSES);
   const run = useAnalysisRun();
 
   const selectedGap = snapshot.gaps.find((gap) => gap.id === selectedGapId);
@@ -41,7 +44,9 @@ export function App() {
         lastRunLabel={run.hasFinished ? "I dag, nettopp" : snapshot.lastRunLabel}
         ticketCount={snapshot.totalTickets}
         routineCount={snapshot.totalRoutines}
+        role={role}
         onNavigate={setView}
+        onRoleChange={setRole}
       />
 
       <main className={styles.main}>
@@ -49,10 +54,11 @@ export function App() {
           <OverviewView
             snapshot={snapshot}
             weights={settings.weights}
-            thresholdPercent={settings.thresholdPercent}
             review={review}
             filter={filter}
             onFilterChange={setFilter}
+            hideAbovePercent={hideAbovePercent}
+            onHideAboveChange={setHideAbovePercent}
             onOpenGap={openGap}
             onOpenSettings={() => {
               setView("run");
@@ -77,6 +83,8 @@ export function App() {
         ) : null}
 
         {view === "trend" ? <TrendsView snapshot={snapshot} /> : null}
+
+        {view === "search" ? <SearchView /> : null}
 
         {view === "run" ? (
           <AnalysisSettingsView snapshot={snapshot} settings={settings} run={run} />

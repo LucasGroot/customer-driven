@@ -14,8 +14,8 @@
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
 }
 
 .filters {
@@ -25,13 +25,29 @@
   align-items: center;
 }
 
-.filtersLabel {
-  font-size: 12px;
-  color: var(--color-text-faint);
+.hideAbove {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--color-text-soft);
 }
 
-.exportLink {
-  margin-left: auto;
+.hideAboveInput {
+  width: 64px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font: inherit;
+  color: var(--color-text);
+}
+
+.hiddenNote {
+  margin-top: -10px;
+  font-size: 12.5px;
+  color: var(--color-text-soft);
 }
 
 .footnote {

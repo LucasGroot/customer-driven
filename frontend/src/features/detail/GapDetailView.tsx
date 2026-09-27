@@ -3,7 +3,7 @@ import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { MeterBar } from "../../components/MeterBar";
 import { COVERAGE_BAND_COLOR, PRIORITY_BAND_COLOR } from "../../components/bandColors";
-import { DECISION_LABEL, DECISION_OPTIONS, PRIORITY_BAND_LABEL, formatPercent } from "../../domain/labels";
+import { PRIORITY_BAND_LABEL, STATUS_LABEL, STATUS_OPTIONS, formatPercent } from "../../domain/labels";
 import { coverageBand, priorityBand, priorityScore } from "../../domain/priority";
 import type { AnalysisSnapshot, KnowledgeGap, PriorityWeights } from "../../domain/types";
 import type { GapReview } from "../../hooks/useGapReview";
@@ -32,7 +32,7 @@ export function GapDetailView({
   const score = priorityScore(gap, weights);
   const band = priorityBand(score);
   const factors = priorityFactors(gap, weights, thresholdPercent, snapshot.totalTickets);
-  const selectedDecision = review.decisionOf(gap.id);
+  const currentStatus = review.statusOf(gap.id);
   const owner = review.ownerOf(gap.id, gap.documentOwner);
 
   return (
@@ -109,25 +109,25 @@ export function GapDetailView({
         </Card>
       </div>
 
-      <Card title="Beslutning">
-        <div className={styles.decisionOptions}>
-          {DECISION_OPTIONS.map((decision) => {
-            const selected = selectedDecision === decision;
+      <Card title="Status">
+        <div className={styles.statusOptions}>
+          {STATUS_OPTIONS.map((status) => {
+            const selected = currentStatus === status;
             return (
               <button
-                key={decision}
+                key={status}
                 type="button"
                 aria-pressed={selected}
                 className={
                   selected
-                    ? classNames(styles.decisionButton, styles.decisionSelected)
-                    : styles.decisionButton
+                    ? classNames(styles.statusButton, styles.statusSelected)
+                    : styles.statusButton
                 }
                 onClick={() => {
-                  review.decide(gap.id, decision);
+                  review.setStatus(gap.id, status);
                 }}
               >
-                {DECISION_LABEL[decision]}
+                {STATUS_LABEL[status]}
               </button>
             );
           })}

@@ -6,7 +6,7 @@
 
 import type {
   AnalysisSnapshot,
-  GapDecision,
+  GapStatus,
   KnowledgeGap,
   KnowledgeGapId,
 } from "../domain/types";
@@ -408,10 +408,9 @@ export const MOCK_SNAPSHOT: AnalysisSnapshot = {
   ],
 };
 
-/** Decisions HR has already recorded, so the work list is not blank on open. */
-export const MOCK_DECISIONS: Record<KnowledgeGapId, GapDecision> = {
-  g1: "update",
-  g2: "update",
-  g5: "covered",
-  g7: "unchanged",
+/** Statuses HR has already set, so the work list is not all "Ny" on open. */
+export const MOCK_STATUSES: Record<KnowledgeGapId, GapStatus> = {
+  g2: "updating",
+  g5: "updating",
+  g7: "done",
 };

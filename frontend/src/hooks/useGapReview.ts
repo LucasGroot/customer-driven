@@ -1,34 +1,33 @@
 /**
  * HR's own annotations on top of an analysis run: what was decided about each
- * gap and who owns the document. Kept in memory only - persisting this needs
+ * gap's status and who owns the document. Kept in memory only - persisting this needs
  * the backend, and nothing here belongs in browser storage.
  */
 
 import { useCallback, useState } from "react";
 import { formatSavedAt } from "../domain/labels";
-import type { GapDecision, KnowledgeGapId } from "../domain/types";
+import type { GapStatus, KnowledgeGapId } from "../domain/types";
 
 export interface GapReview {
-  decisionOf: (gapId: KnowledgeGapId) => GapDecision | undefined;
+  statusOf: (gapId: KnowledgeGapId) => GapStatus;
   ownerOf: (gapId: KnowledgeGapId, fallback: string) => string;
-  undecidedCount: (gapIds: KnowledgeGapId[]) => number;
   savedNote: string | null;
-  decide: (gapId: KnowledgeGapId, decision: GapDecision) => void;
+  setStatus: (gapId: KnowledgeGapId, status: GapStatus) => void;
   assignOwner: (gapId: KnowledgeGapId, owner: string) => void;
   noteAction: (note: string) => void;
 }
 
 export function useGapReview(
-  initialDecisions: Record<KnowledgeGapId, GapDecision>,
+  initialStatuses: Record<KnowledgeGapId, GapStatus>,
 ): GapReview {
-  const [decisions, setDecisions] = useState<Record<KnowledgeGapId, GapDecision>>(
-    () => ({ ...initialDecisions }),
+  const [statuses, setStatuses] = useState<Record<KnowledgeGapId, GapStatus>>(
+    () => ({ ...initialStatuses }),
   );
   const [owners, setOwners] = useState<Record<KnowledgeGapId, string>>({});
   const [savedNote, setSavedNote] = useState<string | null>(null);
 
-  const decide = useCallback((gapId: KnowledgeGapId, decision: GapDecision) => {
-    setDecisions((current) => ({ ...current, [gapId]: decision }));
+  const setStatus = useCallback((gapId: KnowledgeGapId, status: GapStatus) => {
+    setStatuses((current) => ({ ...current, [gapId]: status }));
     setSavedNote(formatSavedAt(new Date()));
   }, []);
 
@@ -37,9 +36,10 @@ export function useGapReview(
     setSavedNote(`Tildelt ${owner}`);
   }, []);
 
-  const decisionOf = useCallback(
-    (gapId: KnowledgeGapId) => decisions[gapId],
-    [decisions],
+  /** A gap nobody has touched yet is new. */
+  const statusOf = useCallback(
+    (gapId: KnowledgeGapId): GapStatus => statuses[gapId] ?? "new",
+    [statuses],
   );
 
   const ownerOf = useCallback(
@@ -47,21 +47,15 @@ export function useGapReview(
     [owners],
   );
 
-  const undecidedCount = useCallback(
-    (gapIds: KnowledgeGapId[]) => gapIds.filter((id) => decisions[id] === undefined).length,
-    [decisions],
-  );
-
   const noteAction = useCallback((note: string) => {
     setSavedNote(note);
   }, []);
 
   return {
-    decisionOf,
+    statusOf,
     ownerOf,
-    undecidedCount,
     savedNote,
-    decide,
+    setStatus,
     assignOwner,
     noteAction,
   };

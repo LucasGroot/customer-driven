@@ -86,5 +86,5 @@ export interface PriorityWeights {
   age: number;
 }
 
-/** What HR decided to do about a gap. */
-export type GapDecision = "update" | "covered" | "unchanged";
+/** Where a gap is in HR's work: untouched, being worked on, or dealt with. */
+export type GapStatus = "new" | "updating" | "done";

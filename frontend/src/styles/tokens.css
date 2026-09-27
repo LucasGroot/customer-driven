@@ -38,14 +38,12 @@
   --color-band-medium: #b0762a;
   --color-band-low: #2f6b4f;
 
-  --color-status-update-bg: #fdf0e4;
-  --color-status-update-fg: #8a4218;
-  --color-status-covered-bg: #e8f0ea;
-  --color-status-covered-fg: #2f6b4f;
-  --color-status-none-bg: #e9eff6;
-  --color-status-none-fg: #1f4e79;
-  --color-status-new-bg: #efede7;
-  --color-status-new-fg: #6b7069;
+  --color-status-new-bg: #e9eff6;
+  --color-status-new-fg: #1f4e79;
+  --color-status-updating-bg: #fbf0d9;
+  --color-status-updating-fg: #7a5518;
+  --color-status-done-bg: #e8f0ea;
+  --color-status-done-fg: #2f6b4f;
 
   --font-sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
   --font-serif: "Source Serif 4", Georgia, serif;

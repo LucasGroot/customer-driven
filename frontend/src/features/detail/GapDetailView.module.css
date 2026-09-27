@@ -183,13 +183,13 @@
   padding: 12px 14px;
 }
 
-.decisionOptions {
+.statusOptions {
   display: flex;
   flex-wrap: wrap;
   gap: 9px;
 }
 
-.decisionButton {
+.statusButton {
   cursor: pointer;
   padding: 9px 15px;
   border-radius: var(--radius-md);
@@ -199,12 +199,12 @@
   color: var(--color-text-muted);
 }
 
-.decisionButton:hover {
+.statusButton:hover {
   border-color: var(--color-accent-border);
 }
 
-.decisionSelected,
-.decisionSelected:hover {
+.statusSelected,
+.statusSelected:hover {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-surface);

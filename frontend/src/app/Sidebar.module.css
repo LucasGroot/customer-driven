@@ -74,9 +74,42 @@
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 18px;
   border-top: 1px solid var(--color-border);
   padding-top: 16px;
+}
+
+.footerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.roleToggle {
+  display: inline-flex;
+  align-self: flex-start;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.roleButton {
+  cursor: pointer;
+  border: none;
+  background: var(--color-surface);
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.roleButton:hover {
+  background: var(--color-surface-muted);
+}
+
+.roleSelected,
+.roleSelected:hover {
+  background: var(--color-accent);
+  color: var(--color-surface);
 }
 
 .footerLabel {

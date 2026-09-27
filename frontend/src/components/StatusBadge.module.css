@@ -6,22 +6,17 @@
   white-space: nowrap;
 }
 
-.update {
-  background: var(--color-status-update-bg);
-  color: var(--color-status-update-fg);
-}
-
-.covered {
-  background: var(--color-status-covered-bg);
-  color: var(--color-status-covered-fg);
-}
-
-.unchanged {
-  background: var(--color-status-none-bg);
-  color: var(--color-status-none-fg);
-}
-
-.undecided {
+.new {
   background: var(--color-status-new-bg);
   color: var(--color-status-new-fg);
+}
+
+.updating {
+  background: var(--color-status-updating-bg);
+  color: var(--color-status-updating-fg);
+}
+
+.done {
+  background: var(--color-status-done-bg);
+  color: var(--color-status-done-fg);
 }
