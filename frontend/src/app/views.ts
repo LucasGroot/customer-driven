@@ -1,6 +1,6 @@
 /** The screens in the dashboard, and the navigation entries that reach them. */
 
-export type ViewName = "list" | "detail" | "run" | "trend" | "search" | "export";
+export type ViewName = "list" | "detail" | "run" | "summary" | "search" | "export";
 
 interface NavigationEntry {
   view: Exclude<ViewName, "detail" | "export">;
@@ -10,7 +10,7 @@ interface NavigationEntry {
 export const NAVIGATION: NavigationEntry[] = [
   { view: "list", label: "Prioritert liste" },
   { view: "run", label: "Kjør analyse" },
-  { view: "trend", label: "Oversikt" },
+  { view: "summary", label: "Oversikt" },
   { view: "search", label: "Søk og treff" },
 ];
 

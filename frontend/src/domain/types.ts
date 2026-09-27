@@ -45,21 +45,12 @@ export interface KnowledgeGap {
   documentAgeLabel: string;
 }
 
-export interface MonthlyUnmatched {
-  month: string;
-  percent: number;
-}
-
-export interface TopicDelta {
-  topic: string;
-  delta: string;
-  note?: string;
-}
-
 export interface DataSource {
   name: string;
-  detail: string;
   count: number;
+  /** What is being counted, e.g. "henvendelser" or "PDF-er". */
+  unit: string;
+  uploadedLabel: string;
 }
 
 /** Everything one analysis run produced. */
@@ -72,9 +63,6 @@ export interface AnalysisSnapshot {
   ticketsOutsideClusters: number;
   coverageOutsideClusters: number;
   lastRunLabel: string;
-  monthlyUnmatched: MonthlyUnmatched[];
-  risingTopics: TopicDelta[];
-  resolvedTopics: TopicDelta[];
   sources: DataSource[];
 }
 

@@ -43,9 +43,6 @@ function makeSnapshot(overrides: Partial<AnalysisSnapshot> = {}): AnalysisSnapsh
     ticketsOutsideClusters: 0,
     coverageOutsideClusters: 1,
     lastRunLabel: "",
-    monthlyUnmatched: [],
-    risingTopics: [],
-    resolvedTopics: [],
     sources: [],
     ...overrides,
   };
@@ -129,8 +126,8 @@ describe("coverageBand", () => {
   it("calls coverage under 0.3 weak, under 0.45 partial and the rest good", () => {
     expect(coverageBand(0.29)).toBe("weak");
     expect(coverageBand(0.3)).toBe("partial");
-    expect(coverageBand(0.44)).toBe("partial");
-    expect(coverageBand(0.45)).toBe("good");
+    expect(coverageBand(0.59)).toBe("partial");
+    expect(coverageBand(0.6)).toBe("good");
   });
 });
 

@@ -1,0 +1,67 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.bands {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bandRow {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) minmax(80px, 1.4fr) 24px;
+  align-items: center;
+  gap: 16px;
+  font-size: 13.5px;
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-align: right;
+}
+
+.stack {
+  display: flex;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: var(--color-track);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  list-style: none;
+  font-size: 13px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex: none;
+}

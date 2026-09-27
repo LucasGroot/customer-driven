@@ -365,45 +365,18 @@ export const MOCK_SNAPSHOT: AnalysisSnapshot = {
   ticketsOutsideClusters: 222,
   coverageOutsideClusters: 0.62,
   lastRunLabel: "3. september 2026",
-  monthlyUnmatched: [
-    { month: "feb", percent: 41 },
-    { month: "mar", percent: 39 },
-    { month: "apr", percent: 43 },
-    { month: "mai", percent: 40 },
-    { month: "jun", percent: 37 },
-    { month: "jul", percent: 44 },
-    { month: "aug", percent: 38 },
-    { month: "sep", percent: 34 },
-  ],
-  risingTopics: [
-    { topic: "Egenmelding ved barns sykdom", delta: "+41 %" },
-    { topic: "Kompensasjon for vaktbytte", delta: "+33 %" },
-    { topic: "Tilgang og utstyr før oppstart", delta: "+22 %" },
-    { topic: "Overføring av ferie", delta: "+12 %" },
-  ],
-  resolvedTopics: [
-    { topic: "Reiseregning og utleggsfrister", delta: "−58 %", note: "KV-033 oppdatert i juni" },
-    {
-      topic: "Bestilling av bedriftshelsetjeneste",
-      delta: "−44 %",
-      note: "KV-050 oppdatert i mai",
-    },
-    {
-      topic: "Registrering av hjemmekontordager",
-      delta: "−31 %",
-      note: "KV-044 oppdatert i april",
-    },
-  ],
   sources: [
     {
-      name: "ServiceNow – HR-henvendelser",
-      detail: "Automatisk henting, siste måned. Fritekst anonymiseres før analyse.",
+      name: "ServiceNow-henvendelser",
       count: 412,
+      unit: "henvendelser",
+      uploadedLabel: "12. september 2026",
     },
     {
-      name: "Kvaliteket – rutiner og retningslinjer",
-      detail: "Alle publiserte HR-dokumenter, inkludert revisjonsdato.",
+      name: "Kvaliteket-rutiner",
       count: 96,
+      unit: "PDF-er",
+      uploadedLabel: "12. september 2026",
     },
   ],
 };

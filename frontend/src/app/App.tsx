@@ -3,9 +3,9 @@ import { GapDetailView } from "../features/detail/GapDetailView";
 import { ExportView } from "../features/export/ExportView";
 import { DEFAULT_HIDE_ABOVE_PERCENT, type GapFilter } from "../features/overview/gapFilters";
 import { OverviewView } from "../features/overview/OverviewView";
+import { RunAnalysisView } from "../features/run/RunAnalysisView";
 import { SearchView } from "../features/search/SearchView";
-import { AnalysisSettingsView } from "../features/settings/AnalysisSettingsView";
-import { TrendsView } from "../features/trends/TrendsView";
+import { SummaryView } from "../features/summary/SummaryView";
 import { useAnalysisRun } from "../hooks/useAnalysisRun";
 import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
 import { useGapReview } from "../hooks/useGapReview";
@@ -82,12 +82,14 @@ export function App() {
           />
         ) : null}
 
-        {view === "trend" ? <TrendsView snapshot={snapshot} /> : null}
+        {view === "summary" ? (
+          <SummaryView snapshot={snapshot} review={review} hideAbovePercent={hideAbovePercent} />
+        ) : null}
 
         {view === "search" ? <SearchView /> : null}
 
         {view === "run" ? (
-          <AnalysisSettingsView snapshot={snapshot} settings={settings} run={run} />
+          <RunAnalysisView snapshot={snapshot} run={run} />
         ) : null}
 
         {view === "export" ? (

@@ -4,7 +4,12 @@
  * around it stays in English.
  */
 
-import type { CoverageBand, PriorityBand } from "./priority";
+import {
+  GOOD_COVERAGE_FROM,
+  PARTIAL_COVERAGE_FROM,
+  type CoverageBand,
+  type PriorityBand,
+} from "./priority";
 import type { GapStatus } from "./types";
 
 export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {
@@ -18,6 +23,18 @@ const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
   partial: "Delvis",
   good: "God",
 };
+
+const partialFrom = Math.round(PARTIAL_COVERAGE_FROM * 100);
+const goodFrom = Math.round(GOOD_COVERAGE_FROM * 100);
+
+/** The band names with their ranges spelled out, for the summary page. */
+export const COVERAGE_BAND_RANGE_LABEL: Record<CoverageBand, string> = {
+  weak: `${COVERAGE_BAND_LABEL.weak} (under ${String(partialFrom)} %)`,
+  partial: `${COVERAGE_BAND_LABEL.partial} (${String(partialFrom)}–${String(goodFrom - 1)} %)`,
+  good: `${COVERAGE_BAND_LABEL.good} (${String(goodFrom)} % og over)`,
+};
+
+export const COVERAGE_BANDS: CoverageBand[] = ["weak", "partial", "good"];
 
 export const STATUS_LABEL: Record<GapStatus, string> = {
   new: "Ny",

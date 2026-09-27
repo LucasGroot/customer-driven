@@ -70,9 +70,13 @@ export function priorityBand(score: number): PriorityBand {
 
 export type CoverageBand = "weak" | "partial" | "good";
 
+/** Coverage below this is weak; from here up to GOOD_COVERAGE_FROM it is partial. */
+export const PARTIAL_COVERAGE_FROM = 0.3;
+export const GOOD_COVERAGE_FROM = 0.6;
+
 export function coverageBand(coverage: number): CoverageBand {
-  if (coverage < 0.3) return "weak";
-  if (coverage < 0.45) return "partial";
+  if (coverage < PARTIAL_COVERAGE_FROM) return "weak";
+  if (coverage < GOOD_COVERAGE_FROM) return "partial";
   return "good";
 }
 
