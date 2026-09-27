@@ -18,7 +18,7 @@ def tf_idf_similarity(corpus, k=3):
 
     vectorizer = TfidfVectorizer(tokenizer=tokenize, lowercase=False, token_pattern=None)
     chunk_matrix = vectorizer.fit_transform(corpus.chunk_texts)
-    question_matrix = vectorizer.transform(corpus.questions)
+    question_matrix = vectorizer.transform(corpus.questions["text"])
     chunk_scores = cosine_similarity(question_matrix, chunk_matrix)
 
     return top_k_per_routine(chunk_scores, corpus, k)

@@ -21,6 +21,10 @@ from backend.ai.pdf_reader import read_all_pdfs
 
 _TOKEN_RE = re.compile(r"\w+")
 
+QUESTION_ID_COLUMN = "Nummer"
+SERVICE_COLUMN = "Tjenestetilbud"
+TEXT_COLUMNS = ["Kort beskrivelse", "Beskrivelse"]
+
 
 def tokenize(text):
     """
@@ -34,7 +38,7 @@ def tokenize(text):
 
 @dataclass
 class Corpus:
-    questions: list
+    questions: pd.DataFrame  # indexed by Nummer, columns Tjenestetilbud and text
     routine_names: list
     chunk_counts: list
     chunk_texts: list
@@ -59,16 +63,22 @@ def extract_all_chunk_embeddings(folder_path="data/raw/kvaliteket", chunker=chun
     return all_chunks
 
 
-def extract_questions(xlsx_path, sheet=0, column="Beskrivelse"):
+def extract_questions(xlsx_path, sheet=0):
     """
-    Reads a column of questions from an xlsx file, dropping empty rows.
-    Returns the questions as a list of strings.
+    Reads questions from an xlsx file and joins "Kort beskrivelse" and "Beskrivelse" into one text.
+    Rows where both fields are empty are dropped; Nummer must be unique.
+    Returns a DataFrame indexed by Nummer with columns Tjenestetilbud and text.
     """
 
-    df = pd.read_excel(xlsx_path, sheet_name=sheet)
-    questions = df[column].dropna().astype(str).tolist()
+    df = pd.read_excel(xlsx_path, sheet_name=sheet, dtype=str)
+    df["text"] = df[TEXT_COLUMNS].apply(
+        lambda row: "\n".join(part.strip() for part in row.dropna() if part.strip()), axis=1
+    )
+    questions = df[df["text"] != ""].set_index(QUESTION_ID_COLUMN)
+    if not questions.index.is_unique:
+        raise ValueError(f"Duplicate {QUESTION_ID_COLUMN} values in {xlsx_path}")
 
-    return questions
+    return questions[[SERVICE_COLUMN, "text"]]
 
 
 def load_corpus(questions_path, routines_path, chunker=chunk_by_layout):
@@ -80,7 +90,7 @@ def load_corpus(questions_path, routines_path, chunker=chunk_by_layout):
     """
 
     questions = extract_questions(questions_path)
-    if not questions:
+    if questions.empty:
         raise ValueError(f"No questions found in {questions_path}")
 
     routine_chunks = extract_all_chunk_embeddings(routines_path, chunker=chunker)
@@ -129,4 +139,4 @@ def top_k_per_routine(chunk_scores, corpus, k):
             scores[:, i] = np.sort(routine_scores, axis=1)[:, -k:].mean(axis=1)
         start += count
 
-    return pd.DataFrame(scores, index=corpus.questions, columns=corpus.routine_names)
+    return pd.DataFrame(scores, index=corpus.questions.index, columns=corpus.routine_names)
