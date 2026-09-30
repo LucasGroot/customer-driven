@@ -16,6 +16,6 @@ def bm25_similarity(corpus, k=3):
     _check_k(k)
 
     bm25 = BM25Okapi([tokenize(text) for text in corpus.chunk_texts])
-    chunk_scores = np.vstack([bm25.get_scores(tokenize(q)) for q in corpus.questions])
+    chunk_scores = np.vstack([bm25.get_scores(tokenize(q)) for q in corpus.questions["text"]])
 
     return top_k_per_routine(chunk_scores, corpus, k)

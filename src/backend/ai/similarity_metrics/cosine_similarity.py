@@ -18,7 +18,7 @@ def cosine_similarity(corpus,
     _check_k(k)
 
     model = SentenceTransformer(model_name)
-    question_embeddings = model.encode(corpus.questions, normalize_embeddings=True)
+    question_embeddings = model.encode(corpus.questions["text"].tolist(), normalize_embeddings=True)
     chunk_embeddings = model.encode(corpus.chunk_texts, normalize_embeddings=True)
     chunk_scores = question_embeddings @ chunk_embeddings.T
 
