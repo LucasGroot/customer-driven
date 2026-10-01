@@ -21,11 +21,3 @@ export function isNavigationActive(entry: NavigationEntry, current: ViewName): b
     (entry.view === "list" && (current === "detail" || current === "export"))
   );
 }
-
-/** Who the prototype is shown as. Nothing is gated on it yet. */
-export type ViewerRole = "user" | "admin";
-
-export const VIEWER_ROLES: { role: ViewerRole; label: string }[] = [
-  { role: "user", label: "Bruker" },
-  { role: "admin", label: "Admin" },
-];

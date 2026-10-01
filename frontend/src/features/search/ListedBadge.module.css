@@ -1,0 +1,17 @@
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.listed {
+  background: var(--color-accent-surface);
+  color: var(--color-accent);
+}
+
+.hidden {
+  background: var(--color-track);
+  color: var(--color-text-soft);
+}

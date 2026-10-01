@@ -43,6 +43,8 @@ function makeSnapshot(overrides: Partial<AnalysisSnapshot> = {}): AnalysisSnapsh
     ticketsOutsideClusters: 0,
     coverageOutsideClusters: 1,
     lastRunLabel: "",
+    questions: [],
+    documents: [],
     sources: [],
     ...overrides,
   };

@@ -1,4 +1,4 @@
-import { NAVIGATION, VIEWER_ROLES, isNavigationActive, type ViewName, type ViewerRole } from "./views";
+import { NAVIGATION, isNavigationActive, type ViewName } from "./views";
 import styles from "./Sidebar.module.css";
 import { classNames } from "../components/classNames";
 
@@ -8,9 +8,7 @@ interface SidebarProps {
   lastRunLabel: string;
   ticketCount: number;
   routineCount: number;
-  role: ViewerRole;
   onNavigate: (view: ViewName) => void;
-  onRoleChange: (role: ViewerRole) => void;
 }
 
 export function Sidebar({
@@ -19,9 +17,7 @@ export function Sidebar({
   lastRunLabel,
   ticketCount,
   routineCount,
-  role,
   onNavigate,
-  onRoleChange,
 }: SidebarProps) {
   return (
     <aside className={styles.sidebar}>
@@ -53,30 +49,6 @@ export function Sidebar({
       </nav>
 
       <div className={styles.footer}>
-        <div className={styles.footerSection}>
-          <div className={styles.footerLabel}>Vis som (prototype)</div>
-          <div className={styles.roleToggle} role="group" aria-label="Vis som">
-            {VIEWER_ROLES.map((option) => {
-              const selected = option.role === role;
-              return (
-                <button
-                  key={option.role}
-                  type="button"
-                  className={
-                    selected ? classNames(styles.roleButton, styles.roleSelected) : styles.roleButton
-                  }
-                  aria-pressed={selected}
-                  onClick={() => {
-                    onRoleChange(option.role);
-                  }}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
         <div className={styles.footerSection}>
           <div className={styles.footerLabel}>Siste analyse</div>
           <div className={styles.footerValue}>{lastRunLabel}</div>

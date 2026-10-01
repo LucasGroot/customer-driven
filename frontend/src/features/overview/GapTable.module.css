@@ -78,16 +78,6 @@
   margin-top: 4px;
 }
 
-.coverage {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.coverageLabel {
-  font-size: 12.5px;
-}
-
 .ticketCount {
   font-family: var(--font-mono);
   font-size: 14px;

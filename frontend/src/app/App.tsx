@@ -12,7 +12,7 @@ import { useGapReview } from "../hooks/useGapReview";
 import type { KnowledgeGapId } from "../domain/types";
 import { MOCK_SNAPSHOT, MOCK_STATUSES } from "../mocks/analysisSnapshot";
 import { Sidebar } from "./Sidebar";
-import type { ViewName, ViewerRole } from "./views";
+import type { ViewName } from "./views";
 import styles from "./App.module.css";
 
 // Until the backend serves an analysis, the dashboard runs on the mock
@@ -24,7 +24,6 @@ export function App() {
   const [selectedGapId, setSelectedGapId] = useState<KnowledgeGapId | null>(null);
   const [filter, setFilter] = useState<GapFilter>("all");
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
-  const [role, setRole] = useState<ViewerRole>("user");
   const settings = useAnalysisSettings();
   const review = useGapReview(MOCK_STATUSES);
   const run = useAnalysisRun();
@@ -44,9 +43,7 @@ export function App() {
         lastRunLabel={run.hasFinished ? "I dag, nettopp" : snapshot.lastRunLabel}
         ticketCount={snapshot.totalTickets}
         routineCount={snapshot.totalRoutines}
-        role={role}
         onNavigate={setView}
-        onRoleChange={setRole}
       />
 
       <main className={styles.main}>
@@ -86,7 +83,9 @@ export function App() {
           <SummaryView snapshot={snapshot} review={review} hideAbovePercent={hideAbovePercent} />
         ) : null}
 
-        {view === "search" ? <SearchView /> : null}
+        {view === "search" ? (
+          <SearchView snapshot={snapshot} hideAbovePercent={hideAbovePercent} onOpenGap={openGap} />
+        ) : null}
 
         {view === "run" ? (
           <RunAnalysisView snapshot={snapshot} run={run} />

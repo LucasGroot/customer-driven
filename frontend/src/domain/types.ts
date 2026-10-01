@@ -45,6 +45,30 @@ export interface KnowledgeGap {
   documentAgeLabel: string;
 }
 
+/** One Kvaliteket document, as listed on the search page. */
+export interface RoutineDocument {
+  /** Document number, e.g. "KV-014". */
+  code: string;
+  name: string;
+  revisedLabel: string;
+}
+
+/**
+ * One ServiceNow question and the document that matched it best. Questions in
+ * a gap's cluster carry its id; questions the routines already answer do not.
+ */
+export interface AskedQuestion {
+  id: string;
+  text: string;
+  /** Ticket number and date, e.g. "INC0412884 · 2. sep". */
+  reference: string;
+  topic: string;
+  gapId?: KnowledgeGapId;
+  documentCode: string;
+  /** Similarity to the best-matching document, 0-1. */
+  coverage: number;
+}
+
 export interface DataSource {
   name: string;
   count: number;
@@ -63,6 +87,8 @@ export interface AnalysisSnapshot {
   ticketsOutsideClusters: number;
   coverageOutsideClusters: number;
   lastRunLabel: string;
+  questions: AskedQuestion[];
+  documents: RoutineDocument[];
   sources: DataSource[];
 }
 

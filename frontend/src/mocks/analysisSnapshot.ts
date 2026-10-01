@@ -10,6 +10,7 @@ import type {
   KnowledgeGap,
   KnowledgeGapId,
 } from "../domain/types";
+import { MOCK_DOCUMENTS, MOCK_QUESTIONS } from "./searchIndex";
 
 const gaps: KnowledgeGap[] = [
   {
@@ -365,6 +366,8 @@ export const MOCK_SNAPSHOT: AnalysisSnapshot = {
   ticketsOutsideClusters: 222,
   coverageOutsideClusters: 0.62,
   lastRunLabel: "3. september 2026",
+  questions: MOCK_QUESTIONS,
+  documents: MOCK_DOCUMENTS,
   sources: [
     {
       name: "ServiceNow-henvendelser",

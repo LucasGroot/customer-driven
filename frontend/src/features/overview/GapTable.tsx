@@ -1,8 +1,7 @@
-import { MeterBar } from "../../components/MeterBar";
+import { CoverageMeter } from "../../components/CoverageMeter";
 import { StatusBadge } from "../../components/StatusBadge";
-import { COVERAGE_BAND_COLOR, PRIORITY_BAND_COLOR } from "../../components/bandColors";
-import { formatCoverage } from "../../domain/labels";
-import { coverageBand, type ScoredGap } from "../../domain/priority";
+import { PRIORITY_BAND_COLOR } from "../../components/bandColors";
+import type { ScoredGap } from "../../domain/priority";
 import type { GapStatus, KnowledgeGapId } from "../../domain/types";
 import styles from "./GapTable.module.css";
 
@@ -38,57 +37,48 @@ export function GapTable({ rows, statusOf, onOpenGap }: GapTableProps) {
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ gap, score, band }, index) => {
-            const coverage = coverageBand(gap.coverage);
-            const coverageColor = COVERAGE_BAND_COLOR[coverage];
-            return (
-              <tr
-                key={gap.id}
-                className={styles.row}
-                onClick={() => {
-                  onOpenGap(gap.id);
-                }}
-              >
-                <td className={styles.rank}>{index + 1}</td>
-                <td>
-                  <button
-                    type="button"
-                    className={styles.topicButton}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onOpenGap(gap.id);
-                    }}
-                  >
-                    {gap.topic}
-                  </button>
-                  <div className={styles.nearest}>{gap.nearestMatchLine}</div>
-                </td>
-                <td>
-                  <div className={styles.coverage}>
-                    <span className={styles.coverageLabel} style={{ color: coverageColor }}>
-                      {formatCoverage(gap.coverage, coverage)}
-                    </span>
-                    <MeterBar value={gap.coverage} color={coverageColor} />
-                  </div>
-                </td>
-                <td>
-                  <span className={styles.ticketCount}>{gap.ticketCount}</span>
-                </td>
-                <td>
-                  <StatusBadge status={statusOf(gap.id)} />
-                </td>
-                <td>
-                  <div className={styles.score}>
-                    <span className={styles.scoreValue}>{score}</span>
-                    <span
-                      className={styles.bandMarker}
-                      style={{ background: PRIORITY_BAND_COLOR[band] }}
-                    />
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+          {rows.map(({ gap, score, band }, index) => (
+            <tr
+              key={gap.id}
+              className={styles.row}
+              onClick={() => {
+                onOpenGap(gap.id);
+              }}
+            >
+              <td className={styles.rank}>{index + 1}</td>
+              <td>
+                <button
+                  type="button"
+                  className={styles.topicButton}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onOpenGap(gap.id);
+                  }}
+                >
+                  {gap.topic}
+                </button>
+                <div className={styles.nearest}>{gap.nearestMatchLine}</div>
+              </td>
+              <td>
+                <CoverageMeter coverage={gap.coverage} />
+              </td>
+              <td>
+                <span className={styles.ticketCount}>{gap.ticketCount}</span>
+              </td>
+              <td>
+                <StatusBadge status={statusOf(gap.id)} />
+              </td>
+              <td>
+                <div className={styles.score}>
+                  <span className={styles.scoreValue}>{score}</span>
+                  <span
+                    className={styles.bandMarker}
+                    style={{ background: PRIORITY_BAND_COLOR[band] }}
+                  />
+                </div>
+              </td>
+            </tr>
+          ))}
           {rows.length === 0 ? (
             <tr>
               <td className={styles.empty} colSpan={6}>
