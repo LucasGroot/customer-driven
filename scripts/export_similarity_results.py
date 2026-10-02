@@ -11,13 +11,13 @@ import pandas as pd
 from backend.ai.similarity_metrics.shared_logic import SERVICE_COLUMN, load_corpus
 from backend.ai.similarity_metrics.bm25_similarity import bm25_similarity
 from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
-from backend.ai.similarity_metrics.cosine_similarity import cosine_similarity
+from backend.ai.similarity_metrics.llm_embedding_similarity import llm_embedding_similarity
 
 
 METHODS = {
     "tf-idf": tf_idf_similarity,
     "bm25": bm25_similarity,
-    "cosine": cosine_similarity,
+    "cosine": llm_embedding_similarity,
 }
 
 
