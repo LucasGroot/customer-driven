@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { PageIntro } from "../../components/PageIntro";
@@ -33,6 +34,7 @@ interface ExportViewProps {
 
 export function ExportView({ snapshot, weights, review }: ExportViewProps) {
   const rows = rankGaps(snapshot.gaps, weights).slice(0, PREVIEW_ROW_COUNT);
+  const [notice, setNotice] = useState<string | null>(null);
 
   return (
     <section className={styles.view}>
@@ -54,7 +56,7 @@ export function ExportView({ snapshot, weights, review }: ExportViewProps) {
                 onClick={() => {
                   // Rendering the file is the backend's job; until that exists the
                   // button only confirms which report was asked for.
-                  review.noteAction(`${option.format} er ikke koblet opp ennå`);
+                  setNotice(`${option.format} er ikke koblet opp ennå`);
                 }}
               >
                 {option.callToAction}
@@ -64,11 +66,9 @@ export function ExportView({ snapshot, weights, review }: ExportViewProps) {
         ))}
       </div>
 
-      {review.savedNote === null ? null : (
-        <div className={styles.status} aria-live="polite">
-          {review.savedNote}
-        </div>
-      )}
+      <div className={styles.status} aria-live="polite">
+        {notice}
+      </div>
 
       <Card title="Med i rapporten">
         {rows.map(({ gap, score }, index) => (

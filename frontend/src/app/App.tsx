@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GapDetailView } from "../features/detail/GapDetailView";
 import { ExportView } from "../features/export/ExportView";
-import { DEFAULT_HIDE_ABOVE_PERCENT, type GapFilter } from "../features/overview/gapFilters";
+import type { GapFilter } from "../features/overview/gapFilters";
 import { OverviewView } from "../features/overview/OverviewView";
 import { RunAnalysisView } from "../features/run/RunAnalysisView";
 import { SearchView } from "../features/search/SearchView";
@@ -9,6 +9,7 @@ import { SummaryView } from "../features/summary/SummaryView";
 import { useAnalysisRun } from "../hooks/useAnalysisRun";
 import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
 import { useGapReview } from "../hooks/useGapReview";
+import { DEFAULT_HIDE_ABOVE_PERCENT, listedGapIds } from "../domain/priority";
 import type { KnowledgeGapId } from "../domain/types";
 import { MOCK_SNAPSHOT, MOCK_STATUSES } from "../mocks/analysisSnapshot";
 import { Sidebar } from "./Sidebar";
@@ -21,6 +22,8 @@ const snapshot = MOCK_SNAPSHOT;
 
 export function App() {
   const [view, setView] = useState<ViewName>("list");
+  // The detail page can be opened from the list or from search; back returns there.
+  const [returnView, setReturnView] = useState<ViewName>("list");
   const [selectedGapId, setSelectedGapId] = useState<KnowledgeGapId | null>(null);
   const [filter, setFilter] = useState<GapFilter>("all");
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
@@ -32,14 +35,15 @@ export function App() {
 
   const openGap = (gapId: KnowledgeGapId) => {
     setSelectedGapId(gapId);
+    setReturnView(view);
     setView("detail");
   };
 
   return (
     <div className={styles.layout}>
       <Sidebar
-        currentView={view}
-        gapCount={snapshot.gaps.length}
+        currentView={view === "detail" ? returnView : view}
+        gapCount={listedGapIds(snapshot.gaps, hideAbovePercent).size}
         lastRunLabel={run.hasFinished ? "I dag, nettopp" : snapshot.lastRunLabel}
         ticketCount={snapshot.totalTickets}
         routineCount={snapshot.totalRoutines}
@@ -73,8 +77,9 @@ export function App() {
             weights={settings.weights}
             thresholdPercent={settings.thresholdPercent}
             review={review}
+            backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
             onBack={() => {
-              setView("list");
+              setView(returnView);
             }}
           />
         ) : null}

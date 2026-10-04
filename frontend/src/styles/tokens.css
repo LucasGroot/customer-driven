@@ -38,12 +38,14 @@
   --color-band-medium: #b0762a;
   --color-band-low: #2f6b4f;
 
-  --color-status-new-bg: #e9eff6;
-  --color-status-new-fg: #1f4e79;
-  --color-status-updating-bg: #fbf0d9;
-  --color-status-updating-fg: #7a5518;
-  --color-status-done-bg: #e8f0ea;
-  --color-status-done-fg: #2f6b4f;
+  --color-badge-accent-bg: #e9eff6;
+  --color-badge-accent-fg: #1f4e79;
+  --color-badge-warning-bg: #fbf0d9;
+  --color-badge-warning-fg: #7a5518;
+  --color-badge-success-bg: #e8f0ea;
+  --color-badge-success-fg: #2f6b4f;
+  --color-badge-neutral-bg: #edebe4;
+  --color-badge-neutral-fg: #6b7069;
 
   --font-sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
   --font-serif: "Source Serif 4", Georgia, serif;

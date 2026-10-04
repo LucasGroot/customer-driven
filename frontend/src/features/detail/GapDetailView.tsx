@@ -1,7 +1,8 @@
-import { useId } from "react";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
+import { FilterPill } from "../../components/FilterPill";
 import { MeterBar } from "../../components/MeterBar";
+import { SelectField } from "../../components/SelectField";
 import { COVERAGE_BAND_COLOR, PRIORITY_BAND_COLOR } from "../../components/bandColors";
 import { PRIORITY_BAND_LABEL, STATUS_LABEL, STATUS_OPTIONS, formatPercent } from "../../domain/labels";
 import { coverageBand, priorityBand, priorityScore } from "../../domain/priority";
@@ -17,6 +18,7 @@ interface GapDetailViewProps {
   weights: PriorityWeights;
   thresholdPercent: number;
   review: GapReview;
+  backLabel: string;
   onBack: () => void;
 }
 
@@ -26,9 +28,9 @@ export function GapDetailView({
   weights,
   thresholdPercent,
   review,
+  backLabel,
   onBack,
 }: GapDetailViewProps) {
-  const ownerFieldId = useId();
   const score = priorityScore(gap, weights);
   const band = priorityBand(score);
   const factors = priorityFactors(gap, weights, thresholdPercent, snapshot.totalTickets);
@@ -38,7 +40,7 @@ export function GapDetailView({
   return (
     <section className={styles.view}>
       <Button variant="link" onClick={onBack}>
-        ← Tilbake til oversikten
+        ← {backLabel}
       </Button>
 
       <div className={styles.header}>
@@ -111,61 +113,38 @@ export function GapDetailView({
 
       <Card title="Status">
         <div className={styles.statusOptions}>
-          {STATUS_OPTIONS.map((status) => {
-            const selected = currentStatus === status;
-            return (
-              <button
-                key={status}
-                type="button"
-                aria-pressed={selected}
-                className={
-                  selected
-                    ? classNames(styles.statusButton, styles.statusSelected)
-                    : styles.statusButton
-                }
-                onClick={() => {
-                  review.setStatus(gap.id, status);
-                }}
-              >
-                {STATUS_LABEL[status]}
-              </button>
-            );
-          })}
+          {STATUS_OPTIONS.map((status) => (
+            <FilterPill
+              key={status}
+              label={STATUS_LABEL[status]}
+              selected={currentStatus === status}
+              onSelect={() => {
+                review.setStatus(gap.id, status);
+              }}
+            />
+          ))}
         </div>
 
         <div className={styles.assignment}>
-          <div className={styles.field}>
-            <label className={styles.fieldLabel} htmlFor={ownerFieldId}>
-              Dokumenteier
-            </label>
-            <select
-              id={ownerFieldId}
-              className={styles.select}
-              value={owner}
-              onChange={(event) => {
-                review.assignOwner(gap.id, event.target.value);
-              }}
-            >
-              {snapshot.documentOwners.map((candidate) => (
-                <option key={candidate} value={candidate}>
-                  {candidate}
-                </option>
-              ))}
-            </select>
-          </div>
+          <SelectField
+            label="Dokumenteier"
+            layout="stacked"
+            value={owner}
+            options={snapshot.documentOwners.map((candidate) => ({
+              value: candidate,
+              label: candidate,
+            }))}
+            onChange={(candidate) => {
+              review.assignOwner(gap.id, candidate);
+            }}
+          />
           <div className={styles.field}>
             <span className={styles.fieldLabel}>Frist</span>
             <span className={styles.dueDate}>{gap.dueDate}</span>
           </div>
           <div
-            className={styles.savedNote}
+            className={classNames(styles.savedNote, review.savedNote !== null && styles.saved)}
             aria-live="polite"
-            style={{
-              color:
-                review.savedNote === null
-                  ? "var(--color-text-faint)"
-                  : "var(--color-band-low)",
-            }}
           >
             {review.savedNote ?? "Endringer lagres automatisk"}
           </div>

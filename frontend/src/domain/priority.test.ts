@@ -3,6 +3,8 @@ import {
   DEFAULT_WEIGHTS,
   THRESHOLD_RANGE,
   coverageBand,
+  isWellCovered,
+  listedGapIds,
   priorityBand,
   priorityScore,
   rankGaps,
@@ -210,5 +212,17 @@ describe("rankGaps", () => {
     rankGaps(gaps, DEFAULT_WEIGHTS);
 
     expect(gaps).toEqual([BEST_GAP, WORST_GAP]);
+  });
+});
+
+describe("coverage cut-off", () => {
+  it("counts a gap as well covered only above the cut-off", () => {
+    expect(isWellCovered(makeGap({ coverage: 0.7 }), 70)).toBe(false);
+    expect(isWellCovered(makeGap({ coverage: 0.71 }), 70)).toBe(true);
+  });
+
+  it("lists the gaps at or below the cut-off", () => {
+    const gaps = [makeGap({ id: "low", coverage: 0.4 }), makeGap({ id: "high", coverage: 0.8 })];
+    expect([...listedGapIds(gaps, 70)]).toEqual(["low"]);
   });
 });

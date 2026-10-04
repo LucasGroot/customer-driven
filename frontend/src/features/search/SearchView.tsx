@@ -3,13 +3,13 @@ import { FilterPill } from "../../components/FilterPill";
 import { PageIntro } from "../../components/PageIntro";
 import { SearchField } from "../../components/SearchField";
 import { SelectField } from "../../components/SelectField";
+import { listedGapIds } from "../../domain/priority";
 import type { AnalysisSnapshot, KnowledgeGapId } from "../../domain/types";
 import { DocumentTable } from "./DocumentTable";
 import { QuestionTable } from "./QuestionTable";
 import {
   SORT_OPTIONS,
   VISIBILITY_FILTERS,
-  listedGapIds,
   searchDocuments,
   searchQuestions,
   type ListVisibility,

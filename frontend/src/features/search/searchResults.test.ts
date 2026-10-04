@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { AskedQuestion, KnowledgeGap, RoutineDocument } from "../../domain/types";
-import { listedGapIds, matchesQuery, searchDocuments, searchQuestions } from "./searchResults";
+import type { AskedQuestion, RoutineDocument } from "../../domain/types";
+import { matchesQuery, searchDocuments, searchQuestions } from "./searchResults";
 
 function makeQuestion(overrides: Partial<AskedQuestion> = {}): AskedQuestion {
   return {
@@ -44,13 +44,6 @@ describe("matchesQuery", () => {
   it("matches on any field", () => {
     expect(matchesQuery(["one", "two"], "two")).toBe(true);
     expect(matchesQuery(["one", "two"], "three")).toBe(false);
-  });
-});
-
-describe("listedGapIds", () => {
-  it("leaves out gaps covered above the cut-off", () => {
-    const gaps = [{ id: "low", coverage: 0.4 }, { id: "high", coverage: 0.8 }] as KnowledgeGap[];
-    expect([...listedGapIds(gaps, 70)]).toEqual(["low"]);
   });
 });
 

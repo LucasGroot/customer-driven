@@ -9,12 +9,6 @@
   max-width: 1160px;
 }
 
-.message {
-  padding: 34px 38px;
-  font-size: 14px;
-  color: var(--color-text-subtle);
-}
-
 @media (max-width: 860px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);

@@ -1,8 +1,9 @@
-import { useId } from "react";
 import { Button } from "../../components/Button";
 import { FilterPill } from "../../components/FilterPill";
+import { NumberField } from "../../components/NumberField";
 import { PageIntro } from "../../components/PageIntro";
 import { StatCard } from "../../components/StatCard";
+import { StatGrid } from "../../components/StatGrid";
 import { rankGaps } from "../../domain/priority";
 import type { AnalysisSnapshot, KnowledgeGapId, PriorityWeights } from "../../domain/types";
 import type { GapReview } from "../../hooks/useGapReview";
@@ -35,7 +36,6 @@ export function OverviewView({
   onOpenSettings,
   onOpenExport,
 }: OverviewViewProps) {
-  const hideAboveFieldId = useId();
   const ranked = rankGaps(snapshot.gaps, weights);
   const shown = hideWellCovered(ranked, hideAbovePercent);
   const hiddenCount = ranked.length - shown.length;
@@ -55,7 +55,7 @@ export function OverviewView({
         </Button>
       </div>
 
-      <div className={styles.stats}>
+      <StatGrid>
         <StatCard
           label="Temaer vist"
           value={String(shown.length)}
@@ -67,7 +67,7 @@ export function OverviewView({
           note="bør tas denne måneden"
         />
         <StatCard label="Nye" value={String(newCount)} note="ikke behandlet ennå" />
-      </div>
+      </StatGrid>
 
       <div className={styles.filters}>
         {GAP_FILTERS.map((option) => (
@@ -81,21 +81,15 @@ export function OverviewView({
           />
         ))}
         <div className={styles.hideAbove}>
-          <label htmlFor={hideAboveFieldId}>Skjul temaer med dekning over</label>
-          <input
-            id={hideAboveFieldId}
-            className={styles.hideAboveInput}
-            type="number"
+          <NumberField
+            label="Skjul temaer med dekning over"
+            value={hideAbovePercent}
             min={0}
             max={100}
             step={5}
-            value={hideAbovePercent}
-            onChange={(event) => {
-              const percent = Number(event.target.value);
-              onHideAboveChange(Math.min(100, Math.max(0, percent)));
-            }}
+            suffix="%"
+            onChange={onHideAboveChange}
           />
-          <span>%</span>
         </div>
       </div>
 

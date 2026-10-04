@@ -14,7 +14,6 @@ export interface GapReview {
   savedNote: string | null;
   setStatus: (gapId: KnowledgeGapId, status: GapStatus) => void;
   assignOwner: (gapId: KnowledgeGapId, owner: string) => void;
-  noteAction: (note: string) => void;
 }
 
 export function useGapReview(
@@ -47,16 +46,11 @@ export function useGapReview(
     [owners],
   );
 
-  const noteAction = useCallback((note: string) => {
-    setSavedNote(note);
-  }, []);
-
   return {
     statusOf,
     ownerOf,
     savedNote,
     setStatus,
     assignOwner,
-    noteAction,
   };
 }

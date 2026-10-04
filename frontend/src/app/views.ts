@@ -14,10 +14,7 @@ export const NAVIGATION: NavigationEntry[] = [
   { view: "search", label: "Søk og treff" },
 ];
 
-/** The gap detail and the export are opened from the list, so that entry stays highlighted. */
+/** The export is opened from the list, so that entry stays highlighted. */
 export function isNavigationActive(entry: NavigationEntry, current: ViewName): boolean {
-  return (
-    entry.view === current ||
-    (entry.view === "list" && (current === "detail" || current === "export"))
-  );
+  return entry.view === current || (entry.view === "list" && current === "export");
 }

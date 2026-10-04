@@ -4,13 +4,7 @@
  * tested without rendering anything.
  */
 
-import type {
-  AskedQuestion,
-  KnowledgeGap,
-  KnowledgeGapId,
-  RoutineDocument,
-} from "../../domain/types";
-import { isWellCovered } from "../overview/gapFilters";
+import type { AskedQuestion, KnowledgeGapId, RoutineDocument } from "../../domain/types";
 
 export type SearchTab = "questions" | "documents";
 export type ListVisibility = "all" | "listed" | "hidden";
@@ -27,13 +21,6 @@ export const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
   { value: "coverage-desc", label: "Høyest dekning først" },
   { value: "alphabetical", label: "Alfabetisk" },
 ];
-
-/** The gaps that make it into the prioritised list at the current cut-off. */
-export function listedGapIds(gaps: KnowledgeGap[], hideAbovePercent: number): Set<KnowledgeGapId> {
-  return new Set(
-    gaps.filter((gap) => !isWellCovered(gap, hideAbovePercent)).map((gap) => gap.id),
-  );
-}
 
 function normalize(text: string): string {
   return text.toLocaleLowerCase("nb-NO").trim();

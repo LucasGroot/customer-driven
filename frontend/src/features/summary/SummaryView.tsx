@@ -2,6 +2,7 @@ import { Card } from "../../components/Card";
 import { MeterBar } from "../../components/MeterBar";
 import { PageIntro } from "../../components/PageIntro";
 import { StatCard } from "../../components/StatCard";
+import { StatGrid } from "../../components/StatGrid";
 import { COVERAGE_BAND_COLOR, STATUS_COLOR } from "../../components/bandColors";
 import {
   COVERAGE_BANDS,
@@ -9,10 +10,9 @@ import {
   STATUS_LABEL,
   STATUS_OPTIONS,
 } from "../../domain/labels";
-import { coverageBand } from "../../domain/priority";
+import { coverageBand, listedGapIds } from "../../domain/priority";
 import type { AnalysisSnapshot } from "../../domain/types";
 import type { GapReview } from "../../hooks/useGapReview";
-import { isWellCovered } from "../overview/gapFilters";
 import styles from "./SummaryView.module.css";
 
 interface SummaryViewProps {
@@ -24,7 +24,7 @@ interface SummaryViewProps {
 export function SummaryView({ snapshot, review, hideAbovePercent }: SummaryViewProps) {
   const { gaps } = snapshot;
   const total = gaps.length || 1;
-  const shownCount = gaps.filter((gap) => !isWellCovered(gap, hideAbovePercent)).length;
+  const shownCount = listedGapIds(gaps, hideAbovePercent).size;
   const coverageCounts = COVERAGE_BANDS.map((band) => ({
     band,
     count: gaps.filter((gap) => coverageBand(gap.coverage) === band).length,
@@ -41,7 +41,7 @@ export function SummaryView({ snapshot, review, hideAbovePercent }: SummaryViewP
         lead="Status for siste analyse: hvor mange henvendelser og rutiner som er sammenlignet, og hvordan temaene fordeler seg."
       />
 
-      <div className={styles.stats}>
+      <StatGrid>
         <StatCard label="Henvendelser" value={String(snapshot.totalTickets)} note="analysert" />
         <StatCard label="Rutiner" value={String(snapshot.totalRoutines)} note="i Kvaliteket" />
         <StatCard
@@ -49,7 +49,7 @@ export function SummaryView({ snapshot, review, hideAbovePercent }: SummaryViewP
           value={String(gaps.length)}
           note={`${String(shownCount)} vises i listen`}
         />
-      </div>
+      </StatGrid>
 
       <div className={styles.columns}>
         <Card title="Dekning i rutinene">

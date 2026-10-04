@@ -1,9 +1,27 @@
 .field {
   display: flex;
+}
+
+.inline {
   align-items: center;
   gap: 10px;
+}
+
+.inline .label {
   font-size: 13px;
   color: var(--color-text-soft);
+}
+
+.stacked {
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stacked .label {
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
 }
 
 .select {
@@ -14,4 +32,8 @@
   font: inherit;
   font-size: 13.5px;
   color: var(--color-text);
+}
+
+.stacked .select {
+  min-width: 210px;
 }

@@ -1,0 +1,27 @@
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.accent {
+  background: var(--color-badge-accent-bg);
+  color: var(--color-badge-accent-fg);
+}
+
+.warning {
+  background: var(--color-badge-warning-bg);
+  color: var(--color-badge-warning-fg);
+}
+
+.success {
+  background: var(--color-badge-success-bg);
+  color: var(--color-badge-success-fg);
+}
+
+.neutral {
+  background: var(--color-badge-neutral-bg);
+  color: var(--color-badge-neutral-fg);
+}

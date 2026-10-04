@@ -4,12 +4,6 @@
   gap: 22px;
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-}
-
 .columns {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
