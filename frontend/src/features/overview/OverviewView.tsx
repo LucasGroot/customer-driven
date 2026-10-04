@@ -21,7 +21,6 @@ interface OverviewViewProps {
   onHideAboveChange: (percent: number) => void;
   onOpenGap: (gapId: KnowledgeGapId) => void;
   onOpenSettings: () => void;
-  onOpenExport: () => void;
 }
 
 export function OverviewView({
@@ -34,7 +33,6 @@ export function OverviewView({
   onHideAboveChange,
   onOpenGap,
   onOpenSettings,
-  onOpenExport,
 }: OverviewViewProps) {
   const ranked = rankGaps(snapshot.gaps, weights);
   const shown = hideWellCovered(ranked, hideAbovePercent);
@@ -107,11 +105,6 @@ export function OverviewView({
         treffer, om temaet øker, og hvor lenge siden dokumentet ble revidert. Klikk på et tema for
         å se regnestykket i klartekst.
       </p>
-      <div>
-        <Button variant="link" onClick={onOpenExport}>
-          Eksporter listen
-        </Button>
-      </div>
     </section>
   );
 }

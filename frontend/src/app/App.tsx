@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { GapDetailView } from "../features/detail/GapDetailView";
-import { ExportView } from "../features/export/ExportView";
 import type { GapFilter } from "../features/overview/gapFilters";
 import { OverviewView } from "../features/overview/OverviewView";
 import { RunAnalysisView } from "../features/run/RunAnalysisView";
@@ -64,9 +63,6 @@ export function App() {
             onOpenSettings={() => {
               setView("run");
             }}
-            onOpenExport={() => {
-              setView("export");
-            }}
           />
         ) : null}
 
@@ -94,10 +90,6 @@ export function App() {
 
         {view === "run" ? (
           <RunAnalysisView snapshot={snapshot} run={run} />
-        ) : null}
-
-        {view === "export" ? (
-          <ExportView snapshot={snapshot} weights={settings.weights} review={review} />
         ) : null}
       </main>
     </div>

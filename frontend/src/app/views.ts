@@ -1,9 +1,9 @@
 /** The screens in the dashboard, and the navigation entries that reach them. */
 
-export type ViewName = "list" | "detail" | "run" | "summary" | "search" | "export";
+export type ViewName = "list" | "detail" | "run" | "summary" | "search";
 
 interface NavigationEntry {
-  view: Exclude<ViewName, "detail" | "export">;
+  view: Exclude<ViewName, "detail">;
   label: string;
 }
 
@@ -13,8 +13,3 @@ export const NAVIGATION: NavigationEntry[] = [
   { view: "summary", label: "Oversikt" },
   { view: "search", label: "Søk og treff" },
 ];
-
-/** The export is opened from the list, so that entry stays highlighted. */
-export function isNavigationActive(entry: NavigationEntry, current: ViewName): boolean {
-  return entry.view === current || (entry.view === "list" && current === "export");
-}

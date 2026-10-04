@@ -1,4 +1,4 @@
-import { NAVIGATION, isNavigationActive, type ViewName } from "./views";
+import { NAVIGATION, type ViewName } from "./views";
 import styles from "./Sidebar.module.css";
 import { classNames } from "../components/classNames";
 
@@ -28,7 +28,7 @@ export function Sidebar({
 
       <nav className={styles.nav} aria-label="Hovedmeny">
         {NAVIGATION.map((entry) => {
-          const active = isNavigationActive(entry, currentView);
+          const active = entry.view === currentView;
           return (
             <button
               key={entry.view}
