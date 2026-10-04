@@ -22,7 +22,6 @@ def euclidean_similarity(corpus,
 
     question_embeddings = model.encode(corpus.questions["text"].tolist(), normalize_embeddings=False)
     chunk_embeddings = model.encode(corpus.chunk_texts, normalize_embeddings=False)
-    # Make euclidean distance negative since instead of cosine lower means better, now higher score is better again
     chunk_scores = -np.linalg.norm(
     question_embeddings[:, None, :] - chunk_embeddings[None, :, :],
     axis=2)
