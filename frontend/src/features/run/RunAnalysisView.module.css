@@ -1,0 +1,78 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.source {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.source:first-child {
+  padding-top: 0;
+}
+
+.source:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sourceName {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sourceDetail {
+  font-size: 13.5px;
+  color: var(--color-text-soft);
+}
+
+.runRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.runHint {
+  font-size: 13px;
+  color: var(--color-text-soft);
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  max-width: 520px;
+}
+
+.step {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--color-text-disabled);
+}
+
+.stepActive {
+  color: var(--color-text);
+}
+
+.stepDone {
+  color: var(--color-band-low);
+}
+
+.stepMark {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  width: 14px;
+}

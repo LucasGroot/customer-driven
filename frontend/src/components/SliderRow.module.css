@@ -1,0 +1,34 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.label {
+  font-size: 13px;
+  width: 200px;
+  flex: none;
+}
+
+.slider {
+  flex: 1;
+  min-width: 0;
+}
+
+.value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  width: 46px;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .label {
+    width: 100%;
+  }
+}

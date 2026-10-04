@@ -1,0 +1,15 @@
+.track {
+  height: 5px;
+  background: var(--color-track);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.thick {
+  height: 6px;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 3px;
+}

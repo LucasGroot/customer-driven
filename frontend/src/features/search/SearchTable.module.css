@@ -1,0 +1,65 @@
+.expandButton {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.expandButton:hover span:last-child {
+  text-decoration: underline;
+}
+
+.chevron {
+  flex: none;
+  width: 10px;
+  font-size: 11px;
+  line-height: 20px;
+  color: var(--color-text-faint);
+}
+
+.openRow {
+  background: var(--color-surface-muted);
+}
+
+.openRow td {
+  border-bottom: none;
+}
+
+.detailRow td {
+  background: var(--color-surface-muted);
+  padding-top: 0;
+}
+
+.detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  padding-left: 18px;
+  font-size: 13px;
+  color: var(--color-text-body);
+}
+
+.soft {
+  color: var(--color-text-soft);
+}
+
+.strong {
+  font-weight: 500;
+}
+
+.meta {
+  font-size: 12.5px;
+  color: var(--color-text-faint);
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
