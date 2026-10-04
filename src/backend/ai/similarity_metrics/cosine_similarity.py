@@ -8,7 +8,7 @@ def cosine_similarity(corpus,
                        model_name="sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
                        k=3):
     """
-    Scores each question against each routine using chosen llm embedding similarity.
+    Scores each question against each routine using embedding cosine similarity.
     Each chunk is embedded and scored individually, then a routine's score is
     the mean of its k highest chunk similarities. Routines with fewer than k
     chunks average over all the chunks they have.
