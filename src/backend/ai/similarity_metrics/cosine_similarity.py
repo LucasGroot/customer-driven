@@ -1,4 +1,3 @@
-import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from backend.ai.similarity_metrics.shared_logic import top_k_per_routine, _check_k
@@ -19,7 +18,6 @@ def cosine_similarity(corpus,
     _check_k(k)
 
     model = SentenceTransformer(model_name)
-
     question_embeddings = model.encode(corpus.questions["text"].tolist(), normalize_embeddings=True)
     chunk_embeddings = model.encode(corpus.chunk_texts, normalize_embeddings=True)
     chunk_scores = question_embeddings @ chunk_embeddings.T
