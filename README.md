@@ -38,6 +38,7 @@ Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ran
 |-- docs
 |-- src
 |   |-- backend
+|   |   |-- api
 |   |   |-- chunking
 |   |   |   |-- customized_chunking.py
 |   |   |   |-- fixed_chunking.py
@@ -67,3 +68,14 @@ pip install -e .
 ```
 
 Installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
+
+## Running the API
+
+The API in [`src/backend/api/`](src/backend/api/) handles Microsoft sign-in and user roles. It needs a Microsoft Entra app registration.
+
+```bash
+cp .env.example .env    # first time only
+uvicorn backend.api.main:create_app --factory --env-file .env --reload
+```
+
+Run the tests with `python -m pytest tests/unit/api`.
