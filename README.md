@@ -63,11 +63,13 @@ Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ran
 ## How to install
 
 ```bash
+python3 -m venv venv          # first time only
+source venv/bin/activate      # every new terminal (Windows: venv\Scripts\activate)
 pip install -r requirements.txt
 pip install -e .
 ```
 
-Installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
+Creates a virtual environment so the project's packages stay separate from the rest of your machine, installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
 
 ## Running the API
 
