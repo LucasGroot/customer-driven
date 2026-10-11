@@ -9,6 +9,7 @@ from backend.ai.clustering.question_clustering import (
     center_embeddings,
     central_question_per_cluster,
     cluster_questions,
+    themes_per_question,
 )
 
 
@@ -68,3 +69,44 @@ def test_central_question_is_closest_to_the_centre_of_the_theme():
     assert central[0] != 5
     assert 6 <= central[1] < 11
 
+
+def test_question_between_two_themes_gets_both_with_primary_first():
+    between = blob(0, 1, seed=8) + blob(1, 1, seed=9)
+    between = between / np.linalg.norm(between)
+    embeddings = np.vstack([blob(0, 6, seed=10), blob(1, 6, seed=11), blob(2, 6, seed=12), between])
+    labels = np.array([0] * 6 + [1] * 6 + [2] * 6 + [0])
+
+    memberships = themes_per_question(embeddings, labels)
+
+    themes = [theme for theme, _ in memberships[-1]]
+    assert themes[0] == 0
+    assert 1 in themes
+    assert 2 not in themes
+
+
+def test_question_in_the_middle_of_its_theme_gets_only_that_theme():
+    embeddings = np.vstack([blob(0, 6, seed=13), blob(1, 6, seed=14), blob(2, 6, seed=15)])
+    labels = np.array([0] * 6 + [1] * 6 + [2] * 6)
+
+    memberships = themes_per_question(embeddings, labels)
+
+    assert [[theme for theme, _ in themes] for themes in memberships] == [[label] for label in labels]
+
+
+def test_questions_outside_every_theme_have_no_themes():
+    embeddings = np.vstack([blob(0, 6, seed=16), blob(1, 6, seed=17), blob(2, 1, seed=18)])
+    labels = np.array([0] * 6 + [1] * 6 + [NOISE_LABEL])
+
+    memberships = themes_per_question(embeddings, labels)
+
+    assert memberships[-1] == []
+    assert all(len(themes) >= 1 for themes in memberships[:-1])
+
+
+def test_relevance_is_highest_for_the_theme_the_question_belongs_to():
+    embeddings = np.vstack([blob(0, 6, seed=19), blob(1, 6, seed=20)])
+    labels = np.array([0] * 6 + [1] * 6)
+
+    memberships = themes_per_question(embeddings, labels)
+
+    assert all(themes[0][1] > 0.9 for themes in memberships)

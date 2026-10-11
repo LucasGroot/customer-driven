@@ -11,6 +11,7 @@ from backend.ai.clustering.question_clustering import (
     NOISE_LABEL,
     central_question_per_cluster,
     cluster_questions,
+    themes_per_question,
 )
 from backend.ai.similarity_metrics.shared_logic import SERVICE_COLUMN, extract_questions
 
@@ -28,6 +29,16 @@ def print_summary(questions, labels):
 
     print(f"{len(questions)} questions -> {len(theme_sizes)} themes, {noise_share:.0%} outside any theme")
     print(f"theme size: median {np.median(theme_sizes):.0f}, largest {theme_sizes.max()}")
+
+
+def print_overlap(memberships):
+    """
+    Prints how many questions are also relevant for other themes than their own.
+    """
+    placed = [themes for themes in memberships if themes]
+    with_other_themes = sum(len(themes) > 1 for themes in placed)
+
+    print(f"{with_other_themes} of {len(placed)} placed questions are also relevant for another theme")
 
 
 def print_largest_themes(questions, labels, central_rows):
@@ -53,6 +64,7 @@ def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx"):
     central_rows = central_question_per_cluster(embeddings, labels)
 
     print_summary(questions, labels)
+    print_overlap(themes_per_question(embeddings, labels))
     print_largest_themes(questions, labels, central_rows)
 
 
