@@ -1,7 +1,7 @@
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from backend.ai.similarity_metrics.shared_logic import top_k_per_routine, _check_k
+from src.ai.similarity_metrics.shared_logic import top_k_per_routine, _check_k
 
 
 def euclidean_similarity(corpus,

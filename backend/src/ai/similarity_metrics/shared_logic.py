@@ -14,9 +14,9 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from backend.ai.chunking.fixed_chunking import DEFAULT_CHUNK_SIZE
-from backend.ai.chunking.customized_chunking import chunk_by_layout
-from backend.ai.pdf_reader import read_all_pdfs
+from src.ai.chunking.fixed_chunking import DEFAULT_CHUNK_SIZE
+from src.ai.chunking.customized_chunking import chunk_by_layout
+from src.ai.pdf_reader import read_all_pdfs
 
 
 _TOKEN_RE = re.compile(r"\w+")

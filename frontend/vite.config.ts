@@ -16,7 +16,7 @@ import react from "@vitejs/plugin-react";
  *   Strict-Transport-Security: max-age=31536000; includeSubDomains
  *
  * style-src needs 'unsafe-inline' because the coverage and weighting meters set
- * their width through an inline style attribute. If the backend ever lands on a
+ * their width through an inline style attribute. If the src ever lands on a
  * different origin, that origin has to be added to connect-src.
  */
 const securityHeaders = {

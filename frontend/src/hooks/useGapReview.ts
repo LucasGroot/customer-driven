@@ -1,7 +1,7 @@
 /**
  * HR's own annotations on top of an analysis run: what was decided about each
  * gap's status and who owns the document. Kept in memory only - persisting this needs
- * the backend, and nothing here belongs in browser storage.
+ * the src, and nothing here belongs in browser storage.
  */
 
 import { useCallback, useState } from "react";

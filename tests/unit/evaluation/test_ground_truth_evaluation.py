@@ -6,7 +6,7 @@ so no confidential files are needed.
 import pandas as pd
 import pytest
 
-from backend.ai.evaluation.ground_truth_evaluation import evaluate, load_ground_truth, missing_routine_ids
+from src.ai.evaluation.ground_truth_evaluation import evaluate, load_ground_truth, missing_routine_ids
 
 
 def write_ground_truth(path, rows):

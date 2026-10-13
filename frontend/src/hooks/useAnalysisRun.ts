@@ -1,6 +1,6 @@
 /**
  * Drives the step-by-step progress shown while an analysis run is simulated.
- * The real run belongs on the backend; this only animates the stages so the
+ * The real run belongs on the src; this only animates the stages so the
  * screen can be reviewed with the customer.
  */
 

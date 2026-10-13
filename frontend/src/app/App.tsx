@@ -15,7 +15,7 @@ import { Sidebar } from "./Sidebar";
 import type { ViewName } from "./views";
 import styles from "./App.module.css";
 
-// Until the backend serves an analysis, the dashboard runs on the mock
+// Until the src serves an analysis, the dashboard runs on the mock
 // snapshot; connecting it means replacing this one import with a fetch.
 const snapshot = MOCK_SNAPSHOT;
 

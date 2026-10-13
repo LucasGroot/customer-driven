@@ -12,16 +12,16 @@ Identify which topics and questions raised through ServiceNow have the lowest se
 
 ## How it works
 
-1. [`src/backend/ai/pdf_reader.py`](src/backend/ai/pdf_reader.py) extracts words and font info from Kvaliteket routine PDFs.
-2. [`src/backend/ai/chunker.py`](src/backend/ai/chunker.py) splits each PDF into sections by bold headings.
-3. [`src/backend/ai/embedding_extract.py`](src/backend/ai/embedding_extract.py) generates embeddings for both routine chunks and ServiceNow questions using a multilingual sentence-transformer model, and caches them to `embeddings/*.pkl`.
-4. [`src/backend/ai/compute_similarity.py`](src/backend/ai/compute_similarity.py) computes cosine similarity between every question and every routine chunk, and ranks questions by their summed top-k similarity — the lowest-scoring questions are the least represented in the current routines — and renders the result as an HTML report.
+1. [`backend/src/ai/pdf_reader.py`](backend/src/ai/pdf_reader.py) extracts words and font info from Kvaliteket routine PDFs.
+2. [`backend/src/ai/chunker.py`](backend/src/ai/chunker.py) splits each PDF into sections by bold headings.
+3. [`backend/src/ai/embedding_extract.py`](backend/src/ai/embedding_extract.py) generates embeddings for both routine chunks and ServiceNow questions using a multilingual sentence-transformer model, and caches them to `embeddings/*.pkl`.
+4. [`backend/src/ai/compute_similarity.py`](backend/src/ai/compute_similarity.py) computes cosine similarity between every question and every routine chunk, and ranks questions by their summed top-k similarity — the lowest-scoring questions are the least represented in the current routines — and renders the result as an HTML report.
 
 5. [`frontend/`](frontend/) presents the result as a dashboard: the gaps ranked by priority, why each one ranks where it does, and what HR decided to do about it.
 
 ## Status
 
-Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data.
+src NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data.
 
 ## Running the frontend
 
@@ -49,14 +49,23 @@ npx vitest run  # run the tests once, e.g. before committing
 |   |   |-- ci.yml
 |-- assets
 |-- docs
-|-- src
-|   |-- backend
-|   |   |-- chunking
-|   |   |   |-- customized_chunking.py
-|   |   |   |-- fixed_chunking.py
-|   |   |   |-- heading_section.py
-|   |   |-- pdf_reader.py
-|   |-- frontend
+|-- backend
+|   |-- src
+|   |   |-- ai
+|   |   |   |-- chunking
+|   |   |   |   |-- customized_chunking.py
+|   |   |   |   |-- fixed_chunking.py
+|   |   |   |   |-- heading_section.py
+|   |   |   |-- evaluation
+|   |   |   |   |-- ground_truth_evaluation.py
+|   |   |   |-- similarity_metrics
+|   |   |   |   |-- bm25_similarity.py
+|   |   |   |   |-- cosine_similarity.py
+|   |   |   |   |-- euclidean_similarity.py
+|   |   |   |   |-- shared_logic.py
+|   |   |   |   |-- tfidf_similarity.py
+|   |   |   |-- pdf_reader.py
+|-- frontend
 |-- tests
 |   |-- visualization
 |   |   |-- customized_chunking.ipynb
@@ -79,4 +88,4 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-Installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
+Installs project dependencies, then installs the package itself in editable mode so local imports (`src.ai...`) work globally without path hacks.

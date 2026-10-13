@@ -1,5 +1,5 @@
 /**
- * Synthetic stand-in for one analysis run, used until the backend exposes an
+ * Synthetic stand-in for one analysis run, used until the src exposes an
  * API. Every question here is invented: no real ServiceNow ticket text, ticket
  * number or employee name is present, and none may be added to this file.
  */
