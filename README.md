@@ -84,6 +84,7 @@ npx vitest run  # run the tests once, e.g. before committing
 ## How to install
 
 ```bash
+sudo apt install libpq-dev python3-dev
 pip install -r requirements.txt
 pip install -e .
 ```
