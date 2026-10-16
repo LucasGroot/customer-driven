@@ -14,6 +14,9 @@ from backend.api.roles import Role, role_for
 # Microsoft's published keys; tests pass in their own key instead.
 SigningKeyResolver = Callable[[str], object]
 
+# The scope the app registration exposes and the dashboard requests (see README)
+API_SCOPE = "access_as_user"
+
 
 class InvalidTokenError(Exception):
     """The token is missing, malformed, or fails one of the checks."""
@@ -40,7 +43,7 @@ def microsoft_key_resolver(tenant_id: str) -> SigningKeyResolver:
 
 def validate_token(token: str, settings: Settings, resolve_key: SigningKeyResolver) -> CurrentUser:
     """
-    Check the token's signature, issuer, tenant, audience and expiry.
+    Check the token's signature, issuer, tenant, audience, scope and expiry.
 
     Returns the user it belongs to, or raises InvalidTokenError.
     """
@@ -59,7 +62,13 @@ def validate_token(token: str, settings: Settings, resolve_key: SigningKeyResolv
     # against a misconfigured issuer ever letting another tenant in (S1)
     if claims["tid"] != settings.tenant_id:
         raise InvalidTokenError("Token is from another tenant")
-    email = claims.get("preferred_username") or claims.get("email")
+    # A sign-in (ID) token for this app passes every check above as well; only
+    # access tokens carry the scope the dashboard asks for
+    if API_SCOPE not in claims.get("scp", "").split():
+        raise InvalidTokenError("Token is not an access token for this API")
+    # The email claim is not always verified (e.g. for guests), and the admin
+    # role is decided from this value, so only preferred_username is trusted
+    email = claims.get("preferred_username")
     if not email:
         raise InvalidTokenError("Token has no email")
     return CurrentUser(

@@ -46,6 +46,7 @@ def make_token():
             "iss": f"https://login.microsoftonline.com/{TENANT}/v2.0",
             "aud": CLIENT,
             "tid": TENANT,
+            "scp": "access_as_user",
             "exp": int(time.time()) + 3600,
             "name": "Kari Nordmann",
             "preferred_username": "kari@test.no",

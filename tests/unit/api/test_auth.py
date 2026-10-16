@@ -37,7 +37,10 @@ def test_admin_email_gives_admin_role(make_token, settings, resolve_key):
         pytest.param({"iss": f"https://login.microsoftonline.com/{OTHER_TENANT}/v2.0"}, id="wrong issuer"),
         pytest.param({"tid": OTHER_TENANT}, id="wrong tenant"),
         pytest.param({"tid": None}, id="missing tenant"),
+        pytest.param({"scp": None}, id="id token"),
+        pytest.param({"scp": "some.other.scope"}, id="wrong scope"),
         pytest.param({"preferred_username": None}, id="missing email"),
+        pytest.param({"preferred_username": None, "email": "kari@test.no"}, id="unverified email only"),
     ],
 )
 def test_rejects_token_failing_a_check(overrides, make_token, settings, resolve_key):
