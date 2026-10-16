@@ -1,0 +1,104 @@
+/**
+ * The shapes the dashboard works with. One analysis run produces one snapshot:
+ * the clusters of ServiceNow questions that matched the Kvaliteket routines
+ * poorly, plus the context needed to act on them.
+ */
+
+export type KnowledgeGapId = string;
+
+/** A single anonymised ServiceNow question, quoted to show how people ask. */
+export interface TicketQuestion {
+  text: string;
+  /** Ticket number and date, e.g. "INC0412884 · 2. sep". */
+  reference: string;
+}
+
+/** How well one Kvaliteket document covers a gap's questions. */
+export interface RoutineMatch {
+  name: string;
+  /** Mean cosine similarity to the cluster, 0-1. */
+  similarity: number;
+  /** Document number and revision date, e.g. "KV-014 · revidert mars 2023". */
+  reference: string;
+}
+
+/** A cluster of related questions that the routines answer poorly. */
+export interface KnowledgeGap {
+  id: KnowledgeGapId;
+  topic: string;
+  category: string;
+  ticketCount: number;
+  /** Change in ticket volume since last month, in percent. Can be negative. */
+  trendPercent: number;
+  /** Mean similarity to the best-matching document, 0-1. */
+  coverage: number;
+  summary: string;
+  nearestMatchLine: string;
+  questions: TicketQuestion[];
+  questionsNote: string;
+  routines: RoutineMatch[];
+  verdict: string;
+  documentOwner: string;
+  dueDate: string;
+  /** Staleness of the nearest document, 0-1, where 1 is most overdue for review. */
+  documentAge: number;
+  documentAgeLabel: string;
+}
+
+/** One Kvaliteket document, as listed on the search page. */
+export interface RoutineDocument {
+  /** Document number, e.g. "KV-014". */
+  code: string;
+  name: string;
+  revisedLabel: string;
+}
+
+/**
+ * One ServiceNow question and the document that matched it best. Questions in
+ * a gap's cluster carry its id; questions the routines already answer do not.
+ */
+export interface AskedQuestion {
+  id: string;
+  text: string;
+  /** Ticket number and date, e.g. "INC0412884 · 2. sep". */
+  reference: string;
+  topic: string;
+  gapId?: KnowledgeGapId;
+  documentCode: string;
+  /** Similarity to the best-matching document, 0-1. */
+  coverage: number;
+}
+
+export interface DataSource {
+  name: string;
+  count: number;
+  /** What is being counted, e.g. "henvendelser" or "PDF-er". */
+  unit: string;
+  uploadedLabel: string;
+}
+
+/** Everything one analysis run produced. */
+export interface AnalysisSnapshot {
+  gaps: KnowledgeGap[];
+  documentOwners: string[];
+  totalTickets: number;
+  totalRoutines: number;
+  /** Tickets that fell outside every cluster, still counted in the totals. */
+  ticketsOutsideClusters: number;
+  coverageOutsideClusters: number;
+  lastRunLabel: string;
+  questions: AskedQuestion[];
+  documents: RoutineDocument[];
+  sources: DataSource[];
+}
+
+/** How much each factor counts towards a gap's priority score. */
+export interface PriorityWeights {
+  volume: number;
+  coverage: number;
+  trend: number;
+  age: number;
+}
+
+/** Where a gap is in HR's work: untouched, being worked on, or dealt with. */
+export type GapStatus = "new" | "updating" | "done";
