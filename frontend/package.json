@@ -13,6 +13,8 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@azure/msal-browser": "^5.25.1",
+    "@azure/msal-react": "^5.7.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
