@@ -40,6 +40,6 @@ def test_admin_endpoint_forbids_normal_user(client, make_token):
 
 
 def test_admin_endpoint_allows_admin(client, make_token):
-    response = client.get("/api/admin/ping", headers=auth(make_token(preferred_username="admin@test.no")))
+    response = client.get("/api/admin/ping", headers=auth(make_token(roles=["admin"])))
 
     assert response.status_code == 200

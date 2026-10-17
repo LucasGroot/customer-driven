@@ -1,5 +1,6 @@
 """
-Decides which role a signed-in user has.
+Decides which role a signed-in user has, from the app roles assigned to them
+in Entra (see README).
 """
 
 from typing import Literal
@@ -7,10 +8,14 @@ from typing import Literal
 Role = Literal["user", "admin"]
 
 
-def role_for(email: str, admin_emails: frozenset[str]) -> Role:
+def role_from_token(token_roles: list[str]) -> Role | None:
     """
-    Return "admin" if the email is on the admin list, otherwise "user".
+    Return the highest role in the token's roles claim, or None if it has none.
 
-    The list is lower-cased when loaded, so the email is lower-cased here too.
+    A user can be assigned both roles in Entra; admin includes what a user can do.
     """
-    return "admin" if email.lower() in admin_emails else "user"
+    if "admin" in token_roles:
+        return "admin"
+    if "user" in token_roles:
+        return "user"
+    return None

@@ -9,8 +9,6 @@ import pytest
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 from backend.api.auth import InvalidTokenError, validate_token
-from backend.api.config import parse_admin_emails
-from backend.api.roles import role_for
 
 OTHER_TENANT = "22222222-2222-2222-2222-222222222222"
 
@@ -23,8 +21,9 @@ def test_valid_token_gives_user(make_token, settings, resolve_key):
     assert user.role == "user"
 
 
-def test_admin_email_gives_admin_role(make_token, settings, resolve_key):
-    user = validate_token(make_token(preferred_username="Admin@Test.no"), settings, resolve_key)
+@pytest.mark.parametrize("roles", [["admin"], ["user", "admin"]], ids=["admin", "both roles"])
+def test_admin_role_gives_admin(roles, make_token, settings, resolve_key):
+    user = validate_token(make_token(roles=roles), settings, resolve_key)
 
     assert user.role == "admin"
 
@@ -39,6 +38,8 @@ def test_admin_email_gives_admin_role(make_token, settings, resolve_key):
         pytest.param({"tid": None}, id="missing tenant"),
         pytest.param({"scp": None}, id="id token"),
         pytest.param({"scp": "some.other.scope"}, id="wrong scope"),
+        pytest.param({"roles": None}, id="no role assigned"),
+        pytest.param({"roles": ["reader"]}, id="unknown role"),
         pytest.param({"preferred_username": None}, id="missing email"),
         pytest.param({"preferred_username": None, "email": "kari@test.no"}, id="unverified email only"),
     ],
@@ -58,10 +59,3 @@ def test_rejects_token_signed_with_another_key(make_token, settings, resolve_key
 def test_rejects_garbage(settings, resolve_key):
     with pytest.raises(InvalidTokenError):
         validate_token("not-a-token", settings, resolve_key)
-
-
-def test_role_is_case_insensitive():
-    admins = parse_admin_emails(" Admin@Test.no , other@test.no ")
-
-    assert role_for("admin@test.NO", admins) == "admin"
-    assert role_for("someone@test.no", admins) == "user"

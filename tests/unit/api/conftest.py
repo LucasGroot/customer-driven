@@ -9,7 +9,7 @@ import jwt
 import pytest
 from cryptography.hazmat.primitives.asymmetric import rsa
 
-from backend.api.config import Settings, parse_admin_emails
+from backend.api.config import Settings
 
 TENANT = "11111111-1111-1111-1111-111111111111"
 CLIENT = "33333333-3333-3333-3333-333333333333"
@@ -22,7 +22,6 @@ def settings():
     return Settings(
         tenant_id=TENANT,
         client_id=CLIENT,
-        admin_emails=parse_admin_emails("admin@test.no"),
         allowed_origin="http://localhost:5173",
     )
 
@@ -47,6 +46,7 @@ def make_token():
             "aud": CLIENT,
             "tid": TENANT,
             "scp": "access_as_user",
+            "roles": ["user"],
             "exp": int(time.time()) + 3600,
             "name": "Kari Nordmann",
             "preferred_username": "kari@test.no",

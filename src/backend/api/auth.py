@@ -8,7 +8,7 @@ from typing import Callable
 import jwt
 
 from backend.api.config import Settings
-from backend.api.roles import Role, role_for
+from backend.api.roles import Role, role_from_token
 
 # Finds the public key a token was signed with. In production this fetches
 # Microsoft's published keys; tests pass in their own key instead.
@@ -43,7 +43,7 @@ def microsoft_key_resolver(tenant_id: str) -> SigningKeyResolver:
 
 def validate_token(token: str, settings: Settings, resolve_key: SigningKeyResolver) -> CurrentUser:
     """
-    Check the token's signature, issuer, tenant, audience, scope and expiry.
+    Check the token's signature, issuer, tenant, audience, scope, role and expiry.
 
     Returns the user it belongs to, or raises InvalidTokenError.
     """
@@ -66,13 +66,14 @@ def validate_token(token: str, settings: Settings, resolve_key: SigningKeyResolv
     # access tokens carry the scope the dashboard asks for
     if API_SCOPE not in claims.get("scp", "").split():
         raise InvalidTokenError("Token is not an access token for this API")
-    # The email claim is not always verified (e.g. for guests), and the admin
-    # role is decided from this value, so only preferred_username is trusted
+    # Entra already refuses sign-in to users without a role when assignment is
+    # required, so this only matters if that setting is ever switched off
+    role = role_from_token(claims.get("roles", []))
+    if role is None:
+        raise InvalidTokenError("Token has no role for this app")
+    # The email claim is not always verified (e.g. for guests), so the user is
+    # identified by their sign-in name instead
     email = claims.get("preferred_username")
     if not email:
         raise InvalidTokenError("Token has no email")
-    return CurrentUser(
-        name=claims.get("name", email),
-        email=email,
-        role=role_for(email, settings.admin_emails),
-    )
+    return CurrentUser(name=claims.get("name", email), email=email, role=role)
