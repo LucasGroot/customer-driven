@@ -36,8 +36,9 @@ def add_routine():
         cur = conn.cursor()
         try:
             cur.execute("""insert into routine values 
-            (1, 'Egenmelding ved barns sykdom over flere periode', 'Ansatte spør hvordan egenmeldingsdager telles når barnet er sykt flere ganger i samme måned, og hva som gjelder ved delt omsorg. Rutinen beskriver egenmelding for egen sykdom, men sier lite om barn.', 38, 'new', 0)
-            (3, 'Overføring av ferie til neste år', 'Spørsmål om hvor mange dager som kan overføres, hvem som godkjenner, og hva som skjer med dager utover grensen. Rutinen nevner overføring, men ikke fristen eller godkjenningsveien.', 31, 'under consideration', 1)
+            ('1234-5', 'Egenmelding ved barns sykdom over flere periode', 'new', '2026-06-10', 1),
+            ('6789-0', 'Overføring av ferie til neste år', 'under consideration', ‘2026-10-10’, 0)
+
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -49,8 +50,8 @@ def add_settings():
         cur = conn.cursor()
         try:
             cur.execute("""insert into question values
-            (1, 'Jeg har 9 dager igjen. Kan jeg ta med alle til neste år, eller mister jeg noen?', '2026-09-02', 1),
-            (2, 'Vi har delt omsorg annenhver uke. Teller dagene bare når barnet bor hos meg?', '2026-08-28', 3)
+            ('INC1234567', 'belebele', 'stupid question', 'Jeg har 9 dager igjen. Kan jeg ta med alle til neste år, eller mister jeg noen?', '2026-09-02'),
+            ('INC1234568', 'pru', 'noen i uke', 'Vi har delt omsorg annenhver uke. Teller dagene bare når barnet bor hos meg?', '2026-08-28')
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
