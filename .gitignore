@@ -6,6 +6,7 @@ visualizations/*.html
 __pycache__
 *.egg-info/
 *.csv
+*.env
 
 # ignoring dev environment
 /venv
