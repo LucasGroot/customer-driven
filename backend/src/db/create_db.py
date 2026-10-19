@@ -32,10 +32,8 @@ def create_leader():
 def create_routine():
     try:
         cur = conn.cursor("""create table routine (
-        id_routine int primary key,
+        routine_id varchar(6) primary key, -- XXXX-X
         routine_title text,
-        routine_text text,
-        nb_references int,
         routine_status status,
         routine_responsible int references leader,
         );""")
@@ -49,10 +47,11 @@ def create_routine():
 def create_question():
     try:
         cur = conn.cursor("""create table question (                                                
-        question_id int primary key,
+        question_id varchar(10) primary key, --INCXXXXXXX ?
         question_title text,
-        question_date date,
-        best_answer int references routine
+        uestion_summary text,
+        uestion_text text,
+        question_date date
         );""")
         try:
             cur.execute()
@@ -78,7 +77,7 @@ def create_settings():
 def create_question_theme():
     try:
         cur = conn.cursor("""create table question_theme (
-        question_id int references routine,
+        question_id varchar(10) references routine,
         question_tags text,
         primary key (question_id, question_tags)
         );""")
@@ -94,9 +93,24 @@ def create_routine_theme():
         cur = conn.cursor()
         try:
             cur.execute("""create table routine_theme (
-        routine_id int references routine,
+        routine_id varchar(6) references routine,
         routine_tags text,
         primary key (routine_id, routine_tags)
+        );""")
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
+
+def create_routine_answer_question():
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute("""create table routine_answer_question (
+        routine_id varchar(6) references routine,
+        question_id varchar(10) references question,
+        primary key (routine_id, question_id)
         );""")
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
