@@ -1,8 +1,8 @@
 import psycopg2
 
 #TODO : put this into an .env...
-conn = psycopg2.connect(dbname="mockup", user="postgres", password="postgres", host="localhost")
-
+conn = psycopg2.connect(dbname="mockup2", user="postgres", password="postgres", host="localhost")
+conn.autocommit = True
 
 def add_type():
     try:
@@ -15,15 +15,15 @@ def add_type():
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
-def create_leader():
+def create_leader(conn):
     try:
-        cur = conn.cursor("""create table leader (
+        cur = conn.cursor()
+        try:
+            cur.execute("""create table leader (
         leader_id int primary key,                  
         name varchar(50),
         surname varchar(50),
         rights rights);""")
-        try:
-            cur.execute()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
     except (Exception, psycopg2.DatabaseError) as error:
@@ -31,15 +31,15 @@ def create_leader():
 
 def create_routine():
     try:
-        cur = conn.cursor("""create table routine (
+        cur = conn.cursor()
+        try:
+            cur.execute("""create table routine (
         routine_id varchar(6) primary key, -- XXXX-X
         routine_title text,
         routine_status status,
         routine_date    date,
-        routine_responsible int references leader,
+        routine_responsible int references leader
         );""")
-        try:
-            cur.execute()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
     except (Exception, psycopg2.DatabaseError) as error:
@@ -47,15 +47,15 @@ def create_routine():
 
 def create_question():
     try:
-        cur = conn.cursor("""create table question (                                                
+        cur = conn.cursor()
+        try:
+            cur.execute("""create table question (                                                
         question_id varchar(10) primary key, --INCXXXXXXX ?
         question_title text,
-        uestion_summary text,
-        uestion_text text,
+        question_summary text,
+        question_text text,
         question_date date
         );""")
-        try:
-            cur.execute()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
     except (Exception, psycopg2.DatabaseError) as error:
@@ -63,13 +63,13 @@ def create_question():
 
 def create_settings():
     try:
-        cur = conn.cursor("""create table settings (
+        cur = conn.cursor()
+        try:
+            cur.execute("""create table settings (
         leader_id int primary key references leader,
         setting_low int,
         setting_medium int,
         setting_good int);""")
-        try:
-            cur.execute()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
     except (Exception, psycopg2.DatabaseError) as error:
@@ -77,13 +77,13 @@ def create_settings():
 
 def create_question_theme():
     try:
-        cur = conn.cursor("""create table question_theme (
+        cur = conn.cursor()
+        try:
+            cur.execute("""create table question_theme (
         question_id varchar(10) references routine,
         question_tags text,
         primary key (question_id, question_tags)
         );""")
-        try:
-            cur.execute()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
     except (Exception, psycopg2.DatabaseError) as error:
@@ -117,3 +117,15 @@ def create_routine_answer_question():
             print(error)
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+
+
+
+if __name__ == "__main__":
+    #add_type()
+    #create_leader(conn)
+    #create_routine()
+    #create_question()
+    create_settings()
+    #create_question_theme()
+    #create_routine_theme()
+    #create_routine_answer_question()

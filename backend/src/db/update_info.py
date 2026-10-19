@@ -1,7 +1,7 @@
 import psycopg2
 
 #TODO : put this into an .env...
-conn = psycopg2.connect(dbname="mockup", user="postgres", password="postgres", host="localhost")
+conn = psycopg2.connect(dbname="mockup2", user="postgres", password="postgres", host="localhost")
 
 
 #####
