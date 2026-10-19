@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { GapDetailView } from "../features/detail/GapDetailView";
+import { ImportView } from "../features/import/ImportView";
 import type { GapFilter } from "../features/overview/gapFilters";
 import { OverviewView } from "../features/overview/OverviewView";
 import { RunAnalysisView } from "../features/run/RunAnalysisView";
@@ -91,6 +92,8 @@ export function App() {
         {view === "run" ? (
           <RunAnalysisView snapshot={snapshot} run={run} />
         ) : null}
+
+        {view === "import" ? <ImportView /> : null}
       </main>
     </div>
   );

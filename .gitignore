@@ -10,3 +10,4 @@ __pycache__
 # ignoring dev environment
 /venv
 /env
+/.env
