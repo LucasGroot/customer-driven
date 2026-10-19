@@ -11,6 +11,7 @@ The structure follows the model **Model + Context + Tools + Skills + Feedback** 
 ## 1. Model
 
 - For coding assistance (Claude Code etc.) we use Claude models (Sonnet/Opus). We don't need to stick to one model at all times, but **no raw text from ServiceNow or Kvaliteket is ever sent to an external AI model** — see the privacy rules below.
+- Trondheim kommune has approved the Gemini API as an external AI model for the project's own analysis code. The key lives in `.env` (gitignored, see `.env.example`) and is never committed. The approval covers Gemini only: coding assistants such as Claude Code are not approved, so the rule above still applies to them.
 
 ## 2. Context
 

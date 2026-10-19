@@ -16,7 +16,7 @@ Two frontend decisions that are easy to undo by accident:
 
 ## Data handling — non-negotiable
 
-- `*.pdf`, `*.xlsx`, `*.zip`, `*.pkl` are gitignored on purpose (real HR ticket text, routine documents, embeddings derived from them). Never remove them from `.gitignore`, never commit them, never paste their contents into a chat or send them to an external API.
+- `*.pdf`, `*.xlsx`, `*.zip`, `*.pkl` are gitignored on purpose (real HR ticket text, routine documents, embeddings derived from them). Never remove them from `.gitignore`, never commit them, never paste their contents into a chat or send them to an external API. The one exception is the project's own code calling the Gemini API, which Trondheim kommune has approved; agents still never read or send raw ticket text themselves, and test that code with synthetic data.
 - If you need to reason about data content, use file structure/counts/anonymized samples, not raw free-text fields.
 - The embedding model is multilingual (Norwegian included) by design — don't suggest swapping to an English-only model.
 
