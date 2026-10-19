@@ -47,7 +47,7 @@ export interface KnowledgeGap {
 
 /** One Kvaliteket document, as listed on the search page. */
 export interface RoutineDocument {
-  /** Document number, e.g. "KV-014". */
+  /** Unique id that questions point to through `documentCode`. Never shown. */
   code: string;
   name: string;
   revisedLabel: string;

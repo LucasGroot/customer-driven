@@ -73,10 +73,7 @@ export function QuestionTable({ results, hideAbovePercent, onOpenGap }: Question
                 </button>
               </td>
               <td className={styles.soft}>{question.topic}</td>
-              <td>
-                <div>{document?.name ?? "Ukjent dokument"}</div>
-                <div className={styles.meta}>{question.documentCode}</div>
-              </td>
+              <td>{document?.name ?? "Ukjent dokument"}</td>
               <td>
                 <CoverageMeter coverage={question.coverage} />
               </td>

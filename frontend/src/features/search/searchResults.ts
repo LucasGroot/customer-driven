@@ -68,12 +68,7 @@ export function searchQuestions(
       if (visibility === "listed" && !result.listed) return false;
       if (visibility === "hidden" && result.listed) return false;
       return matchesQuery(
-        [
-          result.question.text,
-          result.question.topic,
-          result.question.documentCode,
-          result.document?.name ?? "",
-        ],
+        [result.question.text, result.question.topic, result.document?.name ?? ""],
         query,
       );
     })
@@ -103,7 +98,7 @@ export function searchDocuments(
   { query, sort }: DocumentSearch,
 ): DocumentResult[] {
   return documents
-    .filter((document) => matchesQuery([document.name, document.code], query))
+    .filter((document) => matchesQuery([document.name], query))
     .map((document) => {
       const matched = questions.filter((question) => question.documentCode === document.code);
       const total = matched.reduce((sum, question) => sum + question.coverage, 0);
