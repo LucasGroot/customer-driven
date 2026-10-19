@@ -35,6 +35,7 @@ def create_routine():
         routine_id varchar(6) primary key, -- XXXX-X
         routine_title text,
         routine_status status,
+        routine_date    date,
         routine_responsible int references leader,
         );""")
         try:
