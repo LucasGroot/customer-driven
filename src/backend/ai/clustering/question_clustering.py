@@ -8,6 +8,7 @@ from sklearn.cluster import HDBSCAN
 
 
 NOISE_LABEL = -1
+CLUSTERING_MODEL_NAME = "NbAiLab/borealis-embed-212m"
 DEFAULT_MIN_CLUSTER_SIZE = 3
 DEFAULT_RELEVANCE_MARGIN = 0.05
 

@@ -4,10 +4,13 @@ Only question IDs and counts are printed, never the question text; look the
 central questions up in the export to read what each theme is about.
 """
 
+import argparse
+
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from backend.ai.clustering.question_clustering import (
+    CLUSTERING_MODEL_NAME,
     NOISE_LABEL,
     central_question_per_cluster,
     cluster_questions,
@@ -16,7 +19,6 @@ from backend.ai.clustering.question_clustering import (
 from backend.ai.similarity_metrics.shared_logic import SERVICE_COLUMN, extract_questions
 
 
-MODEL_NAME = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
 TOP_THEMES_SHOWN = 10
 
 
@@ -53,12 +55,12 @@ def print_largest_themes(questions, labels, central_rows):
         print(f"  {theme_sizes[label]:3d} | {questions.index[central_row]} | {questions[SERVICE_COLUMN].iloc[central_row]}")
 
 
-def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx"):
+def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx", model_name=CLUSTERING_MODEL_NAME):
     """
-    Embeds the questions, clusters them all together and prints the result.
+    Embeds the questions with the given model, clusters them all together and prints the result.
     """
     questions = extract_questions(questions_path)
-    embeddings = SentenceTransformer(MODEL_NAME).encode(questions["text"].tolist(), normalize_embeddings=True)
+    embeddings = SentenceTransformer(model_name).encode(questions["text"].tolist(), normalize_embeddings=True)
 
     labels = cluster_questions(embeddings)
     central_rows = central_question_per_cluster(embeddings, labels)
@@ -69,4 +71,6 @@ def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx"):
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", default=CLUSTERING_MODEL_NAME, help="embedding model to cluster with")
+    main(model_name=parser.parse_args().model)
