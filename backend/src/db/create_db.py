@@ -1,7 +1,13 @@
 import psycopg2
+from dotenv import load_dotenv
+import os
 
-#TODO : put this into an .env...
-conn = psycopg2.connect(dbname="mockup2", user="postgres", password="postgres", host="localhost")
+load_dotenv()
+dbname = os.getenv('DBNAME')
+user = os.getenv('DBUSER')
+password = os.getenv('DBPASSWORD')
+host = os.getenv('DBHOST')
+conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
 conn.autocommit = True
 
 def add_type():
@@ -121,11 +127,11 @@ def create_routine_answer_question():
 
 
 if __name__ == "__main__":
-    #add_type()
-    #create_leader(conn)
-    #create_routine()
-    #create_question()
+    add_type()
+    create_leader(conn)
+    create_routine()
+    create_question()
     create_settings()
-    #create_question_theme()
-    #create_routine_theme()
-    #create_routine_answer_question()
+    create_question_theme()
+    create_routine_theme()
+    create_routine_answer_question()

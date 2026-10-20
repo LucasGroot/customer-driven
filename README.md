@@ -65,11 +65,21 @@ npx vitest run  # run the tests once, e.g. before committing
 |   |   |   |   |-- shared_logic.py
 |   |   |   |   |-- tfidf_similarity.py
 |   |   |   |-- pdf_reader.py
+|   |   |-- db
+|   |   |   |-- create_db.py
+|   |   |   |-- get_info.py
+|   |   |   |-- mockup.py
+|   |   |   |-- update_info.py
+|   |   |   |-- upload_doc.py
+|   |   |   |-- upload_ia.py
 |-- frontend
 |-- tests
-|   |-- visualization
-|   |   |-- customized_chunking.ipynb
-|   |   |-- fixed_chunking.ipynb
+|   |-- unit
+|   |   |-- db
+|   |   |   |-- test_db.py
+|-- visualization
+|   |-- customized_chunking.ipynb
+|   |-- fixed_chunking.ipynb
 |-- .gitignore
 |-- .gitmessage
 |-- AGENTS.md
@@ -90,3 +100,59 @@ pip install -e .
 ```
 
 Installs project dependencies, then installs the package itself in editable mode so local imports (`src.ai...`) work globally without path hacks.
+
+
+## Database
+### install dependencies
+``` bash
+sudo apt install postgresql
+sudo apt install libpq-dev python3-dev
+```
+in your venv:
+```bash
+pip install psycopg2
+pip install python-dotenv
+```
+
+### create a database
+to access the PostgreSQL environment
+The postgres user is normally created by default with the installation of the package
+```bash
+sudo -i -u postgres
+```
+Normally, you are now in a postgresql user : `postgres@<your usual environement>:~$`
+
+create the database : `createdb mockup`
+put a password if it doesn't exists : `alter user postgres with passeword '<a password>'` Remember this password, you will need it later !
+finally, you can enter the database : `psql mockup` It is normally empty and you are in a shell `mockup=#`
+
+When you have terminated with your work here, use `\q` to exit the database and `Ctrl+D` to exit your session.
+
+### Create the table and add data to the database
+First, create/update your .env file at the root of the project by adding :
+### for the database
+```
+DBNAME="mockup"
+DBUSER="postgres"
+DBPASSWORD=<your previous password>
+DBHOST="localhost"
+```
+
+Then start your venv and execute the python file :
+```bash
+python3 backend/src/db/create_db.py
+```
+
+Normally it should not fail. If you go to your database using the previous step, you should be able to see empty tables.
+
+```bash
+python3 backend/src/db/mockup.py 
+```
+
+Now, the database has some data, you can try to visualise them by executing some requests. Only leader, settings routine and question have data.
+
+Finally
+```bash
+python -m pytest tests/unit/db/
+```
+to run the tests. It should not fail.

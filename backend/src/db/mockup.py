@@ -1,7 +1,15 @@
 import psycopg2
+from dotenv import load_dotenv
+import os
 
-#TODO : put this into an .env...
-conn = psycopg2.connect(dbname="mockup", user="postgres", password="postgres", host="localhost")
+load_dotenv()
+dbname = os.getenv('DBNAME')
+user = os.getenv('DBUSER')
+password = os.getenv('DBPASSWORD')
+host = os.getenv('DBHOST')
+conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
+conn.autocommit = True
+
 
 def add_leader():
     try:
@@ -37,7 +45,7 @@ def add_routine():
         try:
             cur.execute("""insert into routine values 
             ('1234-5', 'Egenmelding ved barns sykdom over flere periode', 'new', '2026-06-10', 1),
-            ('6789-0', 'Overføring av ferie til neste år', 'under consideration', ‘2026-10-10’, 0)
+            ('6789-0', 'Overføring av ferie til neste år', 'under consideration', '2026-10-10', 0)
 
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
@@ -45,7 +53,7 @@ def add_routine():
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
-def add_settings():
+def add_question():
     try:
         cur = conn.cursor()
         try:
@@ -57,3 +65,11 @@ def add_settings():
             print(error)
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+
+
+
+if __name__ == "__main__":
+    add_leader()
+    add_routine()
+    add_settings()
+    add_question()
