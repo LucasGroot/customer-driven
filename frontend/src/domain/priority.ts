@@ -47,9 +47,13 @@ export function priorityBand(score: number): PriorityBand {
 
 export type CoverageBand = "weak" | "partial" | "good";
 
-/** Coverage below this is weak; from here up to GOOD_COVERAGE_FROM it is partial. */
-export const PARTIAL_COVERAGE_FROM = 0.3;
-export const GOOD_COVERAGE_FROM = 0.6;
+/**
+ * Coverage below this is weak; from here up to GOOD_COVERAGE_FROM it is partial. Set for the
+ * scores of the current embedding model, where about a tenth of the questions score under
+ * 0.52 and a third over 0.65. Set again whenever the model changes.
+ */
+export const PARTIAL_COVERAGE_FROM = 0.52;
+export const GOOD_COVERAGE_FROM = 0.65;
 
 export function coverageBand(coverage: number): CoverageBand {
   if (coverage < PARTIAL_COVERAGE_FROM) return "weak";

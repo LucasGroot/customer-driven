@@ -21,12 +21,14 @@ NORWEGIAN_MONTHS = [
     "juli", "august", "september", "oktober", "november", "desember",
 ]
 
-# Cosine scores between HR texts never get near 0: every question lands between
-# 0.3 and 0.85, so a threshold like 5 % would send nothing to HR. This one sits at
-# the low end of that range. It is a stand-in until an AI model judges each question,
-# because the best score barely tells a question without a routine from one with
-# a routine (gap_auc 0.6-0.7 on the ground truth).
-MIN_RELEVANCE = 0.5
+# Cosine scores between HR texts never get near 0: with the current embedding model
+# every question lands between 0.4 and 0.8, so a threshold like 5 % would send nothing
+# to HR. On the ground truth 0.55 is the only level that catches questions without a
+# routine (2 of 8) without sending any that have one, at about a quarter of all
+# questions. It is a stand-in until an AI model judges each question, because the best
+# score barely tells a question without a routine from one with a routine (gap_auc 0.65).
+# Set again whenever the embedding model changes.
+MIN_RELEVANCE = 0.55
 
 
 def split_routine_filename(filename):
