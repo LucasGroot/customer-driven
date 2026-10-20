@@ -70,7 +70,10 @@ The dashboard asks the API for its data, so the API has to be running.
 This is not needed every time. It analyses all questions against all routines, which takes a few minutes, and writes the result to `data/processed/snapshot.json`. The API serves that file until it is replaced, so run the script again only when:
 
 - the ServiceNow export or the PDFs change, or
-- the scoring or the review threshold (`MIN_RELEVANCE` in `src/backend/snapshot/build_snapshot.py`) changes, since which questions need review is decided when the snapshot is built.
+- the scoring or the review threshold (`MIN_RELEVANCE` in `src/backend/snapshot/build_snapshot.py`) changes, since which questions need review is decided when the snapshot is built, or
+- the code that builds the snapshot changes, for example after pulling. An old file can lack fields the dashboard expects.
+
+The questions that need review are grouped by what they are about, so HR can decide on a whole group at once.
 
 The API reads the file on every request, so there is no need to restart it. Reload the page.
 

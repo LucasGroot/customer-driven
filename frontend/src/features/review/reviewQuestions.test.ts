@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AskedQuestion, ReviewDecision } from "../../domain/types";
-import { matchesReviewFilter, reviewItems } from "./reviewQuestions";
+import { groupPendingItems, matchesReviewFilter, mostCommonBestMatch, reviewItems } from "./reviewQuestions";
 
 function makeQuestion(overrides: Partial<AskedQuestion> = {}): AskedQuestion {
   return {
@@ -53,5 +53,75 @@ describe("matchesReviewFilter", () => {
     expect(byFilter("pending")).toEqual([]);
     expect(byFilter("mapped")).toEqual(["high"]);
     expect(byFilter("discarded")).toEqual(["low"]);
+  });
+});
+
+const GROUP = { id: "r0", headingQuestionId: "b" };
+
+function pendingItems(questions: AskedQuestion[], decisions: Record<string, ReviewDecision> = {}) {
+  return reviewItems(questions, decisionsFrom(decisions));
+}
+
+describe("groupPendingItems", () => {
+  const questions = [
+    makeQuestion({ id: "a", groupId: "r0" }),
+    makeQuestion({ id: "b", groupId: "r0" }),
+    makeQuestion({ id: "c", groupId: "r1" }),
+    makeQuestion({ id: "alone" }),
+  ];
+  const groups = [GROUP, { id: "r1", headingQuestionId: "c" }];
+
+  it("puts the questions of a group together and the others alone", () => {
+    const { groups: views, alone } = groupPendingItems(pendingItems(questions), groups);
+
+    expect(views.map((view) => view.items.map((item) => item.question.id))).toEqual([["a", "b"], ["c"]]);
+    expect(alone.map((item) => item.question.id)).toEqual(["alone"]);
+  });
+
+  it("uses the question that stands for the group as its heading", () => {
+    const { groups: views } = groupPendingItems(pendingItems(questions), groups);
+
+    expect(views[0]?.heading.id).toBe("b");
+  });
+
+  it("puts the largest group first, whatever the order they came in", () => {
+    const { groups: views } = groupPendingItems(pendingItems(questions), [groups[1] ?? GROUP, GROUP]);
+
+    expect(views.map((view) => view.group.id)).toEqual(["r0", "r1"]);
+  });
+
+  it("takes decided questions out, and a group with none left", () => {
+    const decisions = { c: { kind: "discarded" } } as const;
+
+    const { groups: views } = groupPendingItems(pendingItems(questions, decisions), groups);
+
+    expect(views.map((view) => view.group.id)).toEqual(["r0"]);
+  });
+
+  it("takes another question as heading when the one that stands for the group is decided", () => {
+    const decisions = { b: { kind: "discarded" } } as const;
+
+    const { groups: views } = groupPendingItems(pendingItems(questions, decisions), groups);
+
+    expect(views[0]?.heading.id).toBe("a");
+  });
+});
+
+describe("mostCommonBestMatch", () => {
+  it("returns the routine most of the questions matched best", () => {
+    const items = reviewItems(
+      [
+        makeQuestion({ id: "1", documentCode: "A" }),
+        makeQuestion({ id: "2", documentCode: "B" }),
+        makeQuestion({ id: "3", documentCode: "B" }),
+      ],
+      decisionsFrom({}),
+    );
+
+    expect(mostCommonBestMatch(items)).toBe("B");
+  });
+
+  it("returns nothing when there are no questions", () => {
+    expect(mostCommonBestMatch([])).toBeUndefined();
   });
 });

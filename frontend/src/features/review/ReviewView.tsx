@@ -3,8 +3,15 @@ import { FilterPill } from "../../components/FilterPill";
 import { PageIntro } from "../../components/PageIntro";
 import type { AnalysisSnapshot } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
+import { ReviewGroupCard } from "./ReviewGroupCard";
 import { ReviewTable } from "./ReviewTable";
-import { REVIEW_FILTERS, matchesReviewFilter, reviewItems, type ReviewFilter } from "./reviewQuestions";
+import {
+  REVIEW_FILTERS,
+  groupPendingItems,
+  matchesReviewFilter,
+  reviewItems,
+  type ReviewFilter,
+} from "./reviewQuestions";
 import styles from "./ReviewView.module.css";
 
 interface ReviewViewProps {
@@ -23,13 +30,14 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
 
   const items = reviewItems(snapshot.questions, review.decisionOf);
   const visible = items.filter((item) => matchesReviewFilter(item, filter));
+  const { groups, alone } = groupPendingItems(items, snapshot.reviewGroups);
   const routinesByName = [...snapshot.documents].sort((a, b) => a.name.localeCompare(b.name, "nb-NO"));
 
   return (
     <section className={styles.view}>
       <PageIntro
         title="Til gjennomgang"
-        lead="Henvendelser der ingen rutine passer godt nok. Forkast spørsmål som ikke hører hjemme i en rutine, eller knytt dem til riktig rutine selv. Valgene teller med når rutinene prioriteres."
+        lead="Henvendelser der ingen rutine passer godt nok. De som ligner hverandre er samlet i grupper: en stor gruppe betyr at flere lurer på det samme uten at en rutine svarer godt nok. Behandle en hel gruppe om gangen, eller åpne den og vurder henvendelsene hver for seg. Valgene teller med når rutinene prioriteres."
       />
 
       <div className={styles.pills}>
@@ -49,12 +57,35 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
         {review.savedNote ?? "Valg lagres automatisk i denne økten."}
       </p>
 
-      <ReviewTable
-        items={visible}
-        routines={routinesByName}
-        review={review}
-        emptyMessage={EMPTY_MESSAGE[filter]}
-      />
+      {filter === "pending" ? (
+        <>
+          {groups.map((view) => (
+            <ReviewGroupCard key={view.group.id} view={view} routines={routinesByName} review={review} />
+          ))}
+
+          {alone.length > 0 ? (
+            <details className={styles.alone}>
+              <summary className={styles.aloneSummary}>Enkeltspørsmål · {alone.length}</summary>
+              <p className={styles.note}>
+                Henvendelser som ikke ligner noen av de andre. De haster mindre enn gruppene, der
+                flere spør om det samme.
+              </p>
+              <ReviewTable items={alone} routines={routinesByName} review={review} emptyMessage="" />
+            </details>
+          ) : null}
+
+          {groups.length === 0 && alone.length === 0 ? (
+            <p className={styles.note}>{EMPTY_MESSAGE.pending}</p>
+          ) : null}
+        </>
+      ) : (
+        <ReviewTable
+          items={visible}
+          routines={routinesByName}
+          review={review}
+          emptyMessage={EMPTY_MESSAGE[filter]}
+        />
+      )}
     </section>
   );
 }

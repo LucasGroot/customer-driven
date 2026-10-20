@@ -21,6 +21,7 @@ function makeSnapshot(questions: AskedQuestion[]): AnalysisSnapshot {
     documentOwners: [],
     lastRunLabel: "",
     questions,
+    reviewGroups: [],
     documents: [
       { code: "A", name: "Rutine A", revisedLabel: "" },
       { code: "B", name: "Rutine B", revisedLabel: "" },

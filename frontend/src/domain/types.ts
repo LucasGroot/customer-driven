@@ -7,6 +7,7 @@
 
 export type RoutineCode = string;
 export type QuestionId = string;
+export type GroupId = string;
 
 /** One Kvaliteket routine, as listed on the search page. */
 export interface RoutineDocument {
@@ -30,6 +31,18 @@ export interface AskedQuestion {
   coverage: number;
   /** No routine matched well enough, so HR decides where the question belongs. */
   needsReview: boolean;
+  /** The group of similar questions it belongs to. Left out for a question that stands alone. */
+  groupId?: GroupId;
+}
+
+/**
+ * Questions that need review and are about the same thing. Several people wondering about
+ * the same thing, with no routine that answers it well enough, is what HR wants to find.
+ */
+export interface ReviewGroup {
+  id: GroupId;
+  /** The question closest to the middle of the group, which stands for it. */
+  headingQuestionId: QuestionId;
 }
 
 export interface DataSource {
@@ -47,6 +60,7 @@ export interface AnalysisSnapshot {
   documentOwners: string[];
   lastRunLabel: string;
   questions: AskedQuestion[];
+  reviewGroups: ReviewGroup[];
   documents: RoutineDocument[];
   sources: DataSource[];
 }

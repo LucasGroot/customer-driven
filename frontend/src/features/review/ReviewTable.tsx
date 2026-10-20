@@ -5,6 +5,7 @@ import { DataTable, type DataTableColumn } from "../../components/DataTable";
 import type { RoutineCode, RoutineDocument } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import type { ReviewItem } from "./reviewQuestions";
+import { RoutineSelect } from "./RoutineSelect";
 import styles from "./ReviewTable.module.css";
 
 const COLUMNS: DataTableColumn[] = [
@@ -44,20 +45,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
       <td>
         {placement.kind === "pending" ? (
           <div className={styles.actions}>
-            <select
-              className={styles.select}
-              aria-label="Rutinen spørsmålet hører til"
-              value={chosenCode}
-              onChange={(event) => {
-                setChosenCode(event.target.value);
-              }}
-            >
-              {routines.map((routine) => (
-                <option key={routine.code} value={routine.code}>
-                  {routine.name}
-                </option>
-              ))}
-            </select>
+            <RoutineSelect value={chosenCode} routines={routines} onChange={setChosenCode} />
             <div className={styles.buttons}>
               <Button
                 variant="secondary"

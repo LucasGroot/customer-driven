@@ -18,7 +18,9 @@ export interface RoutineReview {
   setStatus: (routineCode: RoutineCode, status: RoutineStatus) => void;
   assignOwner: (routineCode: RoutineCode, owner: string) => void;
   discard: (questionId: QuestionId) => void;
+  discardMany: (questionIds: QuestionId[]) => void;
   mapTo: (questionId: QuestionId, routineCode: RoutineCode) => void;
+  mapManyTo: (questionIds: QuestionId[], routineCode: RoutineCode) => void;
   undoDecision: (questionId: QuestionId) => void;
 }
 
@@ -38,23 +40,40 @@ export function useRoutineReview(): RoutineReview {
     setSavedNote(`Tildelt ${owner}`);
   }, []);
 
-  const decide = useCallback((questionId: QuestionId, decision: ReviewDecision) => {
-    setDecisions((current) => ({ ...current, [questionId]: decision }));
+  const decide = useCallback((questionIds: QuestionId[], decision: ReviewDecision) => {
+    setDecisions((current) => ({
+      ...current,
+      ...Object.fromEntries(questionIds.map((questionId) => [questionId, decision])),
+    }));
     setSavedNote(formatSavedAt(new Date()));
   }, []);
 
+  const discardMany = useCallback(
+    (questionIds: QuestionId[]) => {
+      decide(questionIds, { kind: "discarded" });
+    },
+    [decide],
+  );
+
   const discard = useCallback(
     (questionId: QuestionId) => {
-      decide(questionId, { kind: "discarded" });
+      discardMany([questionId]);
+    },
+    [discardMany],
+  );
+
+  const mapManyTo = useCallback(
+    (questionIds: QuestionId[], routineCode: RoutineCode) => {
+      decide(questionIds, { kind: "mapped", routineCode });
     },
     [decide],
   );
 
   const mapTo = useCallback(
     (questionId: QuestionId, routineCode: RoutineCode) => {
-      decide(questionId, { kind: "mapped", routineCode });
+      mapManyTo([questionId], routineCode);
     },
-    [decide],
+    [mapManyTo],
   );
 
   const undoDecision = useCallback((questionId: QuestionId) => {
@@ -88,7 +107,9 @@ export function useRoutineReview(): RoutineReview {
     setStatus,
     assignOwner,
     discard,
+    discardMany,
     mapTo,
+    mapManyTo,
     undoDecision,
   };
 }
