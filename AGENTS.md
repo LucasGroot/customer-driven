@@ -6,7 +6,7 @@ Read [AI-FRAMEWORK.md](docs/AI-FRAMEWORK.md) first — it's the team's policy on
 
 Trondheim kommune (HR department) gets a high volume of repetitive HR/HMS support questions through ServiceNow. This project finds which questions have the lowest semantic match to the organization's formal routines in its quality system ("Kvaliteket"), to surface "knowledge gaps" — routines that are missing or unclear.
 
-Pipeline: `backend/ai/pdf_reader.py` extracts words+fonts from Kvaliteket PDFs → `chunker.py` splits them into sections by bold headings → `embedding_extract.py` embeds both routine chunks and ServiceNow questions (`sentence-transformers/paraphrase-multilingual-mpnet-base-v2`, cached to `embeddings/*.pkl`) → `compute_similarity.py` ranks questions by summed top-k cosine similarity to routines (lowest = least covered) and renders `visualizations/uncovered_questions.html`.
+Pipeline: `backend/ai/pdf_reader.py` extracts words+fonts from Kvaliteket PDFs → `chunker.py` splits them into sections by bold headings → `embedding_extract.py` embeds both routine chunks and ServiceNow questions (`NbAiLab/borealis-embed-212m`, cached to `embeddings/*.pkl`) → `compute_similarity.py` ranks questions by summed top-k cosine similarity to routines (lowest = least covered) and renders `visualizations/uncovered_questions.html`.
 
 `frontend/` is a React + TypeScript + Vite dashboard (Norwegian UI, English code) showing the ranked gaps. 
 
