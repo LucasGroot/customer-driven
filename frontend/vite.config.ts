@@ -28,7 +28,12 @@ const securityHeaders = {
 
 export default defineConfig({
   plugins: [react()],
-  server: { headers: securityHeaders },
+  server: {
+    headers: securityHeaders,
+    // The browser only ever talks to this server; /api goes on to the backend,
+    // so connect-src 'self' in the CSP stays enough.
+    proxy: { "/api": "http://localhost:8000" },
+  },
   preview: { headers: securityHeaders },
   build: { sourcemap: false },
 });

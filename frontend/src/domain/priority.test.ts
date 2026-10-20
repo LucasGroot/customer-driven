@@ -1,133 +1,80 @@
 import { describe, expect, it } from "vitest";
 import {
-  DEFAULT_WEIGHTS,
-  THRESHOLD_RANGE,
   coverageBand,
   isWellCovered,
-  listedGapIds,
   priorityBand,
   priorityScore,
-  rankGaps,
+  rankRoutines,
   scoreBreakdown,
-  totalUnmatchedTickets,
-  unmatchedTicketCount,
 } from "./priority";
-import type { AnalysisSnapshot, KnowledgeGap, PriorityWeights } from "./types";
+import type { RoutineStats } from "./routines";
+import type { PriorityWeights } from "./types";
 
-function makeGap(overrides: Partial<KnowledgeGap> = {}): KnowledgeGap {
+function makeStats(questionCount: number, meanCoverage: number, code = "A"): RoutineStats {
   return {
-    id: "gap",
-    topic: "Topic",
-    category: "Category",
-    ticketCount: 20,
-    trendPercent: 15,
-    coverage: 0.4,
-    summary: "",
-    nearestMatchLine: "",
+    routine: { code, name: code, revisedLabel: "" },
     questions: [],
-    questionsNote: "",
-    routines: [],
-    verdict: "",
-    documentOwner: "",
-    dueDate: "",
-    documentAge: 0.5,
-    documentAgeLabel: "",
-    ...overrides,
+    questionCount,
+    meanCoverage,
   };
 }
 
-function makeSnapshot(overrides: Partial<AnalysisSnapshot> = {}): AnalysisSnapshot {
-  return {
-    gaps: [],
-    documentOwners: [],
-    totalTickets: 0,
-    totalRoutines: 0,
-    ticketsOutsideClusters: 0,
-    coverageOutsideClusters: 1,
-    lastRunLabel: "",
-    questions: [],
-    documents: [],
-    sources: [],
-    ...overrides,
-  };
-}
+const WORST_ROUTINE = makeStats(10, 0);
+const BEST_ROUTINE = makeStats(0, 1);
 
-const WORST_GAP = makeGap({ ticketCount: 40, coverage: 0, trendPercent: 40, documentAge: 1 });
-const BEST_GAP = makeGap({ ticketCount: 0, coverage: 1, trendPercent: -10, documentAge: 0 });
-
-const ONLY_VOLUME: PriorityWeights = { volume: 50, coverage: 0, trend: 0, age: 0 };
-const ONLY_COVERAGE: PriorityWeights = { volume: 0, coverage: 50, trend: 0, age: 0 };
+const ONLY_VOLUME: PriorityWeights = { volume: 50, coverage: 0 };
+const ONLY_COVERAGE: PriorityWeights = { volume: 0, coverage: 50 };
+const EVEN_WEIGHTS: PriorityWeights = { volume: 50, coverage: 50 };
 
 describe("scoreBreakdown", () => {
-  it("scales volume up to full marks at 40 tickets", () => {
-    expect(scoreBreakdown(makeGap({ ticketCount: 20 })).volume).toBe(0.5);
-    expect(scoreBreakdown(makeGap({ ticketCount: 40 })).volume).toBe(1);
-    expect(scoreBreakdown(makeGap({ ticketCount: 400 })).volume).toBe(1);
+  it("scales volume up to full marks at 10 questions", () => {
+    expect(scoreBreakdown(makeStats(5, 0.5)).volume).toBeCloseTo(0.5);
+    expect(scoreBreakdown(makeStats(10, 0.5)).volume).toBe(1);
+    expect(scoreBreakdown(makeStats(30, 0.5)).volume).toBe(1);
   });
 
-  it("scores coverage higher the worse the routines match", () => {
-    expect(scoreBreakdown(makeGap({ coverage: 0.3 })).coverage).toBeCloseTo(0.7);
-    expect(scoreBreakdown(makeGap({ coverage: 1 })).coverage).toBe(0);
-  });
-
-  it("maps trend from -10%..+40% onto 0..1 and clamps outside it", () => {
-    expect(scoreBreakdown(makeGap({ trendPercent: -10 })).trend).toBe(0);
-    expect(scoreBreakdown(makeGap({ trendPercent: 15 })).trend).toBe(0.5);
-    expect(scoreBreakdown(makeGap({ trendPercent: 40 })).trend).toBe(1);
-    expect(scoreBreakdown(makeGap({ trendPercent: -50 })).trend).toBe(0);
-    expect(scoreBreakdown(makeGap({ trendPercent: 120 })).trend).toBe(1);
-  });
-
-  it("passes document age through unchanged", () => {
-    expect(scoreBreakdown(makeGap({ documentAge: 0.8 })).age).toBe(0.8);
+  it("scores coverage higher the worse the routine answers its questions", () => {
+    expect(scoreBreakdown(makeStats(1, 0.25)).coverage).toBeCloseTo(0.75);
+    expect(scoreBreakdown(makeStats(1, 1)).coverage).toBe(0);
   });
 });
 
 describe("priorityScore", () => {
-  it("ranges from 0 for a fully covered gap to 100 for the worst possible gap", () => {
-    expect(priorityScore(BEST_GAP, DEFAULT_WEIGHTS)).toBe(0);
-    expect(priorityScore(WORST_GAP, DEFAULT_WEIGHTS)).toBe(100);
+  it("ranges from 0 for a routine that answers everything to 100 for the worst possible one", () => {
+    expect(priorityScore(BEST_ROUTINE, EVEN_WEIGHTS)).toBe(0);
+    expect(priorityScore(WORST_ROUTINE, EVEN_WEIGHTS)).toBe(100);
   });
 
   it("weights each factor by its share of the total weight", () => {
-    const highVolumeFullyCovered = makeGap({ ticketCount: 40, coverage: 1 });
-    const halfVolumeHalfCoverage: PriorityWeights = { volume: 30, coverage: 30, trend: 0, age: 0 };
-
-    expect(priorityScore(highVolumeFullyCovered, halfVolumeHalfCoverage)).toBe(50);
+    const manyQuestionsGoodCoverage = makeStats(10, 1);
+    expect(priorityScore(manyQuestionsGoodCoverage, ONLY_VOLUME)).toBe(100);
+    expect(priorityScore(manyQuestionsGoodCoverage, ONLY_COVERAGE)).toBe(0);
+    expect(priorityScore(manyQuestionsGoodCoverage, EVEN_WEIGHTS)).toBe(50);
   });
 
   it("depends only on the ratio between weights, not their sum", () => {
-    const gap = makeGap();
-    const doubled: PriorityWeights = {
-      volume: DEFAULT_WEIGHTS.volume * 2,
-      coverage: DEFAULT_WEIGHTS.coverage * 2,
-      trend: DEFAULT_WEIGHTS.trend * 2,
-      age: DEFAULT_WEIGHTS.age * 2,
-    };
-
-    expect(priorityScore(gap, doubled)).toBe(priorityScore(gap, DEFAULT_WEIGHTS));
+    const stats = makeStats(4, 0.3);
+    expect(priorityScore(stats, { volume: 10, coverage: 30 })).toBe(
+      priorityScore(stats, { volume: 20, coverage: 60 }),
+    );
   });
 
   it("returns 0 instead of NaN when every weight is zero", () => {
-    const noWeights: PriorityWeights = { volume: 0, coverage: 0, trend: 0, age: 0 };
-
-    expect(priorityScore(WORST_GAP, noWeights)).toBe(0);
+    expect(priorityScore(WORST_ROUTINE, { volume: 0, coverage: 0 })).toBe(0);
   });
 });
 
 describe("priorityBand", () => {
   it("puts 70 and above in high, 50-69 in medium and the rest in low", () => {
-    expect(priorityBand(100)).toBe("high");
     expect(priorityBand(70)).toBe("high");
     expect(priorityBand(69)).toBe("medium");
     expect(priorityBand(50)).toBe("medium");
     expect(priorityBand(49)).toBe("low");
-    expect(priorityBand(0)).toBe("low");
   });
 });
 
 describe("coverageBand", () => {
-  it("calls coverage under 0.3 weak, under 0.45 partial and the rest good", () => {
+  it("calls coverage under 0.3 weak, under 0.6 partial and the rest good", () => {
     expect(coverageBand(0.29)).toBe("weak");
     expect(coverageBand(0.3)).toBe("partial");
     expect(coverageBand(0.59)).toBe("partial");
@@ -135,94 +82,34 @@ describe("coverageBand", () => {
   });
 });
 
-describe("unmatchedTicketCount", () => {
-  it("counts half the tickets as unmatched when coverage sits exactly on the threshold", () => {
-    expect(unmatchedTicketCount(makeGap({ ticketCount: 20, coverage: 0.4 }), 40)).toBe(10);
-  });
-
-  it("counts every ticket when coverage is far below the threshold", () => {
-    expect(unmatchedTicketCount(makeGap({ ticketCount: 20, coverage: 0.1 }), 40)).toBe(20);
-  });
-
-  it("counts no tickets when coverage is far above the threshold", () => {
-    expect(unmatchedTicketCount(makeGap({ ticketCount: 20, coverage: 0.7 }), 40)).toBe(0);
-  });
-
-  it("never drops when the threshold is raised", () => {
-    const gap = makeGap({ ticketCount: 30, coverage: 0.42 });
-    const stepCount = (THRESHOLD_RANGE.max - THRESHOLD_RANGE.min) / THRESHOLD_RANGE.step;
-    const thresholds = Array.from(
-      { length: stepCount + 1 },
-      (_, index) => THRESHOLD_RANGE.min + index * THRESHOLD_RANGE.step,
-    );
-    const counts = thresholds.map((threshold) => unmatchedTicketCount(gap, threshold));
-
-    expect(counts).toEqual([...counts].sort((a, b) => a - b));
-    expect(counts[0]).toBeLessThan(counts[counts.length - 1] ?? 0);
-  });
-});
-
-describe("totalUnmatchedTickets", () => {
-  it("adds tickets outside every cluster to the unmatched tickets inside them", () => {
-    const snapshot = makeSnapshot({
-      gaps: [
-        makeGap({ ticketCount: 20, coverage: 0.4 }),
-        makeGap({ ticketCount: 10, coverage: 0.1 }),
-      ],
-      ticketsOutsideClusters: 30,
-      coverageOutsideClusters: 0.4,
-    });
-
-    expect(totalUnmatchedTickets(snapshot, 40)).toBe(10 + 10 + 15);
-  });
-});
-
-describe("rankGaps", () => {
-  const busyButCovered = makeGap({
-    id: "busy-but-covered",
-    ticketCount: 40,
-    coverage: 1,
-    trendPercent: -10,
-    documentAge: 0,
-  });
-  const quietButUncovered = makeGap({
-    id: "quiet-but-uncovered",
-    ticketCount: 0,
-    coverage: 0,
-    trendPercent: -10,
-    documentAge: 0,
-  });
+describe("rankRoutines", () => {
+  const routines = [makeStats(2, 0.8, "low"), makeStats(10, 0.1, "high"), makeStats(5, 0.4, "mid")];
 
   it("puts the highest score first and attaches its band", () => {
-    const ranked = rankGaps([BEST_GAP, WORST_GAP], DEFAULT_WEIGHTS);
-
-    expect(ranked.map((entry) => entry.score)).toEqual([100, 0]);
-    expect(ranked.map((entry) => entry.band)).toEqual(["high", "low"]);
+    const ranked = rankRoutines(routines, EVEN_WEIGHTS);
+    expect(ranked.map((entry) => entry.stats.routine.code)).toEqual(["high", "mid", "low"]);
+    expect(ranked[0]?.band).toBe("high");
   });
 
-  it("reorders the work list when the weights change", () => {
-    const gaps = [busyButCovered, quietButUncovered];
+  it("reorders the list when the weights change", () => {
+    const busyButCovered = makeStats(10, 0.9, "busy");
+    const quietButPoor = makeStats(1, 0.1, "quiet");
+    const order = (weights: PriorityWeights) =>
+      rankRoutines([busyButCovered, quietButPoor], weights).map((entry) => entry.stats.routine.code);
 
-    expect(rankGaps(gaps, ONLY_VOLUME)[0]?.gap.id).toBe("busy-but-covered");
-    expect(rankGaps(gaps, ONLY_COVERAGE)[0]?.gap.id).toBe("quiet-but-uncovered");
+    expect(order(ONLY_VOLUME)).toEqual(["busy", "quiet"]);
+    expect(order(ONLY_COVERAGE)).toEqual(["quiet", "busy"]);
   });
 
   it("leaves the input list in its original order", () => {
-    const gaps = [BEST_GAP, WORST_GAP];
-    rankGaps(gaps, DEFAULT_WEIGHTS);
-
-    expect(gaps).toEqual([BEST_GAP, WORST_GAP]);
+    rankRoutines(routines, EVEN_WEIGHTS);
+    expect(routines.map((stats) => stats.routine.code)).toEqual(["low", "high", "mid"]);
   });
 });
 
 describe("coverage cut-off", () => {
-  it("counts a gap as well covered only above the cut-off", () => {
-    expect(isWellCovered(makeGap({ coverage: 0.7 }), 70)).toBe(false);
-    expect(isWellCovered(makeGap({ coverage: 0.71 }), 70)).toBe(true);
-  });
-
-  it("lists the gaps at or below the cut-off", () => {
-    const gaps = [makeGap({ id: "low", coverage: 0.4 }), makeGap({ id: "high", coverage: 0.8 })];
-    expect([...listedGapIds(gaps, 70)]).toEqual(["low"]);
+  it("counts a routine as well covered only above the cut-off", () => {
+    expect(isWellCovered(makeStats(1, 0.71), 70)).toBe(true);
+    expect(isWellCovered(makeStats(1, 0.7), 70)).toBe(false);
   });
 });

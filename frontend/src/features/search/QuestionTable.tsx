@@ -2,35 +2,39 @@ import { Fragment, useState } from "react";
 import { Button } from "../../components/Button";
 import { CoverageMeter } from "../../components/CoverageMeter";
 import { DataTable, type DataTableColumn } from "../../components/DataTable";
-import type { KnowledgeGapId } from "../../domain/types";
-import { ListedBadge } from "./ListedBadge";
+import type { Placement } from "../../domain/routines";
+import type { RoutineCode } from "../../domain/types";
+import { PlacementBadge } from "./PlacementBadge";
 import type { QuestionResult } from "./searchResults";
 import styles from "./SearchTable.module.css";
 
 const COLUMNS: DataTableColumn[] = [
   { label: "Spørsmål" },
-  { label: "Tema", width: "20%" },
-  { label: "Beste dokument", width: "20%" },
+  { label: "Kategori", width: "18%" },
+  { label: "Beste dokument", width: "22%" },
   { label: "Dekning", width: "160px" },
-  { label: "Tema i listen", width: "140px" },
+  { label: "Status", width: "160px" },
 ];
 
 interface QuestionTableProps {
   results: QuestionResult[];
-  hideAbovePercent: number;
-  onOpenGap: (gapId: KnowledgeGapId) => void;
+  onOpenRoutine: (routineCode: RoutineCode) => void;
 }
 
-/** Why a question's topic is, or is not, in the prioritised list. */
-function listReason({ question, listed }: QuestionResult, hideAbovePercent: number): string {
-  if (listed) return "Temaet står i den prioriterte listen.";
-  if (question.gapId !== undefined) {
-    return `Temaet er skjult fordi rutinene dekker det over ${String(hideAbovePercent)} %.`;
+/** What happened to a question, in a sentence. */
+function placementReason(placement: Placement): string {
+  if (placement.kind === "routine") {
+    return placement.byHand
+      ? "Knyttet til rutinen for hånd under gjennomgang."
+      : "Knyttet til rutinen som passet best.";
   }
-  return "Rutinene dekker dette godt nok til at temaet ikke er med i listen.";
+  if (placement.kind === "pending") {
+    return "Passer ikke godt nok til noen rutine, og venter på gjennomgang.";
+  }
+  return "Forkastet under gjennomgang.";
 }
 
-export function QuestionTable({ results, hideAbovePercent, onOpenGap }: QuestionTableProps) {
+export function QuestionTable({ results, onOpenRoutine }: QuestionTableProps) {
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set());
 
   const toggle = (id: string) => {
@@ -49,8 +53,7 @@ export function QuestionTable({ results, hideAbovePercent, onOpenGap }: Question
       emptyMessage="Ingen spørsmål passer til søket."
     >
       {results.map((result) => {
-        const { question, document, listed } = result;
-        const { gapId } = question;
+        const { question, document, placement } = result;
         const isOpen = expanded.has(question.id);
         const detailId = `question-detail-${question.id}`;
         return (
@@ -72,16 +75,13 @@ export function QuestionTable({ results, hideAbovePercent, onOpenGap }: Question
                   <span>{question.text}</span>
                 </button>
               </td>
-              <td className={styles.soft}>{question.topic}</td>
-              <td>
-                <div>{document?.name ?? "Ukjent dokument"}</div>
-                <div className={styles.meta}>{question.documentCode}</div>
-              </td>
+              <td className={styles.soft}>{question.category}</td>
+              <td>{document?.name ?? "Ukjent dokument"}</td>
               <td>
                 <CoverageMeter coverage={question.coverage} />
               </td>
               <td>
-                <ListedBadge listed={listed} />
+                <PlacementBadge placement={placement} />
               </td>
             </tr>
             {isOpen ? (
@@ -89,15 +89,15 @@ export function QuestionTable({ results, hideAbovePercent, onOpenGap }: Question
                 <td colSpan={COLUMNS.length}>
                   <div className={styles.detail}>
                     <span className={styles.meta}>Henvendelse {question.reference}</span>
-                    <span>{listReason(result, hideAbovePercent)}</span>
-                    {listed && gapId !== undefined ? (
+                    <span>{placementReason(placement)}</span>
+                    {placement.kind === "routine" ? (
                       <Button
                         variant="link"
                         onClick={() => {
-                          onOpenGap(gapId);
+                          onOpenRoutine(placement.routineCode);
                         }}
                       >
-                        Åpne temaet
+                        Åpne rutinen
                       </Button>
                     ) : null}
                   </div>

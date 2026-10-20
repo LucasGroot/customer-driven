@@ -4,49 +4,53 @@ import { NumberField } from "../../components/NumberField";
 import { PageIntro } from "../../components/PageIntro";
 import { StatCard } from "../../components/StatCard";
 import { StatGrid } from "../../components/StatGrid";
-import { rankGaps } from "../../domain/priority";
-import type { AnalysisSnapshot, KnowledgeGapId, PriorityWeights } from "../../domain/types";
-import type { GapReview } from "../../hooks/useGapReview";
-import { GAP_FILTERS, filterGaps, hideWellCovered, type GapFilter } from "./gapFilters";
-import { GapTable } from "./GapTable";
+import { rankRoutines } from "../../domain/priority";
+import type { RoutineStats } from "../../domain/routines";
+import type { PriorityWeights, RoutineCode } from "../../domain/types";
+import type { RoutineReview } from "../../hooks/useRoutineReview";
+import { ROUTINE_FILTERS, filterRoutines, hideWellCovered, type RoutineFilter } from "./routineFilters";
+import { RoutineTable } from "./RoutineTable";
 import styles from "./OverviewView.module.css";
 
 interface OverviewViewProps {
-  snapshot: AnalysisSnapshot;
+  routines: RoutineStats[];
+  pendingCount: number;
   weights: PriorityWeights;
-  review: GapReview;
-  filter: GapFilter;
-  onFilterChange: (filter: GapFilter) => void;
+  review: RoutineReview;
+  filter: RoutineFilter;
+  onFilterChange: (filter: RoutineFilter) => void;
   hideAbovePercent: number;
   onHideAboveChange: (percent: number) => void;
-  onOpenGap: (gapId: KnowledgeGapId) => void;
+  onOpenRoutine: (routineCode: RoutineCode) => void;
+  onOpenReview: () => void;
   onOpenSettings: () => void;
 }
 
 export function OverviewView({
-  snapshot,
+  routines,
+  pendingCount,
   weights,
   review,
   filter,
   onFilterChange,
   hideAbovePercent,
   onHideAboveChange,
-  onOpenGap,
+  onOpenRoutine,
+  onOpenReview,
   onOpenSettings,
 }: OverviewViewProps) {
-  const ranked = rankGaps(snapshot.gaps, weights);
+  const ranked = rankRoutines(routines, weights);
   const shown = hideWellCovered(ranked, hideAbovePercent);
   const hiddenCount = ranked.length - shown.length;
-  const visible = filterGaps(shown, filter, review.statusOf);
+  const visible = filterRoutines(shown, filter, review.statusOf);
   const highPriorityCount = shown.filter((entry) => entry.band === "high").length;
-  const newCount = filterGaps(shown, "new", review.statusOf).length;
 
   return (
     <section className={styles.view}>
       <div className={styles.header}>
         <PageIntro
           title="Rutiner som bør oppdateres først"
-          lead="Hvert punkt under er et spørsmål stilt direkte i ServiceNow, satt opp mot rutiner i Kvaliteket. Øverst ligger temaene flest spør om, men der dokumentasjonen gir dårligst eller ingen svar."
+          lead="Hver rutine er satt opp mot spørsmålene fra ServiceNow som passer best til den. Øverst ligger rutinene som får flest spørsmål, men svarer dårligst på dem."
         />
         <Button variant="primary" onClick={onOpenSettings}>
           Kjør ny analyse
@@ -55,23 +59,27 @@ export function OverviewView({
 
       <StatGrid>
         <StatCard
-          label="Temaer vist"
+          label="Rutiner vist"
           value={String(shown.length)}
-          note={`fra ${String(snapshot.totalTickets)} henvendelser`}
+          note={`av ${String(ranked.length)} rutiner med henvendelser`}
         />
         <StatCard
           label="Høy prioritet"
           value={String(highPriorityCount)}
           note="bør tas denne måneden"
         />
-        <StatCard label="Nye" value={String(newCount)} note="ikke behandlet ennå" />
+        <StatCard
+          label="Til gjennomgang"
+          value={String(pendingCount)}
+          note="henvendelser uten rutine"
+        />
       </StatGrid>
 
       <div className={styles.filters}>
-        {GAP_FILTERS.map((option) => (
+        {ROUTINE_FILTERS.map((option) => (
           <FilterPill
             key={option.key}
-            label={`${option.label} · ${String(filterGaps(shown, option.key, review.statusOf).length)}`}
+            label={`${option.label} · ${String(filterRoutines(shown, option.key, review.statusOf).length)}`}
             selected={filter === option.key}
             onSelect={() => {
               onFilterChange(option.key);
@@ -80,7 +88,7 @@ export function OverviewView({
         ))}
         <div className={styles.hideAbove}>
           <NumberField
-            label="Skjul temaer med dekning over"
+            label="Skjul rutiner med snittscore over"
             value={hideAbovePercent}
             min={0}
             max={100}
@@ -93,17 +101,27 @@ export function OverviewView({
 
       {hiddenCount > 0 ? (
         <p className={styles.hiddenNote}>
-          {hiddenCount} {hiddenCount === 1 ? "tema er" : "temaer er"} skjult fordi rutinene
-          allerede dekker dem over {hideAbovePercent} %.
+          {hiddenCount} {hiddenCount === 1 ? "rutine er" : "rutiner er"} skjult fordi de svarer
+          godt på spørsmålene sine, med snittscore over {hideAbovePercent} %.
         </p>
       ) : null}
 
-      <GapTable rows={visible} statusOf={review.statusOf} onOpenGap={onOpenGap} />
+      {pendingCount > 0 ? (
+        <p className={styles.hiddenNote}>
+          {pendingCount} {pendingCount === 1 ? "henvendelse passer" : "henvendelser passer"} ikke
+          til noen rutine og venter på gjennomgang.{" "}
+          <Button variant="link" onClick={onOpenReview}>
+            Gå til gjennomgang
+          </Button>
+        </p>
+      ) : null}
+
+      <RoutineTable rows={visible} statusOf={review.statusOf} onOpenRoutine={onOpenRoutine} />
 
       <p className={styles.footnote}>
-        Prioritet 0–100 bygger på fire ting: hvor mange som spør, hvor dårlig nærmeste rutine
-        treffer, om temaet øker, og hvor lenge siden dokumentet ble revidert. Klikk på et tema for
-        å se regnestykket i klartekst.
+        Prioritet 0–100 bygger på to ting: hvor mange spørsmål som er knyttet til rutinen, og hvor
+        dårlig rutinen treffer dem. Klikk på en rutine for å se spørsmålene og regnestykket i
+        klartekst.
       </p>
     </section>
   );
