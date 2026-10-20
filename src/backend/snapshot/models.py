@@ -25,6 +25,12 @@ class AskedQuestion(CamelCaseModel):
     document_code: str
     coverage: float
     needs_review: bool
+    group_id: str | None = None
+
+
+class ReviewGroup(CamelCaseModel):
+    id: str
+    heading_question_id: str
 
 
 class DataSource(CamelCaseModel):
@@ -39,13 +45,16 @@ class AnalysisSnapshot(CamelCaseModel):
     document_owners: list[str]
     last_run_label: str
     questions: list[AskedQuestion]
+    review_groups: list[ReviewGroup]
     documents: list[RoutineDocument]
     sources: list[DataSource]
 
 
 def snapshot_to_json_dict(snapshot):
     """
-    Turns a snapshot into the camelCase dict the frontend expects.
+    Turns a snapshot into the camelCase dict the frontend expects. Fields that
+    are None are left out, because the frontend checks `groupId !== undefined`
+    and would read a null as a real group.
     """
 
-    return snapshot.model_dump(by_alias=True)
+    return snapshot.model_dump(by_alias=True, exclude_none=True)

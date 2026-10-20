@@ -121,3 +121,41 @@ def test_the_bundled_sample_matches_the_contract_exactly():
 
     assert sample["isExample"] is True
     assert snapshot_to_json_dict(AnalysisSnapshot.model_validate(sample)) == sample
+
+
+def test_review_groups_give_their_questions_a_group_and_a_heading():
+    snapshot = build_snapshot(
+        QUESTIONS,
+        SCORES,
+        last_run=date(2026, 10, 19),
+        questions_uploaded=date(2026, 9, 12),
+        routines_uploaded=date(2026, 9, 1),
+        review_groups=[["INC3", "INC2"]],
+    )
+
+    assert [(group.id, group.heading_question_id) for group in snapshot.review_groups] == [("r0", "INC3")]
+    group_of = {question.id: question.group_id for question in snapshot.questions}
+    assert (group_of["INC2"], group_of["INC3"], group_of["INC1"]) == ("r0", "r0", None)
+
+
+def test_json_leaves_out_the_group_of_questions_in_no_group():
+    data = snapshot_to_json_dict(
+        build_snapshot(
+            QUESTIONS,
+            SCORES,
+            last_run=date(2026, 10, 19),
+            questions_uploaded=date(2026, 9, 12),
+            routines_uploaded=date(2026, 9, 1),
+            review_groups=[["INC3", "INC2"]],
+        )
+    )
+
+    assert data["questions"][1]["groupId"] == "r0"
+    assert "groupId" not in data["questions"][0]
+    assert data["reviewGroups"] == [{"id": "r0", "headingQuestionId": "INC3"}]
+
+
+def test_questions_needing_review_are_the_ones_under_the_threshold(monkeypatch):
+    monkeypatch.setattr(snapshot_builder, "MIN_RELEVANCE", 0.35)
+
+    assert list(snapshot_builder.questions_needing_review(SCORES)) == ["INC2", "INC3"]

@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 from backend.ai.similarity_metrics.shared_logic import SERVICE_COLUMN
-from backend.snapshot.models import AnalysisSnapshot, AskedQuestion, DataSource, RoutineDocument
+from backend.snapshot.models import AnalysisSnapshot, AskedQuestion, DataSource, ReviewGroup, RoutineDocument
 
 
 ROUTINE_FILENAME_PATTERN = re.compile(r"^(\d{4}-\d+)-(.+)$")
@@ -64,12 +64,26 @@ def one_line(text):
     return " ".join(text.split())[:MAX_QUESTION_CHARACTERS]
 
 
-def build_snapshot(questions, scores, last_run, questions_uploaded, routines_uploaded):
+def questions_needing_review(scores):
+    """
+    Returns the IDs of the questions whose best score is under MIN_RELEVANCE.
+    scores is the questions x routines table.
+    """
+
+    best_score = scores.max(axis=1)
+
+    return best_score.index[best_score < MIN_RELEVANCE]
+
+
+def build_snapshot(questions, scores, last_run, questions_uploaded, routines_uploaded, review_groups=()):
     """
     Builds the snapshot for one analysis run.
     questions is indexed by question ID with the columns Tjenestetilbud and text,
     and scores is the questions x routines table with the same rows in the same
     order. The three dates are datetime.date values.
+    review_groups is a list of groups of question IDs from the questions that need
+    review, each with the question that stands for the group first. Questions in
+    no group stand alone.
     """
 
     scores = scores.dropna(axis=1, how="all")
@@ -77,6 +91,15 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
     best_filename = scores.idxmax(axis=1)
     needs_review = best_score < MIN_RELEVANCE
     categories = questions[SERVICE_COLUMN].fillna(UNKNOWN_CATEGORY)
+    groups = [
+        ReviewGroup(id=f"r{number}", heading_question_id=str(member_ids[0]))
+        for number, member_ids in enumerate(review_groups)
+    ]
+    group_of_question = {
+        str(question_id): group.id
+        for group, member_ids in zip(groups, review_groups)
+        for question_id in member_ids
+    }
 
     asked_questions = [
         AskedQuestion(
@@ -87,6 +110,7 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
             document_code=split_routine_filename(filename)[0],
             coverage=round(float(coverage), 3),
             needs_review=bool(flagged),
+            group_id=group_of_question.get(str(question_id)),
         )
         for question_id, text, category, filename, coverage, flagged in zip(
             questions.index, questions["text"], categories, best_filename, best_score, needs_review
@@ -102,6 +126,7 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
         document_owners=[NO_OWNER],
         last_run_label=format_norwegian_date(last_run),
         questions=asked_questions,
+        review_groups=groups,
         documents=documents,
         sources=[
             DataSource(

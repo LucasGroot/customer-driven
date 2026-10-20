@@ -70,7 +70,8 @@
       "category": "Turnus",
       "documentCode": "KV-041",
       "coverage": 0.17,
-      "needsReview": true
+      "needsReview": true,
+      "groupId": "r0"
     },
     {
       "id": "q08",
@@ -79,7 +80,8 @@
       "category": "Turnus",
       "documentCode": "KV-019",
       "coverage": 0.2,
-      "needsReview": true
+      "needsReview": true,
+      "groupId": "r0"
     },
     {
       "id": "q09",
@@ -88,7 +90,8 @@
       "category": "Turnus",
       "documentCode": "KV-019",
       "coverage": 0.21,
-      "needsReview": true
+      "needsReview": true,
+      "groupId": "r0"
     },
     {
       "id": "q10",
@@ -422,6 +425,12 @@
       "documentCode": "KV-050",
       "coverage": 0.19,
       "needsReview": true
+    }
+  ],
+  "reviewGroups": [
+    {
+      "id": "r0",
+      "headingQuestionId": "q07"
     }
   ],
   "documents": [
