@@ -14,3 +14,4 @@ data/processed/*.json
 # ignoring dev environment
 /venv
 /env
+*env

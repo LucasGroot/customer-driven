@@ -1,11 +1,11 @@
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from backend.ai.similarity_metrics.shared_logic import top_k_per_routine, _check_k
+from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, top_k_per_routine, _check_k
 
 
 def euclidean_similarity(corpus,
-                       model_name="sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+                       model_name=SIMILARITY_MODEL_NAME,
                        k=3):
     """
     Scores each question against each routine using chosen llm embedding similarity.
