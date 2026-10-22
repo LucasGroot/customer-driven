@@ -23,18 +23,71 @@ Identify which topics and questions raised through ServiceNow have the lowest se
 
 Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data, behind Microsoft sign-in.
 
-## Running the frontend
+## How to install
 
-Requires Node.js 22.12 or newer. From `frontend/`:
+macOS and Linux:
+
+```bash
+python3 -m venv venv          # first time only
+source venv/bin/activate      # every new terminal
+pip install -r requirements.txt
+pip install -e .
+```
+
+Windows (PowerShell):
+
+```powershell
+py -m venv venv               # first time only
+venv\Scripts\activate         # every new terminal
+pip install -r requirements.txt
+pip install -e .
+```
+
+If PowerShell refuses to run the activate script, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and try again.
+
+Creates a virtual environment so the project's packages stay separate from the rest of your machine, installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
+
+## Running the application
+
+### Running the API/backend
+
+The API in [`src/backend/api/`](src/backend/api/) handles Microsoft sign-in and user roles. It needs a Microsoft Entra app registration.
+
+macOS and Linux:
+
+```bash
+cp .env.example .env    # first time only
+uvicorn backend.api.main:create_app --factory --env-file .env --reload
+```
+
+Windows (PowerShell):
+
+```powershell
+Copy-Item .env.example .env    # first time only
+uvicorn backend.api.main:create_app --factory --env-file .env --reload
+```
+
+Fill in the tenant and client IDs in `.env`. 
+
+Run the tests with `python -m pytest tests/unit/api`.
+
+### Running the frontend
+
+Requires Node.js 22.12 or newer. From `frontend/`
 
 ```bash
 npm install     # once, and again after dependencies change
 npm run dev     # start the dashboard
+```
+
+The dashboard asks you to sign in with Microsoft and then asks the API who you are, so the API must be running too. The dev server forwards `/api` to it on port 8000. Both read the root `.env`.
+
+### Testing the frontend
+
+```bash
 npm test        # run the tests in watch mode (press q to quit)
 npx vitest run  # run the tests once, e.g. before committing
 ```
-
-The dashboard asks you to sign in with Microsoft and then asks the API who you are, so the API must be running too (see [Running the API](#running-the-api)). The dev server forwards `/api` to it on port 8000. Both read the root `.env`.
 
 ## Documentation
 
@@ -75,29 +128,8 @@ The dashboard asks you to sign in with Microsoft and then asks the API who you a
 |-- pyproject.toml
 ```
 
-## How to install
 
-```bash
-python3 -m venv venv          # first time only
-source venv/bin/activate      # every new terminal (Windows: venv\Scripts\activate)
-pip install -r requirements.txt
-pip install -e .
-```
-
-Creates a virtual environment so the project's packages stay separate from the rest of your machine, installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
-
-## Running the API
-
-The API in [`src/backend/api/`](src/backend/api/) handles Microsoft sign-in and user roles. It needs a Microsoft Entra app registration.
-
-```bash
-cp .env.example .env    # first time only
-uvicorn backend.api.main:create_app --factory --env-file .env --reload
-```
-
-Run the tests with `python -m pytest tests/unit/api`.
-
-### Entra app registration
+## Entra app registration (for customer only)
 
 The dashboard and the API use the same app registration. For sign-in from the dashboard to work, it needs:
 
