@@ -103,6 +103,7 @@ export function ReviewTable({ items, routines, review, emptyMessage }: ReviewTab
       columns={COLUMNS}
       isEmpty={items.length === 0}
       emptyMessage={emptyMessage}
+      minWidth={760}
     >
       {items.map((item) => (
         <ReviewRow key={item.question.id} item={item} routines={routines} review={review} />

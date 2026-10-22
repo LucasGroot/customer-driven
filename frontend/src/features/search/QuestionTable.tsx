@@ -52,6 +52,7 @@ export function QuestionTable({ results, onOpenRoutine, onRestore }: QuestionTab
       columns={COLUMNS}
       isEmpty={results.length === 0}
       emptyMessage="Ingen spørsmål passer til søket."
+      minWidth={880}
     >
       {results.map((result) => {
         const { question, document, placement } = result;

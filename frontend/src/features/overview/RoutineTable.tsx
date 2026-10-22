@@ -28,6 +28,7 @@ export function RoutineTable({ rows, statusOf, onOpenRoutine }: RoutineTableProp
       columns={COLUMNS}
       isEmpty={rows.length === 0}
       emptyMessage="Ingen rutiner passer til dette filteret."
+      minWidth={780}
     >
       {rows.map(({ stats, score, band }, index) => (
         <tr
