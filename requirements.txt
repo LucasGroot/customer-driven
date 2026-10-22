@@ -9,6 +9,7 @@ scikit-learn
 fastapi
 uvicorn
 pyjwt[crypto]
+certifi
 python-dotenv
 httpx
 asttokens==3.0.2

@@ -2,9 +2,11 @@
 Validates Microsoft Entra ID access tokens and turns them into a user.
 """
 
+import ssl
 from dataclasses import dataclass
 from typing import Callable
 
+import certifi
 import jwt
 
 from backend.api.config import Settings
@@ -37,7 +39,14 @@ def microsoft_key_resolver(tenant_id: str) -> SigningKeyResolver:
 
     PyJWKClient caches the keys, so Microsoft is not called on every request.
     """
-    client = jwt.PyJWKClient(f"https://login.microsoftonline.com/{tenant_id}/discovery/v2.0/keys")
+    # Python from python.org on macOS has no root certificates until its
+    # "Install Certificates" step is run, so the key download would fail there.
+    # certifi's bundle works the same on every OS.
+    ssl_context = ssl.create_default_context(cafile=certifi.where())
+    client = jwt.PyJWKClient(
+        f"https://login.microsoftonline.com/{tenant_id}/discovery/v2.0/keys",
+        ssl_context=ssl_context,
+    )
     return lambda token: client.get_signing_key_from_jwt(token).key
 
 
