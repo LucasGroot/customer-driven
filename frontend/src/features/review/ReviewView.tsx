@@ -66,7 +66,7 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
 
           {alone.length > 0 ? (
             <details className={styles.alone}>
-              <summary className={styles.aloneSummary}>Enkeltspørsmål · {alone.length}</summary>
+              <summary className={styles.aloneSummary}>Enkeltstående henvendelser · {alone.length}</summary>
               <p className={styles.note}>
                 Henvendelser som ikke ligner noen av de andre. De haster mindre enn gruppene, der
                 flere spør om det samme.

@@ -82,7 +82,7 @@ export function RoutineDetailView({
         </div>
       </Card>
 
-      <Card title="Spørsmål knyttet til rutinen">
+      <Card title="Henvendelser knyttet til rutinen">
         {questionsLowestScoreFirst.map(({ question, byHand }) => (
           <div key={question.id} className={styles.question}>
             <div className={styles.questionText}>
@@ -125,7 +125,7 @@ export function RoutineDetailView({
 
         <div className={styles.assignment}>
           <SelectField
-            label="Dokumenteier"
+            label="Rutineeier"
             layout="stacked"
             value={review.ownerOf(routine.code)}
             options={documentOwners.map((candidate) => ({

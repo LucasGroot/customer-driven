@@ -9,9 +9,9 @@ import type { QuestionResult } from "./searchResults";
 import styles from "./SearchTable.module.css";
 
 const COLUMNS: DataTableColumn[] = [
-  { label: "Spørsmål" },
+  { label: "Henvendelse" },
   { label: "Kategori", width: "18%" },
-  { label: "Beste dokument", width: "22%" },
+  { label: "Beste rutine", width: "22%" },
   { label: "Dekning", width: "160px" },
   { label: "Status", width: "160px" },
 ];
@@ -48,10 +48,10 @@ export function QuestionTable({ results, onOpenRoutine, onRestore }: QuestionTab
 
   return (
     <DataTable
-      caption="Spørsmål fra ServiceNow og beste treff i Kvaliteket"
+      caption="Henvendelser fra ServiceNow og beste treff i Kvaliteket"
       columns={COLUMNS}
       isEmpty={results.length === 0}
-      emptyMessage="Ingen spørsmål passer til søket."
+      emptyMessage="Ingen henvendelser passer til søket."
       minWidth={880}
     >
       {results.map((result) => {
@@ -79,7 +79,7 @@ export function QuestionTable({ results, onOpenRoutine, onRestore }: QuestionTab
                 <div className={styles.reference}>{question.reference}</div>
               </td>
               <td className={styles.soft}>{question.category}</td>
-              <td>{document?.name ?? "Ukjent dokument"}</td>
+              <td>{document?.name ?? "Ukjent rutine"}</td>
               <td>
                 <CoverageMeter coverage={question.coverage} />
               </td>

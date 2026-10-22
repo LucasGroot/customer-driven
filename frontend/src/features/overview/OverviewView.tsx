@@ -50,7 +50,7 @@ export function OverviewView({
       <div className={styles.header}>
         <PageIntro
           title="Rutiner som bør oppdateres først"
-          lead="Hver rutine er satt opp mot spørsmålene fra ServiceNow som passer best til den. Øverst ligger rutinene som får flest spørsmål, men svarer dårligst på dem."
+          lead="Hver rutine er satt opp mot henvendelsene fra ServiceNow som passer best til den. Øverst ligger rutinene som får flest henvendelser, men svarer dårligst på dem."
         />
         <Button variant="primary" onClick={onOpenSettings}>
           Kjør ny analyse
@@ -102,7 +102,7 @@ export function OverviewView({
       {hiddenCount > 0 ? (
         <p className={styles.hiddenNote}>
           {hiddenCount} {hiddenCount === 1 ? "rutine er" : "rutiner er"} skjult fordi de svarer
-          godt på spørsmålene sine, med snittscore over {hideAbovePercent} %.
+          godt på henvendelsene sine, med snittscore over {hideAbovePercent} %.
         </p>
       ) : null}
 
@@ -119,8 +119,8 @@ export function OverviewView({
       <RoutineTable rows={visible} statusOf={review.statusOf} onOpenRoutine={onOpenRoutine} />
 
       <p className={styles.footnote}>
-        Prioritet 0–100 bygger på to ting: hvor mange spørsmål som er knyttet til rutinen, og hvor
-        dårlig rutinen treffer dem. Klikk på en rutine for å se spørsmålene og regnestykket i
+        Prioritet 0–100 bygger på to ting: hvor mange henvendelser som er knyttet til rutinen, og hvor
+        dårlig rutinen treffer dem. Klikk på en rutine for å se henvendelsene og regnestykket i
         klartekst.
       </p>
     </section>

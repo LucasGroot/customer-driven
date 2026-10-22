@@ -42,15 +42,15 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
   const documentResults = searchDocuments(documents, routines, { query, sort });
 
   const tabs: { key: SearchTab; label: string }[] = [
-    { key: "questions", label: `Spørsmål · ${String(questions.length)}` },
-    { key: "documents", label: `Dokumenter · ${String(documents.length)}` },
+    { key: "questions", label: `Henvendelser · ${String(questions.length)}` },
+    { key: "documents", label: `Rutiner · ${String(documents.length)}` },
   ];
 
   return (
     <section className={styles.view}>
       <PageIntro
         title="Søk og treff"
-        lead="Se alle spørsmål og alle rutiner med tilhørende treff, også rutinene som svarer godt og derfor er skjult i den prioriterte listen. Bruk siden til å kontrollere hvor et spørsmål har havnet."
+        lead="Se alle henvendelser og alle rutiner med tilhørende treff, også rutinene som svarer godt og derfor er skjult i den prioriterte listen. Bruk siden til å kontrollere hvor en henvendelse har havnet."
       />
 
       <div className={styles.toolbar}>
@@ -68,11 +68,11 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
         </div>
         <div className={styles.search}>
           <SearchField
-            label={tab === "questions" ? "Søk i spørsmål" : "Søk i dokumenter"}
+            label={tab === "questions" ? "Søk i henvendelser" : "Søk i rutiner"}
             placeholder={
               tab === "questions"
-                ? "Søk i spørsmål, kategorier og dokumenter"
-                : "Søk på dokumentnavn eller nummer"
+                ? "Søk i henvendelser, kategorier og rutiner"
+                : "Søk på rutinenavn"
             }
             value={query}
             onChange={setQuery}
@@ -100,8 +100,8 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
 
       <p className={styles.note} aria-live="polite">
         {tab === "questions"
-          ? `Viser ${String(questionResults.length)} av ${String(questions.length)} ${snapshot.isExample ? "eksempelspørsmål. I den ekte løsningen vises alle henvendelser fra ServiceNow." : "spørsmål."}`
-          : `Viser ${String(documentResults.length)} av ${String(documents.length)} ${snapshot.isExample ? "eksempeldokumenter. I den ekte løsningen vises alle rutiner fra Kvaliteket." : "dokumenter."}`}
+          ? `Viser ${String(questionResults.length)} av ${String(questions.length)} ${snapshot.isExample ? "eksempelhenvendelser. I den ekte løsningen vises alle henvendelser fra ServiceNow." : "henvendelser."}`
+          : `Viser ${String(documentResults.length)} av ${String(documents.length)} ${snapshot.isExample ? "eksempelrutiner. I den ekte løsningen vises alle rutiner fra Kvaliteket." : "rutiner."}`}
       </p>
 
       {tab === "questions" ? (

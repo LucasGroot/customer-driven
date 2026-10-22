@@ -9,7 +9,7 @@ import { RoutineSelect } from "./RoutineSelect";
 import styles from "./ReviewTable.module.css";
 
 const COLUMNS: DataTableColumn[] = [
-  { label: "Spørsmål" },
+  { label: "Henvendelse" },
   { label: "Beste treff", width: "200px" },
   { label: "Valg", width: "290px" },
 ];
