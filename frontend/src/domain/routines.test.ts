@@ -23,9 +23,9 @@ function makeSnapshot(questions: AskedQuestion[]): AnalysisSnapshot {
     questions,
     reviewGroups: [],
     documents: [
-      { code: "A", name: "Rutine A", revisedLabel: "" },
-      { code: "B", name: "Rutine B", revisedLabel: "" },
-      { code: "C", name: "Rutine C", revisedLabel: "" },
+      { code: "A", name: "Rutine A", uploadedLabel: "" },
+      { code: "B", name: "Rutine B", uploadedLabel: "" },
+      { code: "C", name: "Rutine C", uploadedLabel: "" },
     ],
     sources: [],
   };

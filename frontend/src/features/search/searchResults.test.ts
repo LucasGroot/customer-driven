@@ -17,9 +17,9 @@ function makeQuestion(overrides: Partial<AskedQuestion> = {}): AskedQuestion {
 }
 
 const DOCUMENTS: RoutineDocument[] = [
-  { code: "KV-001", name: "Ferierutine", revisedLabel: "" },
-  { code: "KV-002", name: "Permisjonsreglement", revisedLabel: "" },
-  { code: "KV-003", name: "Unused routine", revisedLabel: "" },
+  { code: "KV-001", name: "Ferierutine", uploadedLabel: "" },
+  { code: "KV-002", name: "Permisjonsreglement", uploadedLabel: "" },
+  { code: "KV-003", name: "Unused routine", uploadedLabel: "" },
 ];
 
 const QUESTIONS: AskedQuestion[] = [

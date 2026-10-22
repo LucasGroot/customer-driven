@@ -49,9 +49,7 @@ export function RoutineDetailView({
       <div className={styles.header}>
         <div className={styles.headerText}>
           <h1 className={styles.title}>{routine.name}</h1>
-          {routine.revisedLabel === "" ? null : (
-            <p className={styles.summary}>Revidert {routine.revisedLabel}</p>
-          )}
+          <p className={styles.summary}>{routine.uploadedLabel}</p>
         </div>
         <div className={styles.scorePanel}>
           <div className={styles.scoreBlock}>

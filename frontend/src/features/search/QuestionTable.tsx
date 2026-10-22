@@ -74,6 +74,7 @@ export function QuestionTable({ results, onOpenRoutine }: QuestionTableProps) {
                   </span>
                   <span>{question.text}</span>
                 </button>
+                <div className={styles.reference}>{question.reference}</div>
               </td>
               <td className={styles.soft}>{question.category}</td>
               <td>{document?.name ?? "Ukjent dokument"}</td>
@@ -88,7 +89,6 @@ export function QuestionTable({ results, onOpenRoutine }: QuestionTableProps) {
               <tr id={detailId} className={styles.detailRow}>
                 <td colSpan={COLUMNS.length}>
                   <div className={styles.detail}>
-                    <span className={styles.meta}>Henvendelse {question.reference}</span>
                     <span>{placementReason(placement)}</span>
                     {placement.kind === "routine" ? (
                       <Button

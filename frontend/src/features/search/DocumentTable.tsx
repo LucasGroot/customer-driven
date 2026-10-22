@@ -25,9 +25,7 @@ export function DocumentTable({ results }: DocumentTableProps) {
         <tr key={document.code}>
           <td>
             <div className={styles.strong}>{document.name}</div>
-            {document.revisedLabel === "" ? null : (
-              <div className={styles.meta}>revidert {document.revisedLabel}</div>
-            )}
+            <div className={styles.meta}>{document.uploadedLabel}</div>
           </td>
           <td className={styles.count}>{questionCount} spørsmål</td>
           <td>

@@ -49,6 +49,7 @@ export function RoutineTable({ rows, statusOf, onOpenRoutine }: RoutineTableProp
             >
               {stats.routine.name}
             </button>
+            <div className={styles.uploaded}>{stats.routine.uploadedLabel}</div>
           </td>
           <td>
             <CoverageMeter coverage={stats.meanCoverage} />

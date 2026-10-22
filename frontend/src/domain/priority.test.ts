@@ -12,7 +12,7 @@ import type { PriorityWeights } from "./types";
 
 function makeStats(questionCount: number, meanCoverage: number, code = "A"): RoutineStats {
   return {
-    routine: { code, name: code, revisedLabel: "" },
+    routine: { code, name: code, uploadedLabel: "" },
     questions: [],
     questionCount,
     meanCoverage,

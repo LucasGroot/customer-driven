@@ -14,14 +14,15 @@ export interface RoutineDocument {
   /** Unique id that questions point to through `documentCode`. Never shown. */
   code: RoutineCode;
   name: string;
-  revisedLabel: string;
+  /** The day the file was uploaded, e.g. "7. okt 2026". The PDFs carry no revision date. */
+  uploadedLabel: string;
 }
 
 /** One ServiceNow question and the routine that matched it best. */
 export interface AskedQuestion {
   id: QuestionId;
   text: string;
-  /** Ticket number and date, e.g. "INC0412884 · 2. sep". */
+  /** Ticket number and the day it was uploaded, e.g. "INC0412884 · 2. sep 2026". The export has no creation date. */
   reference: string;
   /** The service the ticket was filed under, e.g. "Sykefravær". */
   category: string;
