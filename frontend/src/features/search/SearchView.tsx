@@ -105,7 +105,11 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
       </p>
 
       {tab === "questions" ? (
-        <QuestionTable results={questionResults} onOpenRoutine={onOpenRoutine} />
+        <QuestionTable
+          results={questionResults}
+          onOpenRoutine={onOpenRoutine}
+          onRestore={review.undoDecision}
+        />
       ) : (
         <DocumentTable results={documentResults} />
       )}

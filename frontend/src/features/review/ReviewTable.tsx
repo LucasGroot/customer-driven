@@ -79,7 +79,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
                   review.undoDecision(question.id);
                 }}
               >
-                Angre
+                {placement.kind === "discarded" ? "Gjenopprett" : "Angre"}
               </Button>
             </div>
           </div>

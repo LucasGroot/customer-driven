@@ -27,3 +27,11 @@
   font-weight: 500;
   margin-bottom: 12px;
 }
+
+.restore {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}

@@ -125,3 +125,21 @@ describe("mostCommonBestMatch", () => {
     expect(mostCommonBestMatch([])).toBeUndefined();
   });
 });
+
+describe("a restored question", () => {
+  const questions = [
+    makeQuestion({ id: "a", groupId: "r0" }),
+    makeQuestion({ id: "b", groupId: "r0" }),
+  ];
+  const groups = [{ id: "r0", headingQuestionId: "a" }];
+
+  it("comes back to its group once the decision is undone", () => {
+    const discarded = { b: { kind: "discarded" } } as const;
+
+    const before = groupPendingItems(reviewItems(questions, decisionsFrom(discarded)), groups);
+    const after = groupPendingItems(reviewItems(questions, decisionsFrom({})), groups);
+
+    expect(before.groups[0]?.items.map((item) => item.question.id)).toEqual(["a"]);
+    expect(after.groups[0]?.items.map((item) => item.question.id)).toEqual(["a", "b"]);
+  });
+});

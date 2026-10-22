@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../components/Button";
 import { FilterPill } from "../../components/FilterPill";
 import { PageIntro } from "../../components/PageIntro";
 import type { AnalysisSnapshot } from "../../domain/types";
@@ -79,12 +80,29 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
           ) : null}
         </>
       ) : (
-        <ReviewTable
-          items={visible}
-          routines={routinesByName}
-          review={review}
-          emptyMessage={EMPTY_MESSAGE[filter]}
-        />
+        <>
+          {filter === "discarded" && visible.length > 0 ? (
+            <div className={styles.restore}>
+              <p className={styles.note}>
+                Gjenopprett en henvendelse for å legge den tilbake under «Venter», i sin gruppe.
+              </p>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  review.undoDecisions(visible.map((item) => item.question.id));
+                }}
+              >
+                Gjenopprett alle
+              </Button>
+            </div>
+          ) : null}
+          <ReviewTable
+            items={visible}
+            routines={routinesByName}
+            review={review}
+            emptyMessage={EMPTY_MESSAGE[filter]}
+          />
+        </>
       )}
     </section>
   );

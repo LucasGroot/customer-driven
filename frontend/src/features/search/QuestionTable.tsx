@@ -3,7 +3,7 @@ import { Button } from "../../components/Button";
 import { CoverageMeter } from "../../components/CoverageMeter";
 import { DataTable, type DataTableColumn } from "../../components/DataTable";
 import type { Placement } from "../../domain/routines";
-import type { RoutineCode } from "../../domain/types";
+import type { QuestionId, RoutineCode } from "../../domain/types";
 import { PlacementBadge } from "./PlacementBadge";
 import type { QuestionResult } from "./searchResults";
 import styles from "./SearchTable.module.css";
@@ -19,6 +19,7 @@ const COLUMNS: DataTableColumn[] = [
 interface QuestionTableProps {
   results: QuestionResult[];
   onOpenRoutine: (routineCode: RoutineCode) => void;
+  onRestore: (questionId: QuestionId) => void;
 }
 
 /** What happened to a question, in a sentence. */
@@ -34,7 +35,7 @@ function placementReason(placement: Placement): string {
   return "Forkastet under gjennomgang.";
 }
 
-export function QuestionTable({ results, onOpenRoutine }: QuestionTableProps) {
+export function QuestionTable({ results, onOpenRoutine, onRestore }: QuestionTableProps) {
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set());
 
   const toggle = (id: string) => {
@@ -98,6 +99,16 @@ export function QuestionTable({ results, onOpenRoutine }: QuestionTableProps) {
                         }}
                       >
                         Åpne rutinen
+                      </Button>
+                    ) : null}
+                    {placement.kind === "discarded" ? (
+                      <Button
+                        variant="link"
+                        onClick={() => {
+                          onRestore(question.id);
+                        }}
+                      >
+                        Gjenopprett
                       </Button>
                     ) : null}
                   </div>

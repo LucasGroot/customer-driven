@@ -22,6 +22,7 @@ export interface RoutineReview {
   mapTo: (questionId: QuestionId, routineCode: RoutineCode) => void;
   mapManyTo: (questionIds: QuestionId[], routineCode: RoutineCode) => void;
   undoDecision: (questionId: QuestionId) => void;
+  undoDecisions: (questionIds: QuestionId[]) => void;
 }
 
 export function useRoutineReview(): RoutineReview {
@@ -76,12 +77,19 @@ export function useRoutineReview(): RoutineReview {
     [mapManyTo],
   );
 
-  const undoDecision = useCallback((questionId: QuestionId) => {
+  const undoDecisions = useCallback((questionIds: QuestionId[]) => {
     setDecisions((current) =>
-      Object.fromEntries(Object.entries(current).filter(([id]) => id !== questionId)),
+      Object.fromEntries(Object.entries(current).filter(([id]) => !questionIds.includes(id))),
     );
     setSavedNote(formatSavedAt(new Date()));
   }, []);
+
+  const undoDecision = useCallback(
+    (questionId: QuestionId) => {
+      undoDecisions([questionId]);
+    },
+    [undoDecisions],
+  );
 
   /** A routine nobody has touched yet is new. */
   const statusOf = useCallback(
@@ -111,5 +119,6 @@ export function useRoutineReview(): RoutineReview {
     mapTo,
     mapManyTo,
     undoDecision,
+    undoDecisions,
   };
 }
