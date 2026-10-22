@@ -5,6 +5,7 @@ gitignored like the other processed data. Only counts are printed here.
 """
 
 import json
+import os
 from datetime import date
 from pathlib import Path
 
@@ -44,7 +45,11 @@ def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
         scores,
         last_run=date.today(),
         questions_uploaded=modified_date(questions_path),
-        routines_uploaded=modified_date(routines_path),
+        routines_uploaded={
+            filename: modified_date(Path(routines_path) / filename)
+            for filename in os.listdir(routines_path)
+            if filename.endswith(".pdf")
+        },
         review_groups=group_review_questions(review_ids, review_embeddings),
     )
 

@@ -10,7 +10,12 @@ import numpy as np
 import pandas as pd
 
 from backend.snapshot import build_snapshot as snapshot_builder
-from backend.snapshot.build_snapshot import build_snapshot, format_norwegian_date, split_routine_filename
+from backend.snapshot.build_snapshot import (
+    build_snapshot,
+    format_norwegian_date,
+    format_short_norwegian_date,
+    split_routine_filename,
+)
 from backend.snapshot.models import AnalysisSnapshot, snapshot_to_json_dict
 from backend.snapshot.router import SAMPLE_SNAPSHOT_PATH
 
@@ -29,6 +34,10 @@ def test_filename_without_a_code_is_used_as_both_code_and_name():
 
 def test_date_is_written_in_norwegian():
     assert format_norwegian_date(date(2026, 9, 3)) == "3. september 2026"
+
+
+def test_the_short_date_uses_the_short_month_name():
+    assert format_short_norwegian_date(date(2026, 10, 20)) == "20. okt 2026"
 
 
 QUESTION_IDS = [f"INC{number}" for number in range(1, 11)]
@@ -51,13 +60,20 @@ SCORES = pd.DataFrame(
 )
 
 
+ROUTINES_UPLOADED = {
+    "1000-1-Lønn.pdf": date(2026, 9, 1),
+    "2000-1-Vernerunde.pdf": date(2026, 9, 3),
+    "3000-1-Tom.pdf": date(2026, 9, 2),
+}
+
+
 def make_snapshot():
     return build_snapshot(
         QUESTIONS,
         SCORES,
         last_run=date(2026, 10, 19),
         questions_uploaded=date(2026, 9, 12),
-        routines_uploaded=date(2026, 9, 1),
+        routines_uploaded=ROUTINES_UPLOADED,
     )
 
 
@@ -86,6 +102,13 @@ def test_a_best_score_exactly_on_the_threshold_is_not_sent_to_review(monkeypatch
     assert flagged == ["INC2"]
 
 
+def test_every_question_shows_its_number_and_the_day_it_was_uploaded():
+    questions = make_snapshot().questions
+
+    assert questions[0].reference == "INC1 · 12. sep 2026"
+    assert {question.reference.split(" · ")[1] for question in questions} == {"12. sep 2026"}
+
+
 def test_a_missing_category_becomes_unknown():
     assert make_snapshot().questions[-1].category == "Ukjent"
 
@@ -98,6 +121,13 @@ def test_empty_routines_are_left_out():
         ("2000-1", "Vernerunde"),
     ]
     assert snapshot.sources[1].count == 2
+
+
+def test_every_routine_shows_the_day_it_was_uploaded():
+    snapshot = make_snapshot()
+
+    assert [document.uploaded_label for document in snapshot.documents] == ["1. sep 2026", "3. sep 2026"]
+    assert snapshot.sources[1].uploaded_label == "3. september 2026"
 
 
 def test_the_snapshot_says_it_is_real_data_and_dates_the_run():
@@ -129,7 +159,7 @@ def test_review_groups_give_their_questions_a_group_and_a_heading():
         SCORES,
         last_run=date(2026, 10, 19),
         questions_uploaded=date(2026, 9, 12),
-        routines_uploaded=date(2026, 9, 1),
+        routines_uploaded=ROUTINES_UPLOADED,
         review_groups=[["INC3", "INC2"]],
     )
 
@@ -145,7 +175,7 @@ def test_json_leaves_out_the_group_of_questions_in_no_group():
             SCORES,
             last_run=date(2026, 10, 19),
             questions_uploaded=date(2026, 9, 12),
-            routines_uploaded=date(2026, 9, 1),
+            routines_uploaded=ROUTINES_UPLOADED,
             review_groups=[["INC3", "INC2"]],
         )
     )

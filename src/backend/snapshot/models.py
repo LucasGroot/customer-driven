@@ -14,7 +14,7 @@ class CamelCaseModel(BaseModel):
 class RoutineDocument(CamelCaseModel):
     code: str
     name: str
-    revised_label: str
+    uploaded_label: str
 
 
 class AskedQuestion(CamelCaseModel):

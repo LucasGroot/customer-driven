@@ -20,6 +20,7 @@ NORWEGIAN_MONTHS = [
     "januar", "februar", "mars", "april", "mai", "juni",
     "juli", "august", "september", "oktober", "november", "desember",
 ]
+NORWEGIAN_MONTHS_SHORT = ["jan", "feb", "mar", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "des"]
 
 # Cosine scores between HR texts never get near 0: with the current embedding model
 # every question lands between 0.4 and 0.8, so a threshold like 5 % would send nothing
@@ -55,6 +56,14 @@ def format_norwegian_date(day):
     return f"{day.day}. {NORWEGIAN_MONTHS[day.month - 1]} {day.year}"
 
 
+def format_short_norwegian_date(day):
+    """
+    Writes a date the short way a ticket is shown, e.g. "3. sep 2026".
+    """
+
+    return f"{day.day}. {NORWEGIAN_MONTHS_SHORT[day.month - 1]} {day.year}"
+
+
 def one_line(text):
     """
     Puts a question on one line and cuts it short, so a few very long tickets
@@ -80,7 +89,8 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
     Builds the snapshot for one analysis run.
     questions is indexed by question ID with the columns Tjenestetilbud and text,
     and scores is the questions x routines table with the same rows in the same
-    order. The three dates are datetime.date values.
+    order. last_run and questions_uploaded are datetime.date values, and
+    routines_uploaded maps the PDF filename of each routine to its date.
     review_groups is a list of groups of question IDs from the questions that need
     review, each with the question that stands for the group first. Questions in
     no group stand alone.
@@ -91,6 +101,8 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
     best_filename = scores.idxmax(axis=1)
     needs_review = best_score < MIN_RELEVANCE
     categories = questions[SERVICE_COLUMN].fillna(UNKNOWN_CATEGORY)
+    # The export has no creation date for a ticket, so every ticket gets the day it was uploaded
+    uploaded = format_short_norwegian_date(questions_uploaded)
     groups = [
         ReviewGroup(id=f"r{number}", heading_question_id=str(member_ids[0]))
         for number, member_ids in enumerate(review_groups)
@@ -105,7 +117,7 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
         AskedQuestion(
             id=str(question_id),
             text=one_line(text),
-            reference=str(question_id),
+            reference=f"{question_id} · {uploaded}",
             category=category,
             document_code=split_routine_filename(filename)[0],
             coverage=round(float(coverage), 3),
@@ -116,10 +128,11 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
             questions.index, questions["text"], categories, best_filename, best_score, needs_review
         )
     ]
-    documents = [
-        RoutineDocument(code=code, name=name, revised_label="")
-        for code, name in map(split_routine_filename, scores.columns)
-    ]
+    documents = []
+    for filename in scores.columns:
+        code, name = split_routine_filename(filename)
+        uploaded_label = format_short_norwegian_date(routines_uploaded[filename])
+        documents.append(RoutineDocument(code=code, name=name, uploaded_label=uploaded_label))
 
     return AnalysisSnapshot(
         is_example=False,
@@ -139,7 +152,7 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
                 name="Kvaliteket-rutiner",
                 count=len(documents),
                 unit="PDF-er",
-                uploaded_label=format_norwegian_date(routines_uploaded),
+                uploaded_label=format_norwegian_date(max(routines_uploaded[filename] for filename in scores.columns)),
             ),
         ],
     )
