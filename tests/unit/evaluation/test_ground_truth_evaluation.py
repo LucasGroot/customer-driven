@@ -67,3 +67,25 @@ def test_evaluate(ground_truth, scores):
     assert metrics["no_routine_questions"] == 2
     # INC006 only refers to a routine that is not among the PDFs
     assert metrics["skipped_missing_routine"] == 1
+
+
+@pytest.mark.parametrize("hit_metric, cutoff", [("hit_at_5", 5), ("hit_at_10", 10)])
+def test_hit_at_n_only_counts_routines_ranked_within_the_cutoff(hit_metric, cutoff):
+    routine_names = [f"{1000 + number}-1 Rutine.pdf" for number in range(12)]
+    scores = pd.DataFrame(
+        [list(range(12, 0, -1))] * 2,
+        index=["INC001", "INC002"],
+        columns=routine_names,
+    )
+    # The routine at index n has rank n + 1, so one question's routine is ranked at the cutoff and the other's just below it
+    ground_truth = pd.DataFrame(
+        {
+            "has_routine": [True, True],
+            "relevant_routine_ids": [{f"{1000 + cutoff - 1}-1"}, {f"{1000 + cutoff}-1"}],
+        },
+        index=["INC001", "INC002"],
+    )
+
+    metrics = evaluate(scores, ground_truth)
+
+    assert metrics[hit_metric] == pytest.approx(0.5)

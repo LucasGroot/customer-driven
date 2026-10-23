@@ -25,6 +25,8 @@ QUESTION_ID_COLUMN = "Nummer"
 SERVICE_COLUMN = "Tjenestetilbud"
 TEXT_COLUMNS = ["Kort beskrivelse", "Beskrivelse"]
 
+SIMILARITY_MODEL_NAME = "NbAiLab/borealis-embed-212m"
+
 
 def tokenize(text):
     """

@@ -8,21 +8,32 @@ export interface DataTableColumn {
   align?: "left" | "right";
 }
 
+const DEFAULT_MIN_WIDTH = 560;
+
 interface DataTableProps {
   /** Read by screen readers only. */
   caption: string;
   columns: DataTableColumn[];
   emptyMessage: string;
   isEmpty: boolean;
+  /** Below this width in pixels the table scrolls sideways instead of squeezing its columns. */
+  minWidth?: number;
   /** The body rows. Cells pick up the shared padding and borders. */
   children: ReactNode;
 }
 
 /** The bordered panel, header row and empty state every table in the dashboard shares. */
-export function DataTable({ caption, columns, emptyMessage, isEmpty, children }: DataTableProps) {
+export function DataTable({
+  caption,
+  columns,
+  emptyMessage,
+  isEmpty,
+  minWidth = DEFAULT_MIN_WIDTH,
+  children,
+}: DataTableProps) {
   return (
     <div className={styles.panel}>
-      <table className={styles.table}>
+      <table className={styles.table} style={{ minWidth }}>
         <caption className="visuallyHidden">{caption}</caption>
         <colgroup>
           {columns.map((column) => (

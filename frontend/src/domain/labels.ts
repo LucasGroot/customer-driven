@@ -10,7 +10,7 @@ import {
   type CoverageBand,
   type PriorityBand,
 } from "./priority";
-import type { GapStatus } from "./types";
+import type { RoutineStatus } from "./types";
 
 export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {
   high: "Høy prioritet",
@@ -36,13 +36,15 @@ export const COVERAGE_BAND_RANGE_LABEL: Record<CoverageBand, string> = {
 
 export const COVERAGE_BANDS: CoverageBand[] = ["weak", "partial", "good"];
 
-export const STATUS_LABEL: Record<GapStatus, string> = {
+export const STATUS_LABEL: Record<RoutineStatus, string> = {
   new: "Ny",
   updating: "Under oppdatering",
   done: "Behandlet",
 };
 
-export const STATUS_OPTIONS: GapStatus[] = ["new", "updating", "done"];
+export const UNASSIGNED_OWNER = "Ikke tildelt";
+
+export const STATUS_OPTIONS: RoutineStatus[] = ["new", "updating", "done"];
 
 export function formatPercent(fraction: number): string {
   return `${String(Math.round(fraction * 100))} %`;
@@ -50,14 +52,6 @@ export function formatPercent(fraction: number): string {
 
 export function formatCoverage(coverage: number, band: CoverageBand): string {
   return `${COVERAGE_BAND_LABEL[band]} · ${formatPercent(coverage)}`;
-}
-
-/** Plain wording for a trend, used where the priority score is explained. */
-export function describeTrend(trendPercent: number): string {
-  if (trendPercent > 0) return `Økt ${String(trendPercent)} prosent siden forrige måned`;
-  if (trendPercent < 0)
-    return `Falt ${String(Math.abs(trendPercent))} prosent siden forrige måned`;
-  return "Uendret fra forrige måned";
 }
 
 export function formatSavedAt(date: Date): string {

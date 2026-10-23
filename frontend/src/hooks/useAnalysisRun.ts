@@ -8,9 +8,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export const RUN_STEPS = [
   "Henter henvendelser fra ServiceNow",
-  "Leser dokumenter fra Kvaliteket",
-  "Grupperer henvendelser i temaer",
-  "Sammenligner temaer mot dokumenter",
+  "Leser rutiner fra Kvaliteket",
+  "Sammenligner henvendelser mot rutiner",
+  "Finner henvendelser uten rutine",
   "Beregner prioritet",
 ] as const;
 

@@ -21,7 +21,7 @@ export function RunAnalysisView({ snapshot, run }: RunAnalysisViewProps) {
     <section className={styles.view}>
       <PageIntro
         title="Kjør analyse"
-        lead="Sammenligner henvendelsene fra ServiceNow med rutinene i Kvaliteket og grupperer dem i temaer. Resultatet havner i den prioriterte listen."
+        lead="Sammenligner henvendelsene fra ServiceNow med rutinene i Kvaliteket og knytter hver henvendelse til rutinen den passer best til. Henvendelser som ikke passer til noen rutine havner under «Til gjennomgang»."
       />
 
       <Card title="Datagrunnlag">
