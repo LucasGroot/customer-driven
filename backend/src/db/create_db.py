@@ -60,7 +60,8 @@ def create_question():
         question_title text,
         question_summary text,
         question_text text,
-        question_date date
+        question_date date,
+        question_need_review boolean default false
         );""")
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -86,7 +87,7 @@ def create_question_theme():
         cur = conn.cursor()
         try:
             cur.execute("""create table question_theme (
-        question_id varchar(10) references routine,
+        question_id varchar(10) references question,
         question_tags text,
         primary key (question_id, question_tags)
         );""")
@@ -117,6 +118,7 @@ def create_routine_answer_question():
             cur.execute("""create table routine_answer_question (
         routine_id varchar(6) references routine,
         question_id varchar(10) references question,
+        similarity double,
         primary key (routine_id, question_id)
         );""")
         except (Exception, psycopg2.DatabaseError) as error:

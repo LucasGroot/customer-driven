@@ -239,20 +239,6 @@ def select_routine_in_last_date_order():
         return []
 
 
-def select_routine_in_date_order():
-    try:
-        cur = conn.cursor()
-        try:
-            cur.execute(""" select * from routine
-            order by routine_date
-        ;""")
-            return cur.fetchall()
-        except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-            return []
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-        return []
 
 
 def select_routine_under_x(x):
@@ -309,7 +295,7 @@ def count_routine_status(status):
         try:
             cur.execute(""" select count(routine_status)
             from routine
-            where routine_status = %s;
+            where routine_status = %s
         ;""", (status,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
