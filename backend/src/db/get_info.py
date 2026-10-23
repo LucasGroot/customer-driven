@@ -33,9 +33,11 @@ def select_question(question_id):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -50,9 +52,11 @@ def select_question_on_theme(question_theme):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -66,9 +70,11 @@ def select_question_before_date(date):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -82,9 +88,11 @@ def select_question_after_date(date):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -98,9 +106,11 @@ def select_question_in_date_order():
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -114,9 +124,11 @@ def select_question_in_last_date_order():
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -136,9 +148,11 @@ def select_routine(routine_id):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -152,9 +166,11 @@ def select_routine_on_theme(routine_theme):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -168,9 +184,11 @@ def select_routine_on_status(routine_status):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -184,9 +202,11 @@ def select_routine_before_date(date):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -200,9 +220,11 @@ def select_routine_after_date(date):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -217,9 +239,11 @@ def select_routine_in_date_order():
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -233,9 +257,11 @@ def select_routine_in_last_date_order():
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -251,9 +277,11 @@ def select_routine_under_x(x):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -267,9 +295,11 @@ def select_routine_over_x(x):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -283,9 +313,11 @@ def select_routine_between_x_and_y(x, y):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
@@ -300,9 +332,11 @@ def count_routine_status(status):
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+            conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        conn.rollback()
         return []
 
 
