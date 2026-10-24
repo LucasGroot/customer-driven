@@ -6,6 +6,12 @@ openpyxl
 pytest
 rank_bm25
 scikit-learn
+fastapi
+uvicorn
+pyjwt[crypto]
+certifi
+python-dotenv
+httpx
 umap-learn
 nbstripout
 asttokens==3.0.2

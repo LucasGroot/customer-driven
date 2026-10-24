@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "customer-driven"
 version = "0.1.0"
 description = "Toolkit for text chunking and similarity analysis"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
 ]
 
