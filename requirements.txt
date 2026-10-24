@@ -12,6 +12,8 @@ pyjwt[crypto]
 certifi
 python-dotenv
 httpx
+umap-learn
+nbstripout
 asttokens==3.0.2
 cffi==2.1.1
 charset-normalizer==3.5.1
