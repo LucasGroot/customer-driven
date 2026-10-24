@@ -9,12 +9,12 @@ export type SnapshotState =
   | { status: "error" }
   | { status: "ready"; snapshot: AnalysisSnapshot };
 
-export function useSnapshot(): SnapshotState {
+export function useSnapshot(accessToken: string): SnapshotState {
   const [state, setState] = useState<SnapshotState>({ status: "loading" });
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchSnapshot(controller.signal).then(
+    fetchSnapshot(accessToken, controller.signal).then(
       (snapshot) => {
         setState({ status: "ready", snapshot });
       },
@@ -26,7 +26,7 @@ export function useSnapshot(): SnapshotState {
     return () => {
       controller.abort();
     };
-  }, []);
+  }, [accessToken]);
 
   return state;
 }

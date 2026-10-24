@@ -30,6 +30,7 @@ function SignedInApp() {
   return (
     <App
       user={currentUser.user}
+      accessToken={currentUser.accessToken}
       onSignOut={() => {
         void signOut();
       }}
