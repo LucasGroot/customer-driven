@@ -1,72 +1,49 @@
 /**
  * The shapes the dashboard works with. One analysis run produces one snapshot:
- * the clusters of ServiceNow questions that matched the Kvaliteket routines
- * poorly, plus the context needed to act on them.
+ * every ServiceNow question, the Kvaliteket routines, and which routine each
+ * question matched best. Which routine a question belongs to once HR has
+ * reviewed it, and how urgent a routine is, are worked out from these.
  */
 
-export type KnowledgeGapId = string;
+export type RoutineCode = string;
+export type QuestionId = string;
+export type GroupId = string;
 
-/** A single anonymised ServiceNow question, quoted to show how people ask. */
-export interface TicketQuestion {
-  text: string;
-  /** Ticket number and date, e.g. "INC0412884 · 2. sep". */
-  reference: string;
-}
-
-/** How well one Kvaliteket document covers a gap's questions. */
-export interface RoutineMatch {
-  name: string;
-  /** Mean cosine similarity to the cluster, 0-1. */
-  similarity: number;
-  /** Document number and revision date, e.g. "KV-014 · revidert mars 2023". */
-  reference: string;
-}
-
-/** A cluster of related questions that the routines answer poorly. */
-export interface KnowledgeGap {
-  id: KnowledgeGapId;
-  topic: string;
-  category: string;
-  ticketCount: number;
-  /** Change in ticket volume since last month, in percent. Can be negative. */
-  trendPercent: number;
-  /** Mean similarity to the best-matching document, 0-1. */
-  coverage: number;
-  summary: string;
-  nearestMatchLine: string;
-  questions: TicketQuestion[];
-  questionsNote: string;
-  routines: RoutineMatch[];
-  verdict: string;
-  documentOwner: string;
-  dueDate: string;
-  /** Staleness of the nearest document, 0-1, where 1 is most overdue for review. */
-  documentAge: number;
-  documentAgeLabel: string;
-}
-
-/** One Kvaliteket document, as listed on the search page. */
+/** One Kvaliteket routine, as listed on the search page. */
 export interface RoutineDocument {
-  /** Document number, e.g. "KV-014". */
-  code: string;
+  /** Unique id that questions point to through `documentCode`. Never shown. */
+  code: RoutineCode;
   name: string;
-  revisedLabel: string;
+  /** The day the file was uploaded, e.g. "7. okt 2026". The PDFs carry no revision date. */
+  uploadedLabel: string;
+}
+
+/** One ServiceNow question and the routine that matched it best. */
+export interface AskedQuestion {
+  id: QuestionId;
+  text: string;
+  /** Ticket number and the day it was uploaded, e.g. "INC0412884 · 2. sep 2026". The export has no creation date. */
+  reference: string;
+  /** The service the ticket was filed under, e.g. "Sykefravær". */
+  category: string;
+  /** The routine with the highest similarity. */
+  documentCode: RoutineCode;
+  /** Similarity to the best-matching routine, 0-1. */
+  coverage: number;
+  /** No routine matched well enough, so HR decides where the question belongs. */
+  needsReview: boolean;
+  /** The group of similar questions it belongs to. Left out for a question that stands alone. */
+  groupId?: GroupId;
 }
 
 /**
- * One ServiceNow question and the document that matched it best. Questions in
- * a gap's cluster carry its id; questions the routines already answer do not.
+ * Questions that need review and are about the same thing. Several people wondering about
+ * the same thing, with no routine that answers it well enough, is what HR wants to find.
  */
-export interface AskedQuestion {
-  id: string;
-  text: string;
-  /** Ticket number and date, e.g. "INC0412884 · 2. sep". */
-  reference: string;
-  topic: string;
-  gapId?: KnowledgeGapId;
-  documentCode: string;
-  /** Similarity to the best-matching document, 0-1. */
-  coverage: number;
+export interface ReviewGroup {
+  id: GroupId;
+  /** The question closest to the middle of the group, which stands for it. */
+  headingQuestionId: QuestionId;
 }
 
 export interface DataSource {
@@ -79,26 +56,26 @@ export interface DataSource {
 
 /** Everything one analysis run produced. */
 export interface AnalysisSnapshot {
-  gaps: KnowledgeGap[];
+  /** True when the data is invented sample data and not a real analysis run. */
+  isExample: boolean;
   documentOwners: string[];
-  totalTickets: number;
-  totalRoutines: number;
-  /** Tickets that fell outside every cluster, still counted in the totals. */
-  ticketsOutsideClusters: number;
-  coverageOutsideClusters: number;
   lastRunLabel: string;
   questions: AskedQuestion[];
+  reviewGroups: ReviewGroup[];
   documents: RoutineDocument[];
   sources: DataSource[];
 }
 
-/** How much each factor counts towards a gap's priority score. */
+/** How much each factor counts towards a routine's priority score. */
 export interface PriorityWeights {
   volume: number;
   coverage: number;
-  trend: number;
-  age: number;
 }
 
-/** Where a gap is in HR's work: untouched, being worked on, or dealt with. */
-export type GapStatus = "new" | "updating" | "done";
+/** Where a routine is in HR's work: untouched, being worked on, or dealt with. */
+export type RoutineStatus = "new" | "updating" | "done";
+
+/** What HR decided about a question the analysis could not place. */
+export type ReviewDecision =
+  | { kind: "discarded" }
+  | { kind: "mapped"; routineCode: RoutineCode };

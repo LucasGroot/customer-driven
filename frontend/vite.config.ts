@@ -16,7 +16,7 @@ import react from "@vitejs/plugin-react";
  *   Strict-Transport-Security: max-age=31536000; includeSubDomains
  *
  * style-src needs 'unsafe-inline' because the coverage and weighting meters set
- * their width through an inline style attribute. If the backend ever lands on a
+ * their width through an inline style attribute. If the src ever lands on a
  * different origin, that origin has to be added to connect-src.
  */
 const securityHeaders = {
@@ -28,7 +28,12 @@ const securityHeaders = {
 
 export default defineConfig({
   plugins: [react()],
-  server: { headers: securityHeaders },
+  server: {
+    headers: securityHeaders,
+    // The browser only ever talks to this server; /api goes on to the backend,
+    // so connect-src 'self' in the CSP stays enough.
+    proxy: { "/api": "http://localhost:8000" },
+  },
   preview: { headers: securityHeaders },
   build: { sourcemap: false },
 });

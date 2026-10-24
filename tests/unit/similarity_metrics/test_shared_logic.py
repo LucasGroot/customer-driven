@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from backend.ai.similarity_metrics.shared_logic import Corpus, extract_questions, top_k_per_routine
+from src.ai.similarity_metrics.shared_logic import Corpus, extract_questions, top_k_per_routine
 
 
 def write_questions(path, rows):

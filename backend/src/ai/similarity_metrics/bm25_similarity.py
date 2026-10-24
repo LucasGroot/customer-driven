@@ -1,7 +1,7 @@
 import numpy as np
 from rank_bm25 import BM25Okapi
 
-from backend.ai.similarity_metrics.shared_logic import _check_k, top_k_per_routine, tokenize
+from src.ai.similarity_metrics.shared_logic import _check_k, top_k_per_routine, tokenize
 
 def bm25_similarity(corpus, k=3):
     """

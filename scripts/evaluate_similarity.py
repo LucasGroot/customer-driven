@@ -5,17 +5,17 @@ one row of metrics per method, so methods and models can be compared.
 
 import pandas as pd
 
-from backend.ai.evaluation.ground_truth_evaluation import (
+from src.ai.evaluation.ground_truth_evaluation import (
     evaluate,
     load_ground_truth,
     missing_routine_ids,
     routine_id_from_filename,
 )
-from backend.ai.similarity_metrics.shared_logic import load_corpus
-from backend.ai.similarity_metrics.bm25_similarity import bm25_similarity
-from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
-from backend.ai.similarity_metrics.cosine_similarity import cosine_similarity
-from backend.ai.similarity_metrics.euclidean_similarity import euclidean_similarity
+from src.ai.similarity_metrics.shared_logic import load_corpus
+from src.ai.similarity_metrics.bm25_similarity import bm25_similarity
+from src.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
+from src.ai.similarity_metrics.cosine_similarity import cosine_similarity
+from src.ai.similarity_metrics.euclidean_similarity import euclidean_similarity
 
 
 METHODS = {
