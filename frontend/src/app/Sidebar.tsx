@@ -1,5 +1,7 @@
 import { NAVIGATION, type ViewName } from "./views";
 import styles from "./Sidebar.module.css";
+import type { CurrentUser } from "../auth/currentUser";
+import { Button } from "../components/Button";
 import { classNames } from "../components/classNames";
 
 interface SidebarProps {
@@ -10,7 +12,9 @@ interface SidebarProps {
   isExample: boolean;
   questionCount: number;
   documentCount: number;
+  user: CurrentUser;
   onNavigate: (view: ViewName) => void;
+  onSignOut: () => void;
 }
 
 function navigationBadge(view: ViewName, routineCount: number, reviewCount: number): string {
@@ -27,7 +31,9 @@ export function Sidebar({
   isExample,
   questionCount,
   documentCount,
+  user,
   onNavigate,
+  onSignOut,
 }: SidebarProps) {
   return (
     <aside className={styles.sidebar}>
@@ -72,6 +78,22 @@ export function Sidebar({
             Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
           </p>
         ) : null}
+        <p className={styles.footerNote}>
+          Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
+        </p>
+
+        <div className={styles.footerSection}>
+          <div className={styles.footerLabel}>Innlogget</div>
+          <div className={styles.footerValue} title={user.email}>
+            {user.name}
+          </div>
+          {user.role === "admin" ? (
+            <div className={styles.footerNote}>Administrator</div>
+          ) : null}
+          <Button variant="link" onClick={onSignOut}>
+            Logg ut
+          </Button>
+        </div>
       </div>
     </aside>
   );

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
+import type { CurrentUser } from "../auth/currentUser";
+import { GapDetailView } from "../features/detail/GapDetailView";
+import type { GapFilter } from "../features/overview/gapFilters";
 import { OverviewView } from "../features/overview/OverviewView";
 import { ReviewView } from "../features/review/ReviewView";
 import { RunAnalysisView } from "../features/run/RunAnalysisView";
@@ -17,7 +20,9 @@ import { Sidebar } from "./Sidebar";
 import type { ViewName } from "./views";
 import styles from "./App.module.css";
 
+// Arlinda !
 export function App() {
+  // to fix : two App function !
   const state = useSnapshot();
 
   if (state.status === "loading") {
@@ -38,6 +43,18 @@ interface DashboardProps {
 }
 
 function Dashboard({ snapshot }: DashboardProps) {
+// Until the backend serves an analysis, the dashboard runs on the mock
+// snapshot; connecting it means replacing this one import with a fetch.
+const snapshot = MOCK_SNAPSHOT;
+
+  
+// Katharina
+interface AppProps {
+  user: CurrentUser;
+  onSignOut: () => void;
+}
+
+export function App({ user, onSignOut }: AppProps) {
   const [view, setView] = useState<ViewName>("list");
   // The detail page can be opened from the list or from search; back returns there.
   const [returnView, setReturnView] = useState<ViewName>("list");
@@ -70,7 +87,11 @@ function Dashboard({ snapshot }: DashboardProps) {
         isExample={snapshot.isExample}
         questionCount={snapshot.questions.length}
         documentCount={snapshot.documents.length}
+        ticketCount={snapshot.totalTickets}
+        routineCount={snapshot.totalRoutines}
+        user={user}
         onNavigate={setView}
+        onSignOut={onSignOut}
       />
 
       <main className={styles.main}>

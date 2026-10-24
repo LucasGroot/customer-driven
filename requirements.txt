@@ -9,6 +9,9 @@ scikit-learn
 fastapi
 uvicorn
 pydantic
+pyjwt[crypto]
+certifi
+python-dotenv
 httpx
 umap-learn
 nbstripout

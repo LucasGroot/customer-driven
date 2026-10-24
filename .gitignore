@@ -14,4 +14,11 @@ data/processed/*.json
 # ignoring dev environment
 /venv
 /env
-*env
+node_modules/
+dist/
+*.tsbuildinfo
+
+# local settings and secrets; .env.example is the committed template
+.env
+.env.*
+!.env.example
