@@ -86,7 +86,7 @@ def create_question_theme():
         cur = conn.cursor()
         try:
             cur.execute("""create table question_theme (
-        question_id varchar(10) references routine,
+        question_id varchar(10) references question,
         question_tags text,
         primary key (question_id, question_tags)
         );""")
