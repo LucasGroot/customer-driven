@@ -4,16 +4,18 @@
  * tested without rendering anything.
  */
 
-import type { AskedQuestion, KnowledgeGapId, RoutineDocument } from "../../domain/types";
+import { placementOf, type DecisionOf, type Placement, type RoutineStats } from "../../domain/routines";
+import type { AskedQuestion, RoutineDocument } from "../../domain/types";
 
 export type SearchTab = "questions" | "documents";
-export type ListVisibility = "all" | "listed" | "hidden";
+export type PlacementFilter = "all" | Placement["kind"];
 export type SortOrder = "coverage-asc" | "coverage-desc" | "alphabetical";
 
-export const VISIBILITY_FILTERS: { key: ListVisibility; label: string }[] = [
+export const PLACEMENT_FILTERS: { key: PlacementFilter; label: string }[] = [
   { key: "all", label: "Alle" },
-  { key: "listed", label: "Vises i listen" },
-  { key: "hidden", label: "Skjult (dekket)" },
+  { key: "routine", label: "Knyttet til rutine" },
+  { key: "pending", label: "Til gjennomgang" },
+  { key: "discarded", label: "Forkastet" },
 ];
 
 export const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
@@ -41,45 +43,40 @@ function compareCoverage(a: number | null, b: number | null, sort: SortOrder): n
 
 export interface QuestionResult {
   question: AskedQuestion;
+  /** The routine that matched the question best, which is not always where it ends up. */
   document: RoutineDocument | undefined;
-  listed: boolean;
+  placement: Placement;
 }
 
 interface QuestionSearch {
   query: string;
-  visibility: ListVisibility;
+  filter: PlacementFilter;
   sort: SortOrder;
-  listed: Set<KnowledgeGapId>;
+  decisionOf: DecisionOf;
 }
 
 export function searchQuestions(
   questions: AskedQuestion[],
   documents: RoutineDocument[],
-  { query, visibility, sort, listed }: QuestionSearch,
+  { query, filter, sort, decisionOf }: QuestionSearch,
 ): QuestionResult[] {
   const documentByCode = new Map(documents.map((document) => [document.code, document]));
   return questions
     .map((question) => ({
       question,
       document: documentByCode.get(question.documentCode),
-      listed: question.gapId !== undefined && listed.has(question.gapId),
+      placement: placementOf(question, decisionOf(question.id)),
     }))
     .filter((result) => {
-      if (visibility === "listed" && !result.listed) return false;
-      if (visibility === "hidden" && result.listed) return false;
+      if (filter !== "all" && result.placement.kind !== filter) return false;
       return matchesQuery(
-        [
-          result.question.text,
-          result.question.topic,
-          result.question.documentCode,
-          result.document?.name ?? "",
-        ],
+        [result.question.text, result.question.category, result.document?.name ?? ""],
         query,
       );
     })
     .sort((a, b) =>
       sort === "alphabetical"
-        ? a.question.topic.localeCompare(b.question.topic, "nb-NO") ||
+        ? a.question.category.localeCompare(b.question.category, "nb-NO") ||
           a.question.text.localeCompare(b.question.text, "nb-NO")
         : compareCoverage(a.question.coverage, b.question.coverage, sort),
     );
@@ -88,7 +85,7 @@ export function searchQuestions(
 export interface DocumentResult {
   document: RoutineDocument;
   questionCount: number;
-  /** Mean coverage of the questions this document matched best, or null if none did. */
+  /** Mean coverage of the questions placed on this document, or null if there are none. */
   meanCoverage: number | null;
 }
 
@@ -99,18 +96,18 @@ interface DocumentSearch {
 
 export function searchDocuments(
   documents: RoutineDocument[],
-  questions: AskedQuestion[],
+  routines: RoutineStats[],
   { query, sort }: DocumentSearch,
 ): DocumentResult[] {
+  const statsByCode = new Map(routines.map((stats) => [stats.routine.code, stats]));
   return documents
-    .filter((document) => matchesQuery([document.name, document.code], query))
+    .filter((document) => matchesQuery([document.name], query))
     .map((document) => {
-      const matched = questions.filter((question) => question.documentCode === document.code);
-      const total = matched.reduce((sum, question) => sum + question.coverage, 0);
+      const stats = statsByCode.get(document.code);
       return {
         document,
-        questionCount: matched.length,
-        meanCoverage: matched.length === 0 ? null : total / matched.length,
+        questionCount: stats?.questionCount ?? 0,
+        meanCoverage: stats?.meanCoverage ?? null,
       };
     })
     .sort((a, b) =>

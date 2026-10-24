@@ -6,21 +6,31 @@ import { classNames } from "../components/classNames";
 
 interface SidebarProps {
   currentView: ViewName;
-  gapCount: number;
-  lastRunLabel: string;
-  ticketCount: number;
   routineCount: number;
+  reviewCount: number;
+  lastRunLabel: string;
+  isExample: boolean;
+  questionCount: number;
+  documentCount: number;
   user: CurrentUser;
   onNavigate: (view: ViewName) => void;
   onSignOut: () => void;
 }
 
+function navigationBadge(view: ViewName, routineCount: number, reviewCount: number): string {
+  if (view === "list") return String(routineCount);
+  if (view === "review") return String(reviewCount);
+  return "";
+}
+
 export function Sidebar({
   currentView,
-  gapCount,
-  lastRunLabel,
-  ticketCount,
   routineCount,
+  reviewCount,
+  lastRunLabel,
+  isExample,
+  questionCount,
+  documentCount,
   user,
   onNavigate,
   onSignOut,
@@ -47,7 +57,7 @@ export function Sidebar({
             >
               <span>{entry.label}</span>
               <span className={styles.navBadge}>
-                {entry.view === "list" ? gapCount : ""}
+                {navigationBadge(entry.view, routineCount, reviewCount)}
               </span>
             </button>
           );
@@ -59,10 +69,15 @@ export function Sidebar({
           <div className={styles.footerLabel}>Siste analyse</div>
           <div className={styles.footerValue}>{lastRunLabel}</div>
           <div className={styles.footerNote}>
-            {ticketCount} henvendelser · {routineCount} rutiner
+            {questionCount} henvendelser · {documentCount} rutiner
           </div>
         </div>
 
+        {isExample ? (
+          <p className={styles.footerNote}>
+            Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
+          </p>
+        ) : null}
         <p className={styles.footerNote}>
           Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
         </p>

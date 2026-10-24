@@ -35,6 +35,17 @@
   background: var(--color-accent-surface-hover);
 }
 
+.danger {
+  border-color: var(--color-danger-border);
+  color: var(--color-band-high);
+  padding: 8px 15px;
+  font-size: 13px;
+}
+
+.danger:hover {
+  background: var(--color-danger-surface-hover);
+}
+
 .link {
   padding: 0;
   font-size: 13px;

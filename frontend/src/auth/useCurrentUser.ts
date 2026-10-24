@@ -10,7 +10,7 @@ import { API_SCOPES } from "./msalConfig";
 
 export type CurrentUserState =
   | { status: "loading" }
-  | { status: "signedIn"; user: CurrentUser }
+  | { status: "signedIn"; user: CurrentUser; accessToken: string }
   | { status: "failed"; message: string };
 
 export function useCurrentUser(): CurrentUserState {
@@ -39,7 +39,7 @@ export function useCurrentUser(): CurrentUserState {
       }
       try {
         const user = await fetchCurrentUser(accessToken);
-        if (!cancelled) setState({ status: "signedIn", user });
+        if (!cancelled) setState({ status: "signedIn", user, accessToken });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         if (!cancelled) setState({ status: "failed", message });

@@ -35,6 +35,8 @@
 
   /* Priority bands, also reused for coverage quality and trend direction. */
   --color-band-high: #9c4221;
+  --color-danger-border: #d4a08f;
+  --color-danger-surface-hover: #fbf1ed;
   --color-band-medium: #b0762a;
   --color-band-low: #2f6b4f;
 

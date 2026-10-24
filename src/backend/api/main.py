@@ -19,6 +19,7 @@ from backend.api.auth import (
     validate_token,
 )
 from backend.api.config import Settings, load_settings
+from backend.snapshot.router import router as snapshot_router
 
 bearer = HTTPBearer(auto_error=False)
 
@@ -90,5 +91,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def admin_ping(user: Annotated[CurrentUser, Depends(require_admin)]) -> dict[str, str]:
         """Example admin-only endpoint, until the admin features exist."""
         return {"status": "ok", "admin": user.email}
+
+    # The snapshot used to be served without login by backend.snapshot.dev_app;
+    # here every snapshot route requires a valid Microsoft token.
+    app.include_router(snapshot_router, dependencies=[Depends(get_current_user)])
 
     return app

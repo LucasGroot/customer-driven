@@ -1,41 +1,44 @@
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
+import { CoverageMeter } from "../../components/CoverageMeter";
 import { FilterPill } from "../../components/FilterPill";
 import { MeterBar } from "../../components/MeterBar";
 import { SelectField } from "../../components/SelectField";
-import { COVERAGE_BAND_COLOR, PRIORITY_BAND_COLOR } from "../../components/bandColors";
-import { PRIORITY_BAND_LABEL, STATUS_LABEL, STATUS_OPTIONS, formatPercent } from "../../domain/labels";
-import { coverageBand, priorityBand, priorityScore } from "../../domain/priority";
-import type { AnalysisSnapshot, KnowledgeGap, PriorityWeights } from "../../domain/types";
-import type { GapReview } from "../../hooks/useGapReview";
+import { PRIORITY_BAND_COLOR } from "../../components/bandColors";
+import { PRIORITY_BAND_LABEL, STATUS_LABEL, STATUS_OPTIONS } from "../../domain/labels";
+import { priorityBand, priorityScore } from "../../domain/priority";
+import type { RoutineStats } from "../../domain/routines";
+import type { PriorityWeights } from "../../domain/types";
+import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { priorityFactors } from "./priorityFactors";
-import styles from "./GapDetailView.module.css";
+import styles from "./RoutineDetailView.module.css";
 import { classNames } from "../../components/classNames";
 
-interface GapDetailViewProps {
-  gap: KnowledgeGap;
-  snapshot: AnalysisSnapshot;
+interface RoutineDetailViewProps {
+  stats: RoutineStats;
+  documentOwners: string[];
   weights: PriorityWeights;
-  thresholdPercent: number;
-  review: GapReview;
+  review: RoutineReview;
   backLabel: string;
   onBack: () => void;
 }
 
-export function GapDetailView({
-  gap,
-  snapshot,
+export function RoutineDetailView({
+  stats,
+  documentOwners,
   weights,
-  thresholdPercent,
   review,
   backLabel,
   onBack,
-}: GapDetailViewProps) {
-  const score = priorityScore(gap, weights);
+}: RoutineDetailViewProps) {
+  const { routine } = stats;
+  const score = priorityScore(stats, weights);
   const band = priorityBand(score);
-  const factors = priorityFactors(gap, weights, thresholdPercent, snapshot.totalTickets);
-  const currentStatus = review.statusOf(gap.id);
-  const owner = review.ownerOf(gap.id, gap.documentOwner);
+  const factors = priorityFactors(stats, weights);
+  const currentStatus = review.statusOf(routine.code);
+  const questionsLowestScoreFirst = [...stats.questions].sort(
+    (a, b) => a.question.coverage - b.question.coverage,
+  );
 
   return (
     <section className={styles.view}>
@@ -45,9 +48,8 @@ export function GapDetailView({
 
       <div className={styles.header}>
         <div className={styles.headerText}>
-          <div className={styles.category}>{gap.category}</div>
-          <h1 className={styles.title}>{gap.topic}</h1>
-          <p className={styles.summary}>{gap.summary}</p>
+          <h1 className={styles.title}>{routine.name}</h1>
+          <p className={styles.summary}>{routine.uploadedLabel}</p>
         </div>
         <div className={styles.scorePanel}>
           <div className={styles.scoreBlock}>
@@ -59,8 +61,8 @@ export function GapDetailView({
           </div>
           <div className={styles.scoreBlock}>
             <div className={styles.scoreLabel}>Henvendelser</div>
-            <div className={styles.scoreValue}>{gap.ticketCount}</div>
-            <div className={styles.scoreNote}>siste måned</div>
+            <div className={styles.scoreValue}>{stats.questionCount}</div>
+            <div className={styles.scoreNote}>knyttet til rutinen</div>
           </div>
         </div>
       </div>
@@ -80,36 +82,32 @@ export function GapDetailView({
         </div>
       </Card>
 
-      <div className={styles.columns}>
-        <Card title="Slik spør folk">
-          {gap.questions.map((question) => (
-            <blockquote key={question.reference} className={styles.quote}>
+      <Card title="Henvendelser knyttet til rutinen">
+        {questionsLowestScoreFirst.map(({ question, byHand }) => (
+          <div key={question.id} className={styles.question}>
+            <div className={styles.questionText}>
               <p className={styles.quoteText}>{question.text}</p>
-              <cite className={styles.quoteMeta}>{question.reference}</cite>
-            </blockquote>
-          ))}
-          <p className={styles.note}>{gap.questionsNote}</p>
-        </Card>
-
-        <Card title="Nærmeste dokumenter i Kvaliteket">
-          {gap.routines.map((routine) => {
-            const color = COVERAGE_BAND_COLOR[coverageBand(routine.similarity)];
-            return (
-              <div key={routine.reference} className={styles.routine}>
-                <div className={styles.routineHead}>
-                  <span className={styles.routineName}>{routine.name}</span>
-                  <span className={styles.routinePercent} style={{ color }}>
-                    {formatPercent(routine.similarity)}
-                  </span>
-                </div>
-                <MeterBar value={routine.similarity} color={color} />
-                <div className={styles.routineMeta}>{routine.reference}</div>
+              <div className={styles.quoteMeta}>
+                {question.reference}
+                {byHand ? " · knyttet til rutinen manuelt" : ""}
               </div>
-            );
-          })}
-          <p className={styles.verdict}>{gap.verdict}</p>
-        </Card>
-      </div>
+            </div>
+            <CoverageMeter coverage={question.coverage} />
+            {byHand ? (
+              <Button
+                variant="link"
+                onClick={() => {
+                  review.undoDecision(question.id);
+                }}
+              >
+                Angre
+              </Button>
+            ) : (
+              <span />
+            )}
+          </div>
+        ))}
+      </Card>
 
       <Card title="Status">
         <div className={styles.statusOptions}>
@@ -119,7 +117,7 @@ export function GapDetailView({
               label={STATUS_LABEL[status]}
               selected={currentStatus === status}
               onSelect={() => {
-                review.setStatus(gap.id, status);
+                review.setStatus(routine.code, status);
               }}
             />
           ))}
@@ -127,21 +125,17 @@ export function GapDetailView({
 
         <div className={styles.assignment}>
           <SelectField
-            label="Dokumenteier"
+            label="Rutineeier"
             layout="stacked"
-            value={owner}
-            options={snapshot.documentOwners.map((candidate) => ({
+            value={review.ownerOf(routine.code)}
+            options={documentOwners.map((candidate) => ({
               value: candidate,
               label: candidate,
             }))}
             onChange={(candidate) => {
-              review.assignOwner(gap.id, candidate);
+              review.assignOwner(routine.code, candidate);
             }}
           />
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Frist</span>
-            <span className={styles.dueDate}>{gap.dueDate}</span>
-          </div>
           <div
             className={classNames(styles.savedNote, review.savedNote !== null && styles.saved)}
             aria-live="polite"

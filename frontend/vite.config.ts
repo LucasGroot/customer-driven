@@ -36,7 +36,7 @@ export default defineConfig({
   // The dashboard and the API share the root .env; Vite only hands the
   // VITE_-prefixed variables to the browser, so the API's settings stay out.
   envDir: "..",
-  server: { headers: securityHeaders, proxy: apiProxy },
+  server: { headers: securityHeaders, proxy: apiProxy }, // Arlinade proxy: { "/api": "http://localhost:8000" }
   preview: { headers: securityHeaders, proxy: apiProxy },
   build: { sourcemap: false },
 });

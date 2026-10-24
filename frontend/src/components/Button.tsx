@@ -3,7 +3,7 @@ import styles from "./Button.module.css";
 import { classNames } from "./classNames";
 
 interface ButtonProps {
-  variant: "primary" | "secondary" | "link";
+  variant: "primary" | "secondary" | "danger" | "link";
   onClick: () => void;
   disabled?: boolean;
   children: ReactNode;

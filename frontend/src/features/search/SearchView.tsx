@@ -3,16 +3,17 @@ import { FilterPill } from "../../components/FilterPill";
 import { PageIntro } from "../../components/PageIntro";
 import { SearchField } from "../../components/SearchField";
 import { SelectField } from "../../components/SelectField";
-import { listedGapIds } from "../../domain/priority";
-import type { AnalysisSnapshot, KnowledgeGapId } from "../../domain/types";
+import type { RoutineStats } from "../../domain/routines";
+import type { AnalysisSnapshot, RoutineCode } from "../../domain/types";
+import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { DocumentTable } from "./DocumentTable";
 import { QuestionTable } from "./QuestionTable";
 import {
+  PLACEMENT_FILTERS,
   SORT_OPTIONS,
-  VISIBILITY_FILTERS,
   searchDocuments,
   searchQuestions,
-  type ListVisibility,
+  type PlacementFilter,
   type SearchTab,
   type SortOrder,
 } from "./searchResults";
@@ -20,35 +21,36 @@ import styles from "./SearchView.module.css";
 
 interface SearchViewProps {
   snapshot: AnalysisSnapshot;
-  hideAbovePercent: number;
-  onOpenGap: (gapId: KnowledgeGapId) => void;
+  routines: RoutineStats[];
+  review: RoutineReview;
+  onOpenRoutine: (routineCode: RoutineCode) => void;
 }
 
-export function SearchView({ snapshot, hideAbovePercent, onOpenGap }: SearchViewProps) {
+export function SearchView({ snapshot, routines, review, onOpenRoutine }: SearchViewProps) {
   const [tab, setTab] = useState<SearchTab>("questions");
   const [query, setQuery] = useState("");
-  const [visibility, setVisibility] = useState<ListVisibility>("all");
+  const [filter, setFilter] = useState<PlacementFilter>("all");
   const [sort, setSort] = useState<SortOrder>("coverage-asc");
 
   const { questions, documents } = snapshot;
   const questionResults = searchQuestions(questions, documents, {
     query,
-    visibility,
+    filter,
     sort,
-    listed: listedGapIds(snapshot.gaps, hideAbovePercent),
+    decisionOf: review.decisionOf,
   });
-  const documentResults = searchDocuments(documents, questions, { query, sort });
+  const documentResults = searchDocuments(documents, routines, { query, sort });
 
   const tabs: { key: SearchTab; label: string }[] = [
-    { key: "questions", label: `Spørsmål · ${String(questions.length)}` },
-    { key: "documents", label: `Dokumenter · ${String(documents.length)}` },
+    { key: "questions", label: `Henvendelser · ${String(questions.length)}` },
+    { key: "documents", label: `Rutiner · ${String(documents.length)}` },
   ];
 
   return (
     <section className={styles.view}>
       <PageIntro
         title="Søk og treff"
-        lead="Se alle spørsmål og alle rutiner med tilhørende treff, også de som er godt dekket og derfor ikke vises i den prioriterte listen. Bruk siden til å kontrollere hvorfor noe er med eller ikke."
+        lead="Se alle henvendelser og alle rutiner med tilhørende treff, også rutinene som svarer godt og derfor er skjult i den prioriterte listen. Bruk siden til å kontrollere hvor en henvendelse har havnet."
       />
 
       <div className={styles.toolbar}>
@@ -66,11 +68,11 @@ export function SearchView({ snapshot, hideAbovePercent, onOpenGap }: SearchView
         </div>
         <div className={styles.search}>
           <SearchField
-            label={tab === "questions" ? "Søk i spørsmål" : "Søk i dokumenter"}
+            label={tab === "questions" ? "Søk i henvendelser" : "Søk i rutiner"}
             placeholder={
               tab === "questions"
-                ? "Søk i spørsmål, temaer og dokumenter"
-                : "Søk på dokumentnavn eller nummer"
+                ? "Søk i henvendelser, kategorier og rutiner"
+                : "Søk på rutinenavn"
             }
             value={query}
             onChange={setQuery}
@@ -81,13 +83,13 @@ export function SearchView({ snapshot, hideAbovePercent, onOpenGap }: SearchView
       <div className={styles.toolbar}>
         <div className={styles.pills}>
           {tab === "questions"
-            ? VISIBILITY_FILTERS.map((option) => (
+            ? PLACEMENT_FILTERS.map((option) => (
                 <FilterPill
                   key={option.key}
                   label={option.label}
-                  selected={visibility === option.key}
+                  selected={filter === option.key}
                   onSelect={() => {
-                    setVisibility(option.key);
+                    setFilter(option.key);
                   }}
                 />
               ))
@@ -98,15 +100,15 @@ export function SearchView({ snapshot, hideAbovePercent, onOpenGap }: SearchView
 
       <p className={styles.note} aria-live="polite">
         {tab === "questions"
-          ? `Viser ${String(questionResults.length)} av ${String(questions.length)} eksempelspørsmål. I den ekte løsningen vises alle henvendelser fra ServiceNow.`
-          : `Viser ${String(documentResults.length)} av ${String(documents.length)} eksempeldokumenter. I den ekte løsningen vises alle rutiner fra Kvaliteket.`}
+          ? `Viser ${String(questionResults.length)} av ${String(questions.length)} ${snapshot.isExample ? "eksempelhenvendelser. I den ekte løsningen vises alle henvendelser fra ServiceNow." : "henvendelser."}`
+          : `Viser ${String(documentResults.length)} av ${String(documents.length)} ${snapshot.isExample ? "eksempelrutiner. I den ekte løsningen vises alle rutiner fra Kvaliteket." : "rutiner."}`}
       </p>
 
       {tab === "questions" ? (
         <QuestionTable
           results={questionResults}
-          hideAbovePercent={hideAbovePercent}
-          onOpenGap={onOpenGap}
+          onOpenRoutine={onOpenRoutine}
+          onRestore={review.undoDecision}
         />
       ) : (
         <DocumentTable results={documentResults} />

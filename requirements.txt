@@ -8,6 +8,7 @@ rank_bm25
 scikit-learn
 fastapi
 uvicorn
+pydantic
 pyjwt[crypto]
 certifi
 python-dotenv
