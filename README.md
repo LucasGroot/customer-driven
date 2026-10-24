@@ -163,11 +163,17 @@ Installs project dependencies, then installs the package itself in editable mode
 
 ## Database
 ### install dependencies
+#### on Linux
 ``` bash
 sudo apt install postgresql
 sudo apt install libpq-dev python3-dev
 ```
-in your venv:
+
+#### on Mac
+`brew install postgresql`
+`gem install pg` or `brew install libpq`
+
+#### in your venv:
 ```bash
 pip install psycopg2
 pip install python-dotenv
