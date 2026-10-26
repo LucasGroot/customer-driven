@@ -118,7 +118,7 @@ def create_routine_answer_question():
             cur.execute("""create table routine_answer_question (
         routine_id varchar(6) references routine,
         question_id varchar(10) references question,
-        similarity double,
+        similarity double precision,
         primary key (routine_id, question_id)
         );""")
         except (Exception, psycopg2.DatabaseError) as error:

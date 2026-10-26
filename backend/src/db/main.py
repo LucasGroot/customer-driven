@@ -38,7 +38,7 @@ def snapshot():
         cur.execute("""
     select distinct on (q.question_id)
            q.question_id, q.question_title, q.question_date,
-           q.needs_review,
+           q.question_needs_review,
            a.routine_id, a.similarity,
            coalesce(t.tags, '') as category
     from question q
