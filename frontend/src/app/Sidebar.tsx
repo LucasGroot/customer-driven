@@ -1,4 +1,4 @@
-import { NAVIGATION, type ViewName } from "./views";
+import { navigationFor, type ViewName } from "./views";
 import styles from "./Sidebar.module.css";
 import type { CurrentUser } from "../auth/currentUser";
 import { Button } from "../components/Button";
@@ -43,7 +43,7 @@ export function Sidebar({
       </div>
 
       <nav className={styles.nav} aria-label="Hovedmeny">
-        {NAVIGATION.map((entry) => {
+        {navigationFor(user.role).map((entry) => {
           const active = entry.view === currentView;
           return (
             <button

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
+import { ExportView } from "../features/export/ExportView";
 import { ImportView } from "../features/import/ImportView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
 import type { CurrentUser } from "../auth/currentUser";
@@ -16,7 +17,7 @@ import { DEFAULT_HIDE_ABOVE_PERCENT, isWellCovered } from "../domain/priority";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
 import { Sidebar } from "./Sidebar";
-import type { ViewName } from "./views";
+import { isAdminOnly, type ViewName } from "./views";
 import styles from "./App.module.css";
 
 interface AppProps {
@@ -62,7 +63,8 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
   const pendingCount = countPendingQuestions(snapshot, review.decisionOf);
   const selectedRoutine = routines.find((stats) => stats.routine.code === selectedRoutineCode);
   // A routine loses its place in the list when its last question is moved away
-  const shownView = view === "detail" && selectedRoutine === undefined ? returnView : view;
+  const reachableView = view === "detail" && selectedRoutine === undefined ? returnView : view;
+  const shownView = isAdminOnly(reachableView) && user.role !== "admin" ? "list" : reachableView;
 
   const openRoutine = (routineCode: RoutineCode) => {
     setSelectedRoutineCode(routineCode);
@@ -142,6 +144,18 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
         ) : null}
 
         {shownView === "run" ? <RunAnalysisView snapshot={snapshot} run={run} /> : null}
+
+        {shownView === "import" ? <ImportView /> : null}
+
+        {shownView === "export" ? (
+          <ExportView
+            routines={routines}
+            weights={settings.weights}
+            review={review}
+            hideAbovePercent={hideAbovePercent}
+            lastRunLabel={snapshot.lastRunLabel}
+          />
+        ) : null}
       </main>
     </div>
   );
