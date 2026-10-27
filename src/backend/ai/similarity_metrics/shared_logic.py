@@ -46,7 +46,9 @@ class Corpus:
     chunk_texts: list
 
 
-def extract_all_chunk_embeddings(folder_path="data/raw/kvaliteket", chunker=chunk_by_layout):
+def extract_all_chunk_embeddings(folder_path="data/raw/kvaliteket", 
+                                 chunker=chunk_by_layout, 
+                                 max_chunk_size=DEFAULT_CHUNK_SIZE):
     """
     Reads every PDF in a folder and splits it into chunks using the given chunker.
     If the chunker returns no non-blank chunks for a PDF, that PDF is re-chunked
@@ -58,7 +60,7 @@ def extract_all_chunk_embeddings(folder_path="data/raw/kvaliteket", chunker=chun
     documents = read_all_pdfs(folder_path)
     for document in documents:
         words, source = document["words"], document["source_pdf"]
-        chunks = chunker(words, source, max_chunk_size=DEFAULT_CHUNK_SIZE) or []
+        chunks = chunker(words, source, max_chunk_size=max_chunk_size) or []
 
         all_chunks.append({"filename": source, "chunks": chunks})
 
@@ -83,7 +85,7 @@ def extract_questions(xlsx_path, sheet=0):
     return questions[[SERVICE_COLUMN, "text"]]
 
 
-def load_corpus(questions_path, routines_path, chunker=chunk_by_layout):
+def load_corpus(questions_path, routines_path, chunker=chunk_by_layout, max_chunk_size=DEFAULT_CHUNK_SIZE):
     """
     Loads questions and chunks every routine, dropping blank chunks.
     Reads and chunks the PDFs exactly once; the resulting Corpus is shared by
@@ -95,7 +97,7 @@ def load_corpus(questions_path, routines_path, chunker=chunk_by_layout):
     if questions.empty:
         raise ValueError(f"No questions found in {questions_path}")
 
-    routine_chunks = extract_all_chunk_embeddings(routines_path, chunker=chunker)
+    routine_chunks = extract_all_chunk_embeddings(routines_path, chunker=chunker, max_chunk_size=max_chunk_size)
     routine_names = [r["filename"] for r in routine_chunks]
     texts_per_routine = [
         [c["text"] for c in r["chunks"] if c["text"].strip()]
