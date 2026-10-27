@@ -61,6 +61,17 @@ def missing_routine_ids(ground_truth, available_routine_ids):
     return sorted(referenced_routine_ids - set(available_routine_ids))
 
 
+def answerable_routine_questions(ground_truth, available_routine_ids):
+    """
+    Returns the questions that have a routine, at least one of which is among the available routines.
+    The others cannot be matched by any method, so they are left out of the metrics.
+    """
+    available_routine_ids = set(available_routine_ids)
+    has_available_routine = ground_truth["relevant_routine_ids"].map(lambda ids: bool(ids & available_routine_ids))
+
+    return ground_truth[ground_truth["has_routine"] & has_available_routine]
+
+
 def rank_of_first_relevant_routine(question_scores, relevant_routine_ids):
     """
     Returns the 1-based rank of the highest-ranked relevant routine for one question.
@@ -82,8 +93,7 @@ def evaluate(scores, ground_truth):
     scores = scores.rename(columns=routine_id_from_filename)
     ground_truth = ground_truth[ground_truth.index.isin(scores.index)]
 
-    has_available_routine = ground_truth["relevant_routine_ids"].map(lambda ids: bool(ids & set(scores.columns)))
-    routine_questions = ground_truth[ground_truth["has_routine"] & has_available_routine]
+    routine_questions = answerable_routine_questions(ground_truth, scores.columns)
     no_routine_questions = ground_truth[~ground_truth["has_routine"]]
 
     ranks = pd.Series([
@@ -98,13 +108,15 @@ def evaluate(scores, ground_truth):
     return pd.Series({
         "hit_at_1": (ranks <= 1).mean(),
         "hit_at_3": (ranks <= 3).mean(),
+        "hit_at_5": (ranks <= 5).mean(),
+        "hit_at_10": (ranks <= 10).mean(),
         "mrr": (1 / ranks).mean(),
         "gap_auc": gap_detection_auc(top_scores_routine, top_scores_no_routine),
         "mean_top_score_routine": top_scores_routine.mean(),
         "mean_top_score_no_routine": top_scores_no_routine.mean(),
         "routine_questions": len(routine_questions),
         "no_routine_questions": len(no_routine_questions),
-        "skipped_missing_routine": int((ground_truth["has_routine"] & ~has_available_routine).sum()),
+        "skipped_missing_routine": int(ground_truth["has_routine"].sum() - len(routine_questions)),
     })
 
 

@@ -13,7 +13,7 @@
   color: var(--color-text-dim);
 }
 
-.topicButton {
+.nameButton {
   cursor: pointer;
   border: none;
   background: none;
@@ -25,17 +25,11 @@
   color: inherit;
 }
 
-.topicButton:hover {
+.nameButton:hover {
   text-decoration: underline;
 }
 
-.nearest {
-  font-size: 12.5px;
-  color: var(--color-text-soft);
-  margin-top: 4px;
-}
-
-.ticketCount {
+.questionCount {
   font-family: var(--font-mono);
   font-size: 14px;
 }
@@ -58,4 +52,10 @@
   height: 26px;
   border-radius: 3px;
   flex: none;
+}
+
+.uploaded {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--color-text-faint);
 }

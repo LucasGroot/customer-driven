@@ -2,61 +2,62 @@ import { CoverageMeter } from "../../components/CoverageMeter";
 import { DataTable, type DataTableColumn } from "../../components/DataTable";
 import { StatusBadge } from "../../components/StatusBadge";
 import { PRIORITY_BAND_COLOR } from "../../components/bandColors";
-import type { ScoredGap } from "../../domain/priority";
-import type { GapStatus, KnowledgeGapId } from "../../domain/types";
-import styles from "./GapTable.module.css";
+import type { ScoredRoutine } from "../../domain/priority";
+import type { RoutineCode, RoutineStatus } from "../../domain/types";
+import styles from "./RoutineTable.module.css";
 
 const COLUMNS: DataTableColumn[] = [
   { label: "#", width: "56px" },
-  { label: "Tema fra henvendelser" },
-  { label: "Dekning i rutine", width: "170px" },
+  { label: "Rutine" },
+  { label: "Snittscore", width: "170px" },
   { label: "Henvendelser", width: "120px" },
   { label: "Status", width: "160px" },
   { label: "Prioritet", width: "96px", align: "right" },
 ];
 
-interface GapTableProps {
-  rows: ScoredGap[];
-  statusOf: (gapId: KnowledgeGapId) => GapStatus;
-  onOpenGap: (gapId: KnowledgeGapId) => void;
+interface RoutineTableProps {
+  rows: ScoredRoutine[];
+  statusOf: (routineCode: RoutineCode) => RoutineStatus;
+  onOpenRoutine: (routineCode: RoutineCode) => void;
 }
 
-export function GapTable({ rows, statusOf, onOpenGap }: GapTableProps) {
+export function RoutineTable({ rows, statusOf, onOpenRoutine }: RoutineTableProps) {
   return (
     <DataTable
-      caption="Temaer fra henvendelser, sortert etter prioritet"
+      caption="Rutiner i Kvaliteket, sortert etter prioritet"
       columns={COLUMNS}
       isEmpty={rows.length === 0}
-      emptyMessage="Ingen temaer passer til dette filteret."
+      emptyMessage="Ingen rutiner passer til dette filteret."
+      minWidth={780}
     >
-      {rows.map(({ gap, score, band }, index) => (
+      {rows.map(({ stats, score, band }, index) => (
         <tr
-          key={gap.id}
+          key={stats.routine.code}
           className={styles.row}
           onClick={() => {
-            onOpenGap(gap.id);
+            onOpenRoutine(stats.routine.code);
           }}
         >
           <td className={styles.rank}>{index + 1}</td>
           <td>
             <button
               type="button"
-              className={styles.topicButton}
+              className={styles.nameButton}
               onClick={(event) => {
                 event.stopPropagation();
-                onOpenGap(gap.id);
+                onOpenRoutine(stats.routine.code);
               }}
             >
-              {gap.topic}
+              {stats.routine.name}
             </button>
-            <div className={styles.nearest}>{gap.nearestMatchLine}</div>
+            <div className={styles.uploaded}>{stats.routine.uploadedLabel}</div>
           </td>
           <td>
-            <CoverageMeter coverage={gap.coverage} />
+            <CoverageMeter coverage={stats.meanCoverage} />
           </td>
-          <td className={styles.ticketCount}>{gap.ticketCount}</td>
+          <td className={styles.questionCount}>{stats.questionCount}</td>
           <td>
-            <StatusBadge status={statusOf(gap.id)} />
+            <StatusBadge status={statusOf(stats.routine.code)} />
           </td>
           <td>
             <div className={styles.score}>

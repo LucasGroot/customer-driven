@@ -21,15 +21,140 @@ Identify which topics and questions raised through ServiceNow have the lowest se
 
 ## Status
 
-Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data.
+Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional, and the dashboard fetches its data from a local API. HR's decisions (discarding or mapping a question, routine status and owner) are kept in the browser only until the database exists.
 
-## Running the frontend
+## Running the project
 
-Requires Node.js 22.12 or newer. From `frontend/`:
+Three parts work together: a script that analyses the data, a small API that serves the result, and the dashboard that shows it.
+
+### First time
+
+1. Install the Python dependencies in a virtual environment at the project root:
+
+   ```bash
+   python3 -m venv .venv
+   .venv/bin/pip install -r requirements.txt
+   .venv/bin/pip install -e .
+   ```
+
+2. Install the frontend dependencies (Node.js 22.12 or newer):
+
+   ```bash
+   cd frontend && npm install
+   ```
+
+3. The real data is confidential and not in git. To analyse it, put the ServiceNow export at `data/raw/serviceNow/serviceNow_questions.xlsx` and the Kvaliteket PDFs in `data/raw/kvaliteket/`. Without them the dashboard still runs, on a sample of invented data.
+
+### Every time
+
+From the project root, in two terminals. First the API:
+
+```bash
+.venv/bin/python -m uvicorn backend.snapshot.dev_app:app --port 8000
+```
+
+Then the dashboard, and open <http://localhost:5173>:
+
+```bash
+cd frontend && npm run dev
+```
+
+The dashboard asks the API for its data, so the API has to be running.
+
+### Building the snapshot
+
+```bash
+.venv/bin/python scripts/build_snapshot.py
+```
+
+This is not needed every time. It analyses all questions against all routines, which takes a few minutes, and writes the result to `data/processed/snapshot.json`. The API serves that file until it is replaced, so run the script again only when:
+
+- the ServiceNow export or the PDFs change, or
+- the scoring or the review threshold (`MIN_RELEVANCE` in `src/backend/snapshot/build_snapshot.py`) changes, since which questions need review is decided when the snapshot is built, or
+- the code that builds the snapshot changes, for example after pulling. An old file can lack fields the dashboard expects.
+
+The questions that need review are grouped by what they are about, so HR can decide on a whole group at once.
+
+The API reads the file on every request, so there is no need to restart it. Reload the page.
+
+Without a snapshot the API serves the bundled sample, and the dashboard says "Eksempeldata" in the sidebar. This lets anyone run the project without the confidential data.
+
+### Things to know
+
+- `data/processed/snapshot.json` contains ticket text. It is gitignored. Do not commit or share it.
+- `backend.snapshot.dev_app` has no login and is for local development only.
+- Decisions made on the review page are lost when the page is reloaded.
+
+### Tests
+
+```bash
+.venv/bin/python -m pytest   # backend
+cd frontend && npx vitest run   # frontend, once
+cd frontend && npm test         # frontend, in watch mode (press q to quit)
+Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data, behind Microsoft sign-in.
+
+## How to install
+
+macOS and Linux:
+
+```bash
+python3 -m venv venv          # first time only
+source venv/bin/activate      # every new terminal
+pip install -r requirements.txt
+pip install -e .
+```
+
+Windows (PowerShell):
+
+```powershell
+py -m venv venv               # first time only
+venv\Scripts\activate         # every new terminal
+pip install -r requirements.txt
+pip install -e .
+```
+
+If PowerShell refuses to run the activate script, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and try again.
+
+Creates a virtual environment so the project's packages stay separate from the rest of your machine, installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
+
+## Running the application
+
+### Running the API/backend
+
+The API in [`src/backend/api/`](src/backend/api/) handles Microsoft sign-in and user roles. It needs a Microsoft Entra app registration.
+
+macOS and Linux:
+
+```bash
+cp .env.example .env    # first time only
+uvicorn backend.api.main:create_app --factory --env-file .env --reload
+```
+
+Windows (PowerShell):
+
+```powershell
+Copy-Item .env.example .env    # first time only
+uvicorn backend.api.main:create_app --factory --env-file .env --reload
+```
+
+Fill in the tenant and client IDs in `.env`. 
+
+Run the tests with `python -m pytest tests/unit/api`.
+
+### Running the frontend
+
+Requires Node.js 22.12 or newer. From `frontend/`
 
 ```bash
 npm install     # once, and again after dependencies change
 npm run dev     # start the dashboard
+```
+
+The dashboard asks you to sign in with Microsoft and then asks the API who you are, so the API must be running too. The dev server forwards `/api` to it on port 8000. Both read the root `.env`.
+
+### Testing the frontend
+
+```bash
 npm test        # run the tests in watch mode (press q to quit)
 npx vitest run  # run the tests once, e.g. before committing
 ```
@@ -51,6 +176,7 @@ npx vitest run  # run the tests once, e.g. before committing
 |-- docs
 |-- src
 |   |-- backend
+|   |   |-- api
 |   |   |-- chunking
 |   |   |   |-- customized_chunking.py
 |   |   |   |-- fixed_chunking.py
@@ -72,11 +198,19 @@ npx vitest run  # run the tests once, e.g. before committing
 |-- pyproject.toml
 ```
 
-## How to install
 
-```bash
-pip install -r requirements.txt
-pip install -e .
-```
+## Entra app registration (for customer only)
 
-Installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
+The dashboard and the API use the same app registration. For sign-in from the dashboard to work, it needs:
+
+1. **Authentication** → add the platform *Single-page application* with the redirect URI `http://localhost:5173`.
+2. **Expose an API** → set the Application ID URI to `api://<client id>` and add a scope named `access_as_user`.
+3. **Manifest** → set `requestedAccessTokenVersion` to `2`. The API only accepts v2 tokens, whose audience is the client ID.
+4. **App roles** → create two roles for *Users/Groups*: `Admin` with the value `admin`, and `Bruker` with the value `user`.
+
+Who gets which role is managed under **Enterprise applications** → the app:
+
+- **Users and groups** → assign each user a role. A user with both roles counts as admin.
+- **Properties** → set **Assignment required?** to **Yes**, so users without a role cannot sign in at all.
+
+A user's role reaches the API inside the token, so a role change takes effect the next time they sign in.

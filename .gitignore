@@ -6,8 +6,19 @@ visualizations/*.html
 __pycache__
 *.egg-info/
 *.csv
+data/processed/*.json
+
+# secrets such as API keys; only the example file with empty values is committed
+.env
 
 # ignoring dev environment
 /venv
 /env
-/.env
+node_modules/
+dist/
+*.tsbuildinfo
+
+# local settings and secrets; .env.example is the committed template
+.env
+.env.*
+!.env.example
