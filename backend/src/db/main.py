@@ -5,6 +5,16 @@ import psycopg2
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from psycopg2.extras import RealDictCursor
+from psycopg2.extras import execute_values
+from db import get_conn
+import threading
+from fastapi import BackgroundTasks, HTTPException
+from analysis_service import save_analysis
+from ai_adapter import run_ai
+
+_lock = threading.Lock()
+_state = {"status": "idle", "completedSteps": 0, "error": None}
+
 
 load_dotenv()
 app = FastAPI()
@@ -86,3 +96,61 @@ def snapshot():
              "unit": "PDF-er", "uploadedLabel": ""},
         ],
     }
+
+
+
+def save_analysis(routines, questions, matches):
+    with get_conn() as conn, conn.cursor() as cur:
+        execute_values(cur, """
+            insert into routine (routine_id, routine_title, routine_date)
+            values %s
+            on conflict (routine_id) do update
+              set routine_title = excluded.routine_title,
+                  routine_date  = excluded.routine_date
+        """, routines)
+
+        execute_values(cur, """
+            insert into question (question_id, question_title, question_date, needs_review)
+            values %s
+            on conflict (question_id) do update
+              set question_title = excluded.question_title,
+                  needs_review   = excluded.needs_review
+        """, questions)
+
+        execute_values(cur, """
+            insert into routine_answer_question (routine_id, question_id, similarity)
+            values %s
+            on conflict (routine_id, question_id) do update
+              set similarity = excluded.similarity
+        """, matches)
+
+
+
+_lock = threading.Lock()
+_state = {"status": "idle", "completedSteps": 0, "error": None}
+
+def _set(**changes):
+    with _lock:
+        _state.update(changes)
+
+def _job():
+    try:
+        routines, questions, matches = run_ai(lambda n: _set(completedSteps=n))
+        save_analysis(routines, questions, matches)   # étape 5 : calcul + écriture
+        _set(status="done", completedSteps=5)
+    except Exception as e:
+        _set(status="error", error=str(e))
+
+@app.post("/api/analysis/run", status_code=202)
+def run_analysis(background: BackgroundTasks):
+    with _lock:
+        if _state["status"] == "running":
+            raise HTTPException(409, "Une analyse est déjà en cours")
+        _state.update(status="running", completedSteps=0, error=None)
+    background.add_task(_job)
+    return {"status": "running"}
+
+@app.get("/api/analysis/status")
+def analysis_status():
+    with _lock:
+        return dict(_state)
