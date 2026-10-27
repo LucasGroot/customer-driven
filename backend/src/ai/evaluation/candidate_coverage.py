@@ -6,7 +6,7 @@ are the top routines of one or several scoring methods put together.
 
 import numpy as np
 
-from backend.ai.evaluation.ground_truth_evaluation import answerable_routine_questions, routine_id_from_filename
+from src.ai.evaluation.ground_truth_evaluation import answerable_routine_questions, routine_id_from_filename
 
 
 def candidates_per_question(score_tables, top_n):

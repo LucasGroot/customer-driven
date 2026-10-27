@@ -1,10 +1,5 @@
-/**
- * Drives the step-by-step progress shown while an analysis run is simulated.
- * The real run belongs on the src; this only animates the stages so the
- * screen can be reviewed with the customer.
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
+import { fetchAnalysisStatus, startAnalysis } from "../api/analysis";
 
 export const RUN_STEPS = [
   "Henter henvendelser fra ServiceNow",
@@ -14,11 +9,12 @@ export const RUN_STEPS = [
   "Beregner prioritet",
 ] as const;
 
-const STEP_DURATION_MS = 550;
+const POLL_MS = 1000;
 
 export interface AnalysisRun {
   isRunning: boolean;
   hasFinished: boolean;
+  hasFailed: boolean;
   completedSteps: number;
   start: () => void;
 }
@@ -27,33 +23,51 @@ export function useAnalysisRun(): AnalysisRun {
   const [completedSteps, setCompletedSteps] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [hasFinished, setHasFinished] = useState(false);
-  const timerRef = useRef<number | undefined>(undefined);
+  const [hasFailed, setHasFailed] = useState(false);
+  const pollRef = useRef<number | undefined>(undefined);
 
-  useEffect(
-    () => () => {
-      window.clearTimeout(timerRef.current);
-    },
-    [],
-  );
+  const stopPolling = useCallback(() => {
+    window.clearInterval(pollRef.current);
+  }, []);
 
-  useEffect(() => {
-    if (!isRunning) return;
-    if (completedSteps >= RUN_STEPS.length) {
-      setIsRunning(false);
-      setHasFinished(true);
-      return;
-    }
-    timerRef.current = window.setTimeout(() => {
-      setCompletedSteps((step) => step + 1);
-    }, STEP_DURATION_MS);
-  }, [isRunning, completedSteps]);
+  useEffect(() => stopPolling, [stopPolling]);
 
   const start = useCallback(() => {
     if (isRunning) return;
     setCompletedSteps(0);
     setHasFinished(false);
+    setHasFailed(false);
     setIsRunning(true);
-  }, [isRunning]);
 
-  return { isRunning, hasFinished, completedSteps, start };
+    startAnalysis()
+      .then(() => {
+        pollRef.current = window.setInterval(() => {
+          fetchAnalysisStatus().then(
+            (status) => {
+              setCompletedSteps(status.completedSteps);
+              if (status.status === "done") {
+                stopPolling();
+                setIsRunning(false);
+                setHasFinished(true);
+              } else if (status.status === "error") {
+                stopPolling();
+                setIsRunning(false);
+                setHasFailed(true);
+              }
+            },
+            () => {
+              stopPolling();
+              setIsRunning(false);
+              setHasFailed(true);
+            },
+          );
+        }, POLL_MS);
+      })
+      .catch(() => {
+        setIsRunning(false);
+        setHasFailed(true);
+      });
+  }, [isRunning, stopPolling]);
+
+  return { isRunning, hasFinished, hasFailed, completedSteps, start };
 }

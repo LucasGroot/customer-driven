@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer
 
-from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, top_k_per_routine, _check_k
+from src.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, top_k_per_routine, _check_k
 
 
 def cosine_similarity(corpus,

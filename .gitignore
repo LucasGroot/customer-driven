@@ -7,6 +7,7 @@ __pycache__
 *.egg-info/
 *.csv
 data/processed/*.json
+data/raw/kvaliteket/
 src/node_modules/
 
 # secrets such as API keys; only the example file with empty values is committed
