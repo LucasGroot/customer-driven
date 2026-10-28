@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
 import type { CurrentUser } from "../auth/currentUser";
@@ -40,6 +40,12 @@ export function App({ user, accessToken, onSignOut }: AppProps) {
   return <Dashboard snapshot={state.snapshot} user={user} onSignOut={onSignOut} />;
 }
 
+interface Location {
+  view: ViewName;
+  returnView: ViewName;
+  routineCode: RoutineCode | null;
+}
+
 interface DashboardProps {
   snapshot: AnalysisSnapshot;
   user: CurrentUser;
@@ -57,6 +63,37 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
   const review = useRoutineReview();
   const run = useAnalysisRun();
 
+  const applyLocation = (location: Location) => {
+    setView(location.view);
+    setReturnView(location.returnView);
+    setSelectedRoutineCode(location.routineCode);
+  };
+
+  const go = (next: Partial<Location>) => {
+    const target: Location = {
+        view,
+        returnView,
+        routineCode: selectedRoutineCode,
+        ...next,
+      };
+      window.history.pushState(target, "");
+      applyLocation(target);
+    };
+
+  useEffect(() => {
+    // L'entrée actuelle (la vue de départ) devient la première "page" de l'app
+    window.history.replaceState({ view: "list", returnView: "list", routineCode: null }, "");
+  
+    const onPopState = (event: PopStateEvent) => {
+      const location = event.state as Location | null;
+      if (location?.view !== undefined) applyLocation(location);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, []);
+
   const routines = routinesWithQuestions(snapshot, review.decisionOf);
   const pendingCount = countPendingQuestions(snapshot, review.decisionOf);
   const selectedRoutine = routines.find((stats) => stats.routine.code === selectedRoutineCode);
@@ -64,10 +101,9 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
   const shownView = view === "detail" && selectedRoutine === undefined ? returnView : view;
 
   const openRoutine = (routineCode: RoutineCode) => {
-    setSelectedRoutineCode(routineCode);
-    setReturnView(view);
-    setView("detail");
+    go({ view: "detail", returnView: view, routineCode });
   };
+
 
   return (
     <div className={styles.layout}>
@@ -81,7 +117,7 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
         documentCount={snapshot.documents.length}
         ticketCount={snapshot.totalTickets}
         user={user}
-        onNavigate={setView}
+        onNavigate={(next) => { go({ view: next }); }}
         onSignOut={onSignOut}
       />
 
@@ -97,12 +133,8 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
             hideAbovePercent={hideAbovePercent}
             onHideAboveChange={setHideAbovePercent}
             onOpenRoutine={openRoutine}
-            onOpenReview={() => {
-              setView("review");
-            }}
-            onOpenSettings={() => {
-              setView("run");
-            }}
+            onOpenReview={() => { go({ view: "review" }); }}
+            onOpenSettings={() => { go({ view: "run" }); }}
           />
         ) : null}
 
@@ -113,9 +145,7 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
             weights={settings.weights}
             review={review}
             backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
-            onBack={() => {
-              setView(returnView);
-            }}
+            onBack={() => { window.history.back(); }}
           />
         ) : null}
 
