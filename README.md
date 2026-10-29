@@ -43,15 +43,19 @@ Three parts work together: a script that analyses the data, a small API that ser
    cd frontend && npm install
    ```
 
-3. The real data is confidential and not in git. To analyse it, put the ServiceNow export at `data/raw/serviceNow/serviceNow_questions.xlsx` and the Kvaliteket PDFs in `data/raw/kvaliteket/`. Without them the dashboard still runs, on a sample of invented data.
+3. Copy `.env.example` to `.env` and fill in the IDs from the Microsoft Entra app registration (see [Entra app registration](#entra-app-registration-for-customer-only) below).
+
+4. The real data is confidential and not in git. An admin uploads it on the dashboard's "Importer data" page (see [Updating the data](#updating-the-data)), which saves it to `data/raw/`. You can also put the ServiceNow export at `data/raw/serviceNow/serviceNow_questions.xlsx` and the Kvaliteket PDFs in `data/raw/kvaliteket/` by hand. Without them the dashboard still runs, on a sample of invented data.
 
 ### Every time
 
 From the project root, in two terminals. First the API:
 
 ```bash
-.venv/bin/python -m uvicorn backend.snapshot.dev_app:app --port 8000
+.venv/bin/python -m uvicorn backend.api.main:create_app --factory --env-file .env --port 8000
 ```
+
+If your virtual environment is called `venv`, use `venv/bin/python` instead.
 
 Then the dashboard, and open <http://localhost:5173>:
 
@@ -61,13 +65,24 @@ cd frontend && npm run dev
 
 The dashboard asks the API for its data, so the API has to be running.
 
+### Updating the data
+
+Users with the admin role see two extra pages in the dashboard:
+
+1. **Importer data** uploads a new ServiceNow export, which replaces the previous one, and new Kvaliteket routines, which are added to the ones already there. A routine that is already uploaded is refused, matched on its document code (`1760-1` in `1760-1-Vernerunde.pdf`). Nothing is saved unless every file passes its checks.
+2. **Kjør analyse** then runs the analysis on the uploaded files in the background and shows its progress. When it finishes, the dashboard loads the new result.
+
+The API refuses uploads and runs from anyone without the admin role, whatever the dashboard shows.
+
 ### Building the snapshot
+
+The analysis can also be run without the dashboard:
 
 ```bash
 .venv/bin/python scripts/build_snapshot.py
 ```
 
-This is not needed every time. It analyses all questions against all routines, which takes a few minutes, and writes the result to `data/processed/snapshot.json`. The API serves that file until it is replaced, so run the script again only when:
+This is not needed every time. It analyses all questions against all routines, which takes a few minutes, and writes the result to `data/processed/snapshot.json`. The API serves that file until it is replaced, so run the analysis again, from the script or from "Kjør analyse", only when:
 
 - the ServiceNow export or the PDFs change, or
 - the scoring or the review threshold (`MIN_RELEVANCE` in `src/backend/snapshot/build_snapshot.py`) changes, since which questions need review is decided when the snapshot is built, or
@@ -82,7 +97,9 @@ Without a snapshot the API serves the bundled sample, and the dashboard says "Ek
 ### Things to know
 
 - `data/processed/snapshot.json` contains ticket text. It is gitignored. Do not commit or share it.
-- `backend.snapshot.dev_app` has no login and is for local development only.
+- Uploaded files are saved to `data/raw/`, which is gitignored for the same reason.
+- An uploaded routine cannot be replaced or removed from the dashboard yet. Delete the old PDF from `data/raw/kvaliteket/` by hand first.
+- The API remembers how far a run has come only while it is running. Restarting it during a run loses the run; start it again.
 - Decisions made on the review page are lost when the page is reloaded.
 
 ### Tests
