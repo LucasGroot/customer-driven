@@ -27,7 +27,9 @@ interface AppProps {
 }
 
 export function App({ user, accessToken, onSignOut }: AppProps) {
-  const state = useSnapshot(accessToken);
+  // Raised when an analysis run finishes, so the new snapshot is fetched
+  const [snapshotVersion, setSnapshotVersion] = useState(0);
+  const state = useSnapshot(accessToken, snapshotVersion);
 
   if (state.status === "loading") {
     return <p className={styles.status}>Henter analysen …</p>;
@@ -39,16 +41,28 @@ export function App({ user, accessToken, onSignOut }: AppProps) {
       </p>
     );
   }
-  return <Dashboard snapshot={state.snapshot} user={user} onSignOut={onSignOut} />;
+  return (
+    <Dashboard
+      snapshot={state.snapshot}
+      user={user}
+      accessToken={accessToken}
+      onSignOut={onSignOut}
+      onSnapshotReplaced={() => {
+        setSnapshotVersion((version) => version + 1);
+      }}
+    />
+  );
 }
 
 interface DashboardProps {
   snapshot: AnalysisSnapshot;
   user: CurrentUser;
+  accessToken: string;
   onSignOut: () => void;
+  onSnapshotReplaced: () => void;
 }
 
-function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
+function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced }: DashboardProps) {
   const [view, setView] = useState<ViewName>("list");
   // The detail page can be opened from the list or from search; back returns there.
   const [returnView, setReturnView] = useState<ViewName>("list");
@@ -57,14 +71,15 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
   const settings = useAnalysisSettings();
   const review = useRoutineReview();
-  const run = useAnalysisRun();
+  const isAdmin = user.role === "admin";
+  const run = useAnalysisRun(accessToken, isAdmin, onSnapshotReplaced);
 
   const routines = routinesWithQuestions(snapshot, review.decisionOf);
   const pendingCount = countPendingQuestions(snapshot, review.decisionOf);
   const selectedRoutine = routines.find((stats) => stats.routine.code === selectedRoutineCode);
   // A routine loses its place in the list when its last question is moved away
   const reachableView = view === "detail" && selectedRoutine === undefined ? returnView : view;
-  const shownView = isAdminOnly(reachableView) && user.role !== "admin" ? "list" : reachableView;
+  const shownView = isAdminOnly(reachableView) && !isAdmin ? "list" : reachableView;
 
   const openRoutine = (routineCode: RoutineCode) => {
     setSelectedRoutineCode(routineCode);
@@ -82,7 +97,6 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
         isExample={snapshot.isExample}
         questionCount={snapshot.questions.length}
         documentCount={snapshot.documents.length}
-        ticketCount={snapshot.totalTickets}
         user={user}
         onNavigate={setView}
         onSignOut={onSignOut}
@@ -143,9 +157,16 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
           />
         ) : null}
 
-        {shownView === "run" ? <RunAnalysisView snapshot={snapshot} run={run} /> : null}
+        {shownView === "run" ? <RunAnalysisView snapshot={snapshot} run={run} canRun={isAdmin} /> : null}
 
-        {shownView === "import" ? <ImportView /> : null}
+        {shownView === "import" ? (
+          <ImportView
+            accessToken={accessToken}
+            onOpenRun={() => {
+              setView("run");
+            }}
+          />
+        ) : null}
 
         {shownView === "export" ? (
           <ExportView

@@ -33,6 +33,8 @@ export function FilePicker({ buttonLabel, accept, multiple = false, files, onCha
         hidden
         onChange={(event) => {
           onChange(Array.from(event.target.files ?? []));
+          // Lets the same file be picked again after the list was cleared by an upload
+          event.target.value = "";
         }}
       />
       <button

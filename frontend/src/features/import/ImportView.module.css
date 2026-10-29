@@ -27,3 +27,8 @@
   font-size: 13px;
   color: var(--color-text-soft);
 }
+
+.error {
+  font-size: 13px;
+  color: var(--color-band-high);
+}
