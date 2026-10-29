@@ -6,14 +6,28 @@ import { PageIntro } from "../../components/PageIntro";
 import { FilePicker } from "./FilePicker";
 import styles from "./ImportView.module.css";
 
-type UploadOutcome = { kind: "saved"; message: string } | { kind: "failed"; message: string };
+type UploadOutcome = { kind: "saved" | "unchanged" | "failed"; message: string };
 
-function describeImport(result: ImportResult): string {
+function countRoutines(count: number): string {
+  return `${String(count)} ${count === 1 ? "rutine" : "rutiner"}`;
+}
+
+function describeImport(result: ImportResult): UploadOutcome {
   const parts: string[] = [];
   if (result.questionsReplaced) parts.push("ServiceNow-eksporten er byttet ut");
   const added = result.routinesAdded.length;
-  if (added > 0) parts.push(`${String(added)} ${added === 1 ? "rutine" : "rutiner"} er lagt til`);
-  return `${parts.join(" og ")}. Kjør en ny analyse for å oppdatere listen.`;
+  if (added > 0) parts.push(`${countRoutines(added)} er lagt til`);
+  // The backend refuses an upload without files, so nothing saved means every routine was skipped
+  if (parts.length === 0) {
+    return { kind: "unchanged", message: "Alle de valgte rutinene var lastet opp fra før. Ingenting nytt ble lagret." };
+  }
+
+  const skipped = result.routinesSkipped.length;
+  const skippedNote = skipped > 0 ? ` ${countRoutines(skipped)} var lastet opp fra før og ble hoppet over.` : "";
+  return {
+    kind: "saved",
+    message: `${parts.join(" og ")}.${skippedNote} Kjør en ny analyse for å oppdatere listen.`,
+  };
 }
 
 interface ImportViewProps {
@@ -38,7 +52,7 @@ export function ImportView({ accessToken, onOpenRun }: ImportViewProps) {
         (result) => {
           setQuestionFiles([]);
           setRoutineFiles([]);
-          setOutcome({ kind: "saved", message: describeImport(result) });
+          setOutcome(describeImport(result));
         },
         (error: unknown) => {
           const message =
@@ -74,8 +88,8 @@ export function ImportView({ accessToken, onOpenRun }: ImportViewProps) {
 
         <Card title="Kvaliteket-rutiner">
           <p className={styles.description}>
-            PDF-filer med nye rutiner fra Kvaliteket. De legges til rutinene som allerede er lastet
-            opp. En rutine som finnes fra før, kan ikke lastes opp på nytt.
+            PDF-filer med rutiner fra Kvaliteket. De legges til rutinene som allerede er lastet opp.
+            Rutiner som finnes fra før, hoppes over, så du kan velge hele mappen på nytt.
           </p>
           <FilePicker
             buttonLabel="Velg PDF-filer"

@@ -110,9 +110,9 @@ def existing_routine_codes(folder):
 
 def check_routines(files):
     """
-    Rejects routines that are not PDFs, have an unsafe name, or are already
-    uploaded. Every file is checked before anything is saved, so an upload is
-    saved completely or not at all.
+    Rejects routines that are not PDFs, have an unsafe name, or are chosen
+    twice. Every file is checked before anything is saved, so an upload with a
+    broken file saves nothing.
     """
 
     for file in files:
@@ -128,10 +128,18 @@ def check_routines(files):
     if chosen_twice:
         raise UploadRejectedError("routineChosenTwice", status_code=409, files=chosen_twice)
 
+
+def split_new_routines(files):
+    """
+    Separates the routines not uploaded before from those that are, so an
+    administrator can choose the whole Kvaliteket folder again and only the
+    new ones are added. Returns the new files and the names of the skipped ones.
+    """
+
     existing = existing_routine_codes(ROUTINES_FOLDER)
-    already_uploaded = sorted(file.name for file, code in zip(files, codes) if code in existing)
-    if already_uploaded:
-        raise UploadRejectedError("routineExists", status_code=409, files=already_uploaded)
+    new_files = [file for file in files if routine_code(file.name) not in existing]
+    skipped_names = sorted(file.name for file in files if routine_code(file.name) in existing)
+    return new_files, skipped_names
 
 
 def write_file(path, content):

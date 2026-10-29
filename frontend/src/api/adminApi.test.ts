@@ -6,14 +6,14 @@ afterEach(() => {
 });
 
 describe("importErrorMessage", () => {
-  it("names every routine that is already uploaded", () => {
+  it("names every routine chosen twice", () => {
     const message = importErrorMessage(409, {
-      reason: "routineExists",
-      files: ["1760-1-Vernerunde.pdf", "1800-2-Ferie.pdf"],
+      reason: "routineChosenTwice",
+      files: ["1760-1-Vernerunde.pdf", "1760-1-Vernerunde (1).pdf"],
     });
 
     expect(message).toBe(
-      "Disse rutinene er lastet opp fra før: «1760-1-Vernerunde.pdf», «1800-2-Ferie.pdf». Ingen filer ble lastet opp.",
+      "Samme rutine er valgt flere ganger: «1760-1-Vernerunde.pdf», «1760-1-Vernerunde (1).pdf». Velg bare én av dem.",
     );
   });
 
@@ -30,7 +30,7 @@ describe("importErrorMessage", () => {
 
 describe("uploadData", () => {
   it("sends the files as a form and returns what was saved", async () => {
-    const result = { questionsReplaced: false, routinesAdded: ["1760-1-Vernerunde.pdf"] };
+    const result = { questionsReplaced: false, routinesAdded: ["1760-1-Vernerunde.pdf"], routinesSkipped: [] };
     const fetchMock = vi.fn().mockResolvedValue(Response.json(result));
     vi.stubGlobal("fetch", fetchMock);
 

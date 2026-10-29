@@ -6,6 +6,8 @@
 export interface ImportResult {
   questionsReplaced: boolean;
   routinesAdded: string[];
+  /** Routines that were already uploaded, so they were left out. */
+  routinesSkipped: string[];
 }
 
 export interface AnalysisStatus {
@@ -46,8 +48,6 @@ export function importErrorMessage(status: number, detail: RefusalDetail | undef
       return "Excel-filen har flere henvendelser med samme nummer.";
     case "noQuestions":
       return "Excel-filen har ingen henvendelser.";
-    case "routineExists":
-      return `Disse rutinene er lastet opp fra før: ${fileList}. Ingen filer ble lastet opp.`;
     case "routineChosenTwice":
       return `Samme rutine er valgt flere ganger: ${fileList}. Velg bare én av dem.`;
     case "analysisRunning":

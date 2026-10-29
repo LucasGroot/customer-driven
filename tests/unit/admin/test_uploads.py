@@ -81,14 +81,14 @@ def test_rejects_a_routine_that_is_not_a_pdf():
     assert rejection_reason(uploads.check_routines, [file]) == "wrongType"
 
 
-def test_rejects_a_routine_already_uploaded_even_with_a_new_title():
+def test_skips_a_routine_already_uploaded_even_with_a_new_title():
     uploads.save_routines([pdf_file("1760-1-Vernerunde.pdf")])
+    new_routine = pdf_file("1800-2-Ferie.pdf")
 
-    with pytest.raises(UploadRejectedError) as error:
-        uploads.check_routines([pdf_file("1760-1-Vernerunde ny tittel.pdf"), pdf_file("1800-2-Ferie.pdf")])
+    new_files, skipped_names = uploads.split_new_routines([pdf_file("1760-1-Vernerunde ny tittel.pdf"), new_routine])
 
-    assert error.value.status_code == 409
-    assert error.value.detail == {"reason": "routineExists", "files": ["1760-1-Vernerunde ny tittel.pdf"]}
+    assert new_files == [new_routine]
+    assert skipped_names == ["1760-1-Vernerunde ny tittel.pdf"]
 
 
 def test_rejects_the_same_routine_chosen_twice():

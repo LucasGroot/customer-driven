@@ -67,10 +67,10 @@ The dashboard asks the API for its data, so the API has to be running.
 
 ### Updating the data
 
-Users with the admin role see two extra pages in the dashboard:
+Users with the admin role can update the data from the dashboard:
 
-1. **Importer data** uploads a new ServiceNow export, which replaces the previous one, and new Kvaliteket routines, which are added to the ones already there. A routine that is already uploaded is refused, matched on its document code (`1760-1` in `1760-1-Vernerunde.pdf`). Nothing is saved unless every file passes its checks.
-2. **Kjør analyse** then runs the analysis on the uploaded files in the background and shows its progress. When it finishes, the dashboard loads the new result.
+1. **Importer data**, a page only they see, uploads a new ServiceNow export, which replaces the previous one, and Kvaliteket routines, which are added to the ones already there. A routine that is already uploaded is skipped, matched on its document code (`1760-1` in `1760-1-Vernerunde.pdf`), so the whole Kvaliteket folder can be chosen again to add only the new routines. Nothing is saved if any file fails its checks, for example a file that is not a PDF.
+2. **Kjør analyse**, where only they have the run button, then runs the analysis on the uploaded files in the background and shows its progress. When it finishes, the dashboard loads the new result.
 
 The API refuses uploads and runs from anyone without the admin role, whatever the dashboard shows.
 

@@ -72,11 +72,15 @@ def test_imports_an_export_and_new_routines(client, admin):
     )
 
     assert response.status_code == 200
-    assert response.json() == {"questionsReplaced": True, "routinesAdded": ["1760-1-Vernerunde.pdf", "1800-2-Ferie.pdf"]}
+    assert response.json() == {
+        "questionsReplaced": True,
+        "routinesAdded": ["1760-1-Vernerunde.pdf", "1800-2-Ferie.pdf"],
+        "routinesSkipped": [],
+    }
     assert uploads.QUESTIONS_PATH.exists()
 
 
-def test_saves_nothing_when_one_routine_already_exists(client, admin):
+def test_adds_the_new_routines_and_skips_those_already_uploaded(client, admin):
     client.post("/api/admin/import", headers=admin, files=[routine("1760-1-Vernerunde.pdf")])
 
     response = client.post(
@@ -85,9 +89,25 @@ def test_saves_nothing_when_one_routine_already_exists(client, admin):
         files=[routine("1800-2-Ferie.pdf"), routine("1760-1-Vernerunde.pdf")],
     )
 
-    assert response.status_code == 409
-    assert response.json()["detail"] == {"reason": "routineExists", "files": ["1760-1-Vernerunde.pdf"]}
-    assert [path.name for path in uploads.ROUTINES_FOLDER.iterdir()] == ["1760-1-Vernerunde.pdf"]
+    assert response.status_code == 200
+    assert response.json() == {
+        "questionsReplaced": False,
+        "routinesAdded": ["1800-2-Ferie.pdf"],
+        "routinesSkipped": ["1760-1-Vernerunde.pdf"],
+    }
+    assert sorted(path.name for path in uploads.ROUTINES_FOLDER.iterdir()) == ["1760-1-Vernerunde.pdf", "1800-2-Ferie.pdf"]
+
+
+def test_saves_nothing_when_one_routine_is_broken(client, admin):
+    response = client.post(
+        "/api/admin/import",
+        headers=admin,
+        files=[routine("1800-2-Ferie.pdf"), ("routines", ("1760-1-Vernerunde.pdf", b"not a pdf"))],
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == {"reason": "wrongType", "file": "1760-1-Vernerunde.pdf", "expected": "pdf"}
+    assert not uploads.ROUTINES_FOLDER.exists()
 
 
 def test_import_needs_at_least_one_file(client, admin):
