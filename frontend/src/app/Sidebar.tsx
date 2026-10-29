@@ -78,9 +78,6 @@ export function Sidebar({
             Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
           </p>
         ) : null}
-        <p className={styles.footerNote}>
-          Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
-        </p>
 
         <div className={styles.footerSection}>
           <div className={styles.footerLabel}>Innlogget</div>
