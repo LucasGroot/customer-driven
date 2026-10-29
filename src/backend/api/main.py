@@ -11,6 +11,8 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from backend.admin.analysis_run import AnalysisRunner
+from backend.admin.router import router as admin_router
 from backend.api.auth import (
     CurrentUser,
     InvalidTokenError,
@@ -87,10 +89,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         """Who the signed-in user is and which role they have."""
         return user
 
-    @app.get("/api/admin/ping")
-    def admin_ping(user: Annotated[CurrentUser, Depends(require_admin)]) -> dict[str, str]:
-        """Example admin-only endpoint, until the admin features exist."""
-        return {"status": "ok", "admin": user.email}
+    app.state.analysis_runner = AnalysisRunner()
+    app.include_router(admin_router, dependencies=[Depends(require_admin)])
 
     # The snapshot used to be served without login by backend.snapshot.dev_app;
     # here every snapshot route requires a valid Microsoft token.

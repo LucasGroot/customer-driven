@@ -10,12 +10,12 @@ describe("fetchSnapshot", () => {
     const snapshot = { isExample: false, questions: [] };
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json(snapshot)));
 
-    await expect(fetchSnapshot(new AbortController().signal)).resolves.toEqual(snapshot);
+    await expect(fetchSnapshot("token", new AbortController().signal)).resolves.toEqual(snapshot);
   });
 
   it("rejects when the backend answers with an error", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("nope", { status: 404 })));
 
-    await expect(fetchSnapshot(new AbortController().signal)).rejects.toThrow("404");
+    await expect(fetchSnapshot("token", new AbortController().signal)).rejects.toThrow("404");
   });
 });
