@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
-import { ExportView } from "../features/export/ExportView";
 import { ImportView } from "../features/import/ImportView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
 import type { CurrentUser } from "../auth/currentUser";
@@ -165,16 +164,6 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
             onOpenRun={() => {
               setView("run");
             }}
-          />
-        ) : null}
-
-        {shownView === "export" ? (
-          <ExportView
-            routines={routines}
-            weights={settings.weights}
-            review={review}
-            hideAbovePercent={hideAbovePercent}
-            lastRunLabel={snapshot.lastRunLabel}
           />
         ) : null}
       </main>
