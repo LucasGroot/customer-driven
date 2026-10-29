@@ -1,0 +1,552 @@
+{
+  "isExample": true,
+  "documentOwners": [
+    "Ikke tildelt",
+    "Lene Fjeld (HR drift)",
+    "Marit Sandvik (HR forvaltning)",
+    "Tor Bergli (Lønn)",
+    "Ida Krogh (HR utvikling)"
+  ],
+  "lastRunLabel": "3. september 2026",
+  "questions": [
+    {
+      "id": "q01",
+      "text": "Vi deler omsorgen for barnet. Hvem av oss kan bruke egenmelding når barnet er hjemme?",
+      "reference": "INC0412610 · 28. aug",
+      "category": "Sykefravær",
+      "documentCode": "KV-014",
+      "coverage": 0.21,
+      "needsReview": false
+    },
+    {
+      "id": "q02",
+      "text": "Har jeg flere dager igjen når barnet blir sykt for andre gang samme måned?",
+      "reference": "INC0412884 · 2. sep",
+      "category": "Sykefravær",
+      "documentCode": "KV-014",
+      "coverage": 0.24,
+      "needsReview": false
+    },
+    {
+      "id": "q03",
+      "text": "Må jeg levere legeerklæring når barnet er sykt mer enn tre dager?",
+      "reference": "INC0411977 · 21. aug",
+      "category": "Sykefravær",
+      "documentCode": "KV-014",
+      "coverage": 0.29,
+      "needsReview": false
+    },
+    {
+      "id": "q04",
+      "text": "Hvor mange feriedager kan jeg ta med meg over nyttår?",
+      "reference": "INC0412702 · 30. aug",
+      "category": "Ferie",
+      "documentCode": "KV-007",
+      "coverage": 0.28,
+      "needsReview": false
+    },
+    {
+      "id": "q05",
+      "text": "Må lederen godkjenne at jeg overfører ferie, og når er fristen?",
+      "reference": "INC0412215 · 24. aug",
+      "category": "Ferie",
+      "documentCode": "KV-007",
+      "coverage": 0.33,
+      "needsReview": false
+    },
+    {
+      "id": "q06",
+      "text": "Jeg jobber turnus og fikk ikke tatt ut all ferie. Hva skjer med resten?",
+      "reference": "INC0411840 · 19. aug",
+      "category": "Ferie",
+      "documentCode": "KV-023",
+      "coverage": 0.32,
+      "needsReview": false
+    },
+    {
+      "id": "q07",
+      "text": "Får jeg ubekvemstillegg når jeg bytter fra dagvakt til nattevakt med en kollega?",
+      "reference": "INC0412933 · 3. sep",
+      "category": "Turnus",
+      "documentCode": "KV-041",
+      "coverage": 0.17,
+      "needsReview": true,
+      "groupId": "r0"
+    },
+    {
+      "id": "q08",
+      "text": "Teller et vaktbytte som overtid hvis jeg går over 40 timer den uken?",
+      "reference": "INC0412488 · 27. aug",
+      "category": "Turnus",
+      "documentCode": "KV-019",
+      "coverage": 0.2,
+      "needsReview": true,
+      "groupId": "r0"
+    },
+    {
+      "id": "q09",
+      "text": "Hvem registrerer vaktbyttet i turnusplanen, jeg eller lederen?",
+      "reference": "INC0411702 · 16. aug",
+      "category": "Turnus",
+      "documentCode": "KV-019",
+      "coverage": 0.21,
+      "needsReview": true,
+      "groupId": "r0"
+    },
+    {
+      "id": "q10",
+      "text": "Kan jeg ta ut fedrekvoten som 50 % permisjon over et helt år?",
+      "reference": "INC0412377 · 26. aug",
+      "category": "Permisjon",
+      "documentCode": "KV-011",
+      "coverage": 0.34,
+      "needsReview": false
+    },
+    {
+      "id": "q11",
+      "text": "Hva skjer med fedrekvoten hvis jeg blir syk mens jeg har permisjon?",
+      "reference": "INC0412051 · 22. aug",
+      "category": "Permisjon",
+      "documentCode": "KV-011",
+      "coverage": 0.38,
+      "needsReview": false
+    },
+    {
+      "id": "q12",
+      "text": "Kan jeg kombinere gradert uttak med redusert stilling?",
+      "reference": "INC0411655 · 15. aug",
+      "category": "Permisjon",
+      "documentCode": "KV-036",
+      "coverage": 0.36,
+      "needsReview": false
+    },
+    {
+      "id": "q13",
+      "text": "Kan jeg velge selv om overtiden skal utbetales eller avspaseres?",
+      "reference": "INC0412819 · 1. sep",
+      "category": "Lønn og tillegg",
+      "documentCode": "KV-005",
+      "coverage": 0.44,
+      "needsReview": false
+    },
+    {
+      "id": "q14",
+      "text": "Hvor lenge kan jeg spare avspasering før den må tas ut?",
+      "reference": "INC0412163 · 23. aug",
+      "category": "Lønn og tillegg",
+      "documentCode": "KV-005",
+      "coverage": 0.4,
+      "needsReview": false
+    },
+    {
+      "id": "q15",
+      "text": "Blir overtidstillegget med når timene avspaseres?",
+      "reference": "INC0411590 · 14. aug",
+      "category": "Lønn og tillegg",
+      "documentCode": "KV-002",
+      "coverage": 0.43,
+      "needsReview": false
+    },
+    {
+      "id": "q16",
+      "text": "Hvem bestiller PC og tilganger til en ny ansatt, og hvor lang tid før oppstart?",
+      "reference": "INC0412955 · 4. sep",
+      "category": "Ansettelse",
+      "documentCode": "KV-028",
+      "coverage": 0.25,
+      "needsReview": false
+    },
+    {
+      "id": "q17",
+      "text": "Den nye ansatte har ikke fått adgangskort. Hvem skal vi kontakte?",
+      "reference": "INC0412530 · 28. aug",
+      "category": "Ansettelse",
+      "documentCode": "KV-028",
+      "coverage": 0.27,
+      "needsReview": false
+    },
+    {
+      "id": "q18",
+      "text": "Kan en vikar få tilgang til fagsystemene før kontrakten er signert?",
+      "reference": "INC0411933 · 20. aug",
+      "category": "Ansettelse",
+      "documentCode": "KV-026",
+      "coverage": 0.3,
+      "needsReview": false
+    },
+    {
+      "id": "q19",
+      "text": "Jeg ble sykmeldt i ferien. Kan jeg få feriedagene tilbake?",
+      "reference": "INC0412644 · 29. aug",
+      "category": "Ferie",
+      "documentCode": "KV-007",
+      "coverage": 0.46,
+      "needsReview": false
+    },
+    {
+      "id": "q20",
+      "text": "Kan jeg ta ut ferie mens jeg er delvis sykmeldt?",
+      "reference": "INC0412290 · 25. aug",
+      "category": "Ferie",
+      "documentCode": "KV-014",
+      "coverage": 0.43,
+      "needsReview": false
+    },
+    {
+      "id": "q21",
+      "text": "Må jeg melde fra til NAV hvis jeg reiser bort mens jeg er sykmeldt?",
+      "reference": "INC0411788 · 18. aug",
+      "category": "Ferie",
+      "documentCode": "KV-052",
+      "coverage": 0.47,
+      "needsReview": false
+    },
+    {
+      "id": "q22",
+      "text": "Hvilken lønn får jeg for august når jeg bytter enhet den 15.?",
+      "reference": "INC0412871 · 2. sep",
+      "category": "Lønn og tillegg",
+      "documentCode": "KV-002",
+      "coverage": 0.5,
+      "needsReview": false
+    },
+    {
+      "id": "q23",
+      "text": "Følger feriepengene med til den nye enheten ved intern overgang?",
+      "reference": "INC0412399 · 26. aug",
+      "category": "Lønn og tillegg",
+      "documentCode": "KV-047",
+      "coverage": 0.55,
+      "needsReview": false
+    },
+    {
+      "id": "q24",
+      "text": "Hvem godkjenner lønnsendringen når jeg går over til ny stilling internt?",
+      "reference": "INC0411866 · 19. aug",
+      "category": "Lønn og tillegg",
+      "documentCode": "KV-047",
+      "coverage": 0.52,
+      "needsReview": false
+    },
+    {
+      "id": "q25",
+      "text": "Kan jeg få permisjon i to måneder for å ta vare på moren min?",
+      "reference": "INC0412720 · 31. aug",
+      "category": "Permisjon",
+      "documentCode": "KV-060",
+      "coverage": 0.66,
+      "needsReview": false
+    },
+    {
+      "id": "q26",
+      "text": "Må jeg dokumentere at pårørende trenger pleie for å få permisjon?",
+      "reference": "INC0412108 · 22. aug",
+      "category": "Permisjon",
+      "documentCode": "KV-060",
+      "coverage": 0.71,
+      "needsReview": false
+    },
+    {
+      "id": "q27",
+      "text": "Kan arbeidsgiver si nei til permisjon uten lønn?",
+      "reference": "INC0411744 · 17. aug",
+      "category": "Permisjon",
+      "documentCode": "KV-060",
+      "coverage": 0.74,
+      "needsReview": false
+    },
+    {
+      "id": "q28",
+      "text": "Hva er fristen for å levere reiseregning etter en kursreise?",
+      "reference": "INC0412801 · 1. sep",
+      "category": "Reiseregning",
+      "documentCode": "KV-033",
+      "coverage": 0.82,
+      "needsReview": false
+    },
+    {
+      "id": "q29",
+      "text": "Kan jeg få dekket parkering når jeg kjører egen bil i jobb?",
+      "reference": "INC0412237 · 24. aug",
+      "category": "Reiseregning",
+      "documentCode": "KV-033",
+      "coverage": 0.77,
+      "needsReview": false
+    },
+    {
+      "id": "q30",
+      "text": "Hvordan legger jeg ved kvitteringer når jeg har betalt med privat kort?",
+      "reference": "INC0411611 · 14. aug",
+      "category": "Reiseregning",
+      "documentCode": "KV-033",
+      "coverage": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "q31",
+      "text": "Hvor registrerer jeg dagene jeg jobber hjemmefra?",
+      "reference": "INC0412566 · 28. aug",
+      "category": "Hjemmekontor",
+      "documentCode": "KV-044",
+      "coverage": 0.79,
+      "needsReview": false
+    },
+    {
+      "id": "q32",
+      "text": "Hvor mange dager i uken kan jeg ha hjemmekontor?",
+      "reference": "INC0412012 · 21. aug",
+      "category": "Hjemmekontor",
+      "documentCode": "KV-044",
+      "coverage": 0.73,
+      "needsReview": false
+    },
+    {
+      "id": "q33",
+      "text": "Får jeg dekket skjerm og kontorstol til hjemmekontoret?",
+      "reference": "INC0411699 · 15. aug",
+      "category": "Hjemmekontor",
+      "documentCode": "KV-044",
+      "coverage": 0.68,
+      "needsReview": false
+    },
+    {
+      "id": "q34",
+      "text": "Hvor mange egenmeldingsdager har jeg i året?",
+      "reference": "INC0413011 · 5. sep",
+      "category": "Sykefravær",
+      "documentCode": "KV-014",
+      "coverage": 0.41,
+      "needsReview": false
+    },
+    {
+      "id": "q35",
+      "text": "Kan jeg bruke egenmelding to ganger på rad for samme sykdom?",
+      "reference": "INC0413024 · 5. sep",
+      "category": "Sykefravær",
+      "documentCode": "KV-014",
+      "coverage": 0.35,
+      "needsReview": false
+    },
+    {
+      "id": "q36",
+      "text": "Må jeg ringe lederen min samme dag som jeg er syk?",
+      "reference": "INC0412990 · 4. sep",
+      "category": "Sykefravær",
+      "documentCode": "KV-014",
+      "coverage": 0.38,
+      "needsReview": false
+    },
+    {
+      "id": "q37",
+      "text": "Gjelder egenmeldingen også for korttidsfravær i turnus?",
+      "reference": "INC0412976 · 4. sep",
+      "category": "Sykefravær",
+      "documentCode": "KV-014",
+      "coverage": 0.27,
+      "needsReview": false
+    },
+    {
+      "id": "q38",
+      "text": "Når må sommerferien være avtalt med lederen?",
+      "reference": "INC0412801 · 1. sep",
+      "category": "Ferie",
+      "documentCode": "KV-007",
+      "coverage": 0.36,
+      "needsReview": false
+    },
+    {
+      "id": "q39",
+      "text": "Kan jeg få utbetalt feriepenger for ferie jeg ikke rakk å ta?",
+      "reference": "INC0412760 · 31. aug",
+      "category": "Ferie",
+      "documentCode": "KV-007",
+      "coverage": 0.31,
+      "needsReview": false
+    },
+    {
+      "id": "q40",
+      "text": "Hvor mange ferieuker har jeg krav på?",
+      "reference": "INC0412702 · 30. aug",
+      "category": "Ferie",
+      "documentCode": "KV-007",
+      "coverage": 0.5,
+      "needsReview": false
+    },
+    {
+      "id": "q41",
+      "text": "Hvor langt frem i tid må turnusplanen være klar?",
+      "reference": "INC0412655 · 29. aug",
+      "category": "Turnus",
+      "documentCode": "KV-019",
+      "coverage": 0.29,
+      "needsReview": false
+    },
+    {
+      "id": "q42",
+      "text": "Kan jeg be om å slippe helgevakter i en periode?",
+      "reference": "INC0412590 · 28. aug",
+      "category": "Turnus",
+      "documentCode": "KV-019",
+      "coverage": 0.33,
+      "needsReview": false
+    },
+    {
+      "id": "q43",
+      "text": "Kan jeg få dekket tannlegeregningen min av arbeidsgiver?",
+      "reference": "INC0413040 · 6. sep",
+      "category": "Helse",
+      "documentCode": "KV-050",
+      "coverage": 0.12,
+      "needsReview": true
+    },
+    {
+      "id": "q44",
+      "text": "Hvor kan jeg parkere når jeg skal på møte på rådhuset?",
+      "reference": "INC0413052 · 6. sep",
+      "category": "Praktisk",
+      "documentCode": "KV-033",
+      "coverage": 0.09,
+      "needsReview": true
+    },
+    {
+      "id": "q45",
+      "text": "Hva er passordet til gjestenettverket?",
+      "reference": "INC0413066 · 6. sep",
+      "category": "IT",
+      "documentCode": "KV-064",
+      "coverage": 0.05,
+      "needsReview": true
+    },
+    {
+      "id": "q46",
+      "text": "Hvordan melder jeg fra om en nestenulykke på avdelingen?",
+      "reference": "INC0413071 · 7. sep",
+      "category": "HMS",
+      "documentCode": "KV-050",
+      "coverage": 0.19,
+      "needsReview": true
+    }
+  ],
+  "reviewGroups": [
+    {
+      "id": "r0",
+      "headingQuestionId": "q07"
+    }
+  ],
+  "documents": [
+    {
+      "code": "KV-002",
+      "name": "Lønnsrutine – tillegg og trekk",
+      "uploadedLabel": "7. sep 2026"
+    },
+    {
+      "code": "KV-005",
+      "name": "Rutine for overtid og merarbeid",
+      "uploadedLabel": "21. sep 2026"
+    },
+    {
+      "code": "KV-007",
+      "name": "Ferierutine for fast ansatte",
+      "uploadedLabel": "7. okt 2026"
+    },
+    {
+      "code": "KV-011",
+      "name": "Rutine for foreldrepermisjon",
+      "uploadedLabel": "7. sep 2026"
+    },
+    {
+      "code": "KV-014",
+      "name": "Rutine for egenmelding og sykefravær",
+      "uploadedLabel": "21. sep 2026"
+    },
+    {
+      "code": "KV-019",
+      "name": "Rutine for turnusplanlegging",
+      "uploadedLabel": "7. okt 2026"
+    },
+    {
+      "code": "KV-023",
+      "name": "Rutine for ferieavvikling i turnus",
+      "uploadedLabel": "7. sep 2026"
+    },
+    {
+      "code": "KV-026",
+      "name": "Rutine for ansettelsesprosessen",
+      "uploadedLabel": "21. sep 2026"
+    },
+    {
+      "code": "KV-028",
+      "name": "Sjekkliste for onboarding",
+      "uploadedLabel": "7. okt 2026"
+    },
+    {
+      "code": "KV-031",
+      "name": "Retningslinje for velferdspermisjon",
+      "uploadedLabel": "7. sep 2026"
+    },
+    {
+      "code": "KV-033",
+      "name": "Rutine for reiseregning og utlegg",
+      "uploadedLabel": "21. sep 2026"
+    },
+    {
+      "code": "KV-036",
+      "name": "Veileder for redusert stilling",
+      "uploadedLabel": "7. okt 2026"
+    },
+    {
+      "code": "KV-041",
+      "name": "Retningslinje for tillegg og ubekvem arbeidstid",
+      "uploadedLabel": "7. sep 2026"
+    },
+    {
+      "code": "KV-044",
+      "name": "Retningslinje for hjemmekontor",
+      "uploadedLabel": "21. sep 2026"
+    },
+    {
+      "code": "KV-047",
+      "name": "Rutine for intern mobilitet",
+      "uploadedLabel": "7. okt 2026"
+    },
+    {
+      "code": "KV-050",
+      "name": "Rutine for bedriftshelsetjenesten",
+      "uploadedLabel": "7. sep 2026"
+    },
+    {
+      "code": "KV-052",
+      "name": "Veileder for nærværsoppfølging",
+      "uploadedLabel": "21. sep 2026"
+    },
+    {
+      "code": "KV-060",
+      "name": "Permisjonsreglement",
+      "uploadedLabel": "7. okt 2026"
+    },
+    {
+      "code": "KV-061",
+      "name": "Rutine for varsling av kritikkverdige forhold",
+      "uploadedLabel": "7. sep 2026"
+    },
+    {
+      "code": "KV-064",
+      "name": "Retningslinje for bruk av sosiale medier",
+      "uploadedLabel": "21. sep 2026"
+    }
+  ],
+  "sources": [
+    {
+      "name": "ServiceNow-henvendelser",
+      "count": 46,
+      "unit": "henvendelser",
+      "uploadedLabel": "12. september 2026"
+    },
+    {
+      "name": "Kvaliteket-rutiner",
+      "count": 20,
+      "unit": "PDF-er",
+      "uploadedLabel": "12. september 2026"
+    }
+  ]
+}

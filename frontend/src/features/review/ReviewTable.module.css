@@ -1,0 +1,35 @@
+.text {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.meta {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--color-text-faint);
+}
+
+.bestMatch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13.5px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.decision {
+  font-size: 13px;
+  color: var(--color-text-body);
+}

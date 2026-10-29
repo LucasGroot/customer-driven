@@ -1,0 +1,20 @@
+.pill {
+  cursor: pointer;
+  padding: 6px 13px;
+  border-radius: var(--radius-pill);
+  font-size: 12.5px;
+  border: 1px solid var(--color-border-input);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
+.pill:hover {
+  border-color: var(--color-accent-border);
+}
+
+.selected,
+.selected:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-surface);
+}
