@@ -88,7 +88,7 @@ def test_every_question_points_to_its_best_routine_and_score():
 def test_questions_with_a_best_score_under_the_threshold_go_to_review(monkeypatch):
     monkeypatch.setattr(snapshot_builder, "MIN_RELEVANCE", 0.35)
 
-    flagged = [question.id for question in make_snapshot().questions if question.needs_review]
+    flagged = [question.id for question in make_snapshot().questions if question.question_need_review]
 
     # INC2 and INC3 have the only best scores under 0.35 (0.2 and 0.3)
     assert flagged == ["INC2", "INC3"]
@@ -97,7 +97,7 @@ def test_questions_with_a_best_score_under_the_threshold_go_to_review(monkeypatc
 def test_a_best_score_exactly_on_the_threshold_is_not_sent_to_review(monkeypatch):
     monkeypatch.setattr(snapshot_builder, "MIN_RELEVANCE", 0.3)
 
-    flagged = [question.id for question in make_snapshot().questions if question.needs_review]
+    flagged = [question.id for question in make_snapshot().questions if question.question_need_review]
 
     assert flagged == ["INC2"]
 

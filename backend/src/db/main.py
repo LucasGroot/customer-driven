@@ -66,7 +66,7 @@ def snapshot():
         cur.execute("""
     select distinct on (q.question_id)
            q.question_id, q.question_title, q.question_date,
-           q.needs_review,
+           q.question_need_review,
            a.routine_id, a.similarity,
            coalesce(t.tags, '') as category
     from question q
@@ -102,7 +102,7 @@ def snapshot():
                 "category": q["category"] or "",
                 "documentCode": q["routine_id"],
                 "coverage": q["similarity"] or 0,
-                "needsReview": bool(q["needs_review"]),
+                "needsReview": bool(q["question_need_review"]),
             }
             for q in questions
         ],

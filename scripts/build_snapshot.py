@@ -54,7 +54,7 @@ def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
     )
 
     Path(output_path).write_text(json.dumps(snapshot_to_json_dict(snapshot), ensure_ascii=False), encoding="utf-8")
-    flagged = sum(question.needs_review for question in snapshot.questions)
+    flagged = sum(question.question_need_review for question in snapshot.questions)
     print(f"Wrote {len(snapshot.questions)} questions ({flagged} for review in "
           f"{len(snapshot.review_groups)} groups) and {len(snapshot.documents)} routines to {output_path}")
 

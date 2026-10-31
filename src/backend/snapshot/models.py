@@ -24,7 +24,7 @@ class AskedQuestion(CamelCaseModel):
     category: str
     document_code: str
     coverage: float
-    needs_review: bool
+    question_need_review: bool
     group_id: str | None = None
 
 

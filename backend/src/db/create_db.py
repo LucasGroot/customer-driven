@@ -56,7 +56,7 @@ def create_question():
         cur = conn.cursor()
         try:
             cur.execute("""create table question (                                                
-        question_id varchar(10) primary key, --INCXXXXXXX ?
+        question_id varchar(10) primary key, --INCXXXXXXX
         question_title text,
         question_summary text,
         question_text text,

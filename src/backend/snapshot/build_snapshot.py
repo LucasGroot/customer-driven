@@ -99,7 +99,7 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
     scores = scores.dropna(axis=1, how="all")
     best_score = scores.max(axis=1)
     best_filename = scores.idxmax(axis=1)
-    needs_review = best_score < MIN_RELEVANCE
+    question_need_review = best_score < MIN_RELEVANCE
     categories = questions[SERVICE_COLUMN].fillna(UNKNOWN_CATEGORY)
     # The export has no creation date for a ticket, so every ticket gets the day it was uploaded
     uploaded = format_short_norwegian_date(questions_uploaded)
@@ -121,11 +121,11 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
             category=category,
             document_code=split_routine_filename(filename)[0],
             coverage=round(float(coverage), 3),
-            needs_review=bool(flagged),
+            question_need_review=bool(flagged),
             group_id=group_of_question.get(str(question_id)),
         )
         for question_id, text, category, filename, coverage, flagged in zip(
-            questions.index, questions["text"], categories, best_filename, best_score, needs_review
+            questions.index, questions["text"], categories, best_filename, best_score, question_need_review
         )
     ]
     documents = []

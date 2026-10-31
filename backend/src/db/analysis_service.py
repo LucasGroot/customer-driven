@@ -13,11 +13,11 @@ def save_analysis(routines, questions, matches, themes):
         """, routines)
 
         execute_values(cur, """
-            insert into question (question_id, question_title, question_date, needs_review)
+            insert into question (question_id, question_title, question_date, question_need_review)
             values %s
             on conflict (question_id) do update
               set question_title = excluded.question_title,
-                  needs_review   = excluded.needs_review
+                  question_need_review   = excluded.question_need_review
         """, questions)
 
         question_ids = [q[0] for q in questions]
