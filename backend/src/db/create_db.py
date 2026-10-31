@@ -126,6 +126,21 @@ def create_routine_answer_question():
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
+def create_question_decision():
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute("""create table question_decision (
+        question_id varchar(10) primary key references question,
+        kind        text not null check (kind in ('discarded', 'mapped')),
+        routine_id  varchar(6) references routine,
+        decided_at  timestamp not null default now(),
+        check ((kind = 'mapped') = (routine_id is not null))
+        );""")
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
 
 
 if __name__ == "__main__":
@@ -137,3 +152,4 @@ if __name__ == "__main__":
     create_question_theme()
     create_routine_theme()
     create_routine_answer_question()
+    create_question_decision()

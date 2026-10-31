@@ -1,15 +1,19 @@
 import os
 from contextlib import contextmanager
 import psycopg2
+from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from psycopg2.extras import RealDictCursor
+from pydantic import BaseModel
+from typing import Literal
 import threading
 
 
 from fastapi import BackgroundTasks, HTTPException
 from src.db.analysis_service import save_analysis
 from src.db.ai_adapter import run_ai
+from src.db import review_service
+
 
 _lock = threading.Lock()
 _state = {"status": "idle", "completedSteps": 0, "error": None}
@@ -19,6 +23,22 @@ app = FastAPI()
 
 MONTHS = ["jan", "feb", "mar", "apr", "mai", "jun",
           "jul", "aug", "sep", "okt", "nov", "des"]
+
+
+class StatusBody(BaseModel):
+    status: Literal["new", "updating", "done"]
+
+class OwnerBody(BaseModel):
+    owner: str
+
+class DecisionBody(BaseModel):
+    questionIds: list[str]
+    kind: Literal["discarded", "mapped"]
+    routineCode: str | None = None
+
+class UndoBody(BaseModel):
+    questionIds: list[str]
+
 
 def label(d) -> str:
     return f"{d.day}. {MONTHS[d.month - 1]} {d.year}" if d else ""
@@ -120,3 +140,39 @@ def run_analysis(background: BackgroundTasks):
 def analysis_status():
     with _lock:
         return dict(_state)
+
+
+@app.get("/api/review")
+def get_review():
+    return review_service.load_review()
+
+
+@app.put("/api/routines/{routine_code}/status", status_code=204)
+def put_status(routine_code: str, body: StatusBody):
+    try:
+        review_service.set_status(routine_code, body.status)
+    except LookupError as e:
+        raise HTTPException(404, str(e))
+
+
+@app.put("/api/routines/{routine_code}/owner", status_code=204)
+def put_owner(routine_code: str, body: OwnerBody):
+    try:
+        review_service.set_owner(routine_code, body.owner)
+    except LookupError as e:
+        raise HTTPException(404, str(e))
+
+
+@app.put("/api/questions/decisions", status_code=204)
+def put_decisions(body: DecisionBody):
+    if (body.kind == "mapped") != (body.routineCode is not None):
+        raise HTTPException(422, "routineCode kreves for 'mapped', og er forbudt ellers.")
+    try:
+        review_service.decide(body.questionIds, body.kind, body.routineCode)
+    except psycopg2.errors.ForeignKeyViolation:
+        raise HTTPException(400, "Ukjent spørsmål eller rutine.")
+
+
+@app.post("/api/questions/decisions/undo", status_code=204)
+def post_undo(body: UndoBody):
+    review_service.undo(body.questionIds)
