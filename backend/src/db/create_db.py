@@ -21,7 +21,7 @@ def add_type():
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
-def create_leader(conn):
+def create_leader():
     try:
         cur = conn.cursor()
         try:
@@ -145,7 +145,7 @@ def create_question_decision():
 
 if __name__ == "__main__":
     add_type()
-    create_leader(conn)
+    create_leader()
     create_routine()
     create_question()
     create_settings()

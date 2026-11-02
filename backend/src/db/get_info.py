@@ -46,7 +46,7 @@ def select_question_on_theme(question_theme):
     try:
         cur = conn.cursor()
         try:
-            cur.execute(""" select * from question
+            cur.execute(""" select question_id from question_theme
             where question_theme = %s
         ;""", (question_theme,))
             return cur.fetchall()
@@ -264,16 +264,14 @@ def select_routine_in_last_date_order():
         conn.rollback()
         return []
 
-
-
-
-def select_routine_under_x(x):
+def get_routine_owner(routine_id):
     try:
         cur = conn.cursor()
         try:
-            cur.execute(""" select * from routine
-            where XX < %s
-        ;""", (x,))
+            cur.execute(""" select routine_responsible
+            from routine
+            where routine_id = %s
+        ;""", (routine_id,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -283,43 +281,6 @@ def select_routine_under_x(x):
         print(error)
         conn.rollback()
         return []
-
-
-def select_routine_over_x(x):
-    try:
-        cur = conn.cursor()
-        try:
-            cur.execute(""" select * from routine
-            where XX > %s
-        ;""", (x,))
-            return cur.fetchall()
-        except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-            conn.rollback()
-            return []
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-        conn.rollback()
-        return []
-
-
-def select_routine_between_x_and_y(x, y):
-    try:
-        cur = conn.cursor()
-        try:
-            cur.execute(""" select * from routine
-            where XX > %s and XX < %s
-        ;""", (x, y))
-            return cur.fetchall()
-        except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-            conn.rollback()
-            return []
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-        conn.rollback()
-        return []
-
 
 def count_routine_status(status):
     try:
@@ -357,3 +318,73 @@ def repartion_routine_status():
 #                                             OTHER                                                   #
 #                                                                                                       #
 #########################################################################################################
+
+def select_similarity_under_x(x):
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute(""" select * from routine_answer_question
+            where similarity < %s
+        ;""", (x,))
+            return cur.fetchall()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            conn.rollback()
+            return []
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        conn.rollback()
+        return []
+
+
+def select_similarity_over_x(x):
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute(""" select * from routine_answer_question
+            where similarity > %s
+        ;""", (x,))
+            return cur.fetchall()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            conn.rollback()
+            return []
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        conn.rollback()
+        return []
+
+
+def select_similarity_between_x_and_y(x, y):
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute(""" select * from routine_answer_question
+            where similarity > %s and similarity < %s
+        ;""", (x, y))
+            return cur.fetchall()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            conn.rollback()
+            return []
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        conn.rollback()
+        return []
+
+def get_decision():
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute(""" select * from question_decision
+        ;""", (x, y))
+            return cur.fetchall()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            conn.rollback()
+            return []
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        conn.rollback()
+        return []
+

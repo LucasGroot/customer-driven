@@ -55,20 +55,6 @@ def delete_question(question_to_delete):
 #########################################################################################################
 
 
-def update_routine_status(new_status, routine_to_update):
-    try:
-        cur = conn.cursor()
-        try:
-            cur.execute("""update routine
-                set routine_status = %s
-                where id_routine = %s ;""",
-                (new_status, routine_to_update))
-        except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-
-
 def delete_routine_from_raq(routine_to_delete):
     try:
         cur = conn.cursor()

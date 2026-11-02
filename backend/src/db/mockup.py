@@ -66,6 +66,54 @@ def add_question():
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
+def add_theme():
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute("""insert into question_theme values
+            ('INC1234567', 'bananas'),
+            ('INC1234567', 'ferie'),
+            ('INC1234568', 'uke')
+            ;""")
+
+            cur.execute("""insert into routine_theme values
+            ('1234-5', 'ferie'),
+            ('6789-0', 'uke')
+            ;""")
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
+def add_answer():
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute("""insert into routine_answer_question values
+            ('1234-5', 'INC1234567', 0.7),
+            ('6789-0', 'INC1234568', 0.5),
+            ('6789-0', 'INC1234567', 0.1)
+            ;""")
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
+
+def add_decision():
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute("""insert into question_decision values
+            ('INC1234567', 'mapped', '1234-5', '2026-10-31 16:53:40.28730')
+            ;""")
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
+
+
 
 
 if __name__ == "__main__":
@@ -73,3 +121,6 @@ if __name__ == "__main__":
     add_routine()
     add_settings()
     add_question()
+    add_theme()
+    add_answer()
+    add_decision()
