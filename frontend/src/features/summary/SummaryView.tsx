@@ -14,6 +14,9 @@ import { coverageBand, isWellCovered } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
 import type { AnalysisSnapshot } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
+import { rankRoutines } from "../../domain/priority";
+import type { PriorityWeights, RoutineCode } from "../../domain/types";
+import {hideWellCovered} from "../overview/routineFilters";
 import styles from "./SummaryView.module.css";
 
 interface SummaryViewProps {
@@ -22,6 +25,7 @@ interface SummaryViewProps {
   pendingCount: number;
   review: RoutineReview;
   hideAbovePercent: number;
+  weights: PriorityWeights;
 }
 
 export function SummaryView({
@@ -30,6 +34,7 @@ export function SummaryView({
   pendingCount,
   review,
   hideAbovePercent,
+  weights,
 }: SummaryViewProps) {
   const total = routines.length || 1;
   const shownCount = routines.filter((stats) => !isWellCovered(stats, hideAbovePercent)).length;
@@ -41,6 +46,9 @@ export function SummaryView({
     status,
     count: routines.filter((stats) => review.statusOf(stats.routine.code) === status).length,
   }));
+  const ranked = rankRoutines(routines, weights);
+  const shown = hideWellCovered(ranked, hideAbovePercent);
+  const highPriorityCount = shown.filter((entry) => entry.band === "high").length;
 
   return (
     <section className={styles.view}>
@@ -51,16 +59,20 @@ export function SummaryView({
 
       <StatGrid>
         <StatCard label="Henvendelser" value={String(snapshot.questions.length)} note="analysert" />
-        <StatCard label="Rutiner" value={String(snapshot.documents.length)} note="i Kvaliteket" />
         <StatCard
           label="Rutiner med henvendelser"
-          value={String(routines.length)}
+          value={`${String(routines.length)} / ${String(snapshot.documents.length)}`}
           note={`${String(shownCount)} vises i listen`}
         />
         <StatCard
           label="Til gjennomgang"
           value={String(pendingCount)}
           note="henvendelser uten rutine"
+        />
+        <StatCard
+          label="Høy prioritet"
+          value={String(highPriorityCount)}
+          note="bør tas denne måneden"
         />
       </StatGrid>
 
@@ -102,6 +114,18 @@ export function SummaryView({
           </ul>
         </Card>
       </div>
+      <Card title="Datagrunnlag">
+        <div>
+          {snapshot.sources.map((source) => (
+            <div key={source.name} className={styles.source}>
+              <span className={styles.sourceName}>{source.name}</span>
+              <span className={styles.sourceDetail}>
+                {source.count} {source.unit} · lastet opp {source.uploadedLabel}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Card>
     </section>
   );
 }

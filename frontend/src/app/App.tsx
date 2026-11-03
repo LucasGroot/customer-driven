@@ -11,7 +11,7 @@ import { useAnalysisRun } from "../hooks/useAnalysisRun";
 import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
 import { useRoutineReview } from "../hooks/useRoutineReview";
 import { useSnapshot } from "../hooks/useSnapshot";
-import { DEFAULT_HIDE_ABOVE_PERCENT, isWellCovered } from "../domain/priority";
+import { DEFAULT_HIDE_ABOVE_PERCENT, isWellCovered, WEIGHT_RANGE } from "../domain/priority";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
 import { Sidebar } from "./Sidebar";
@@ -158,6 +158,7 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
             pendingCount={pendingCount}
             review={review}
             hideAbovePercent={hideAbovePercent}
+            weights={settings.weights}
           />
         ) : null}
 

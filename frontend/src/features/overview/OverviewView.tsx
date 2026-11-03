@@ -43,7 +43,6 @@ export function OverviewView({
   const shown = hideWellCovered(ranked, hideAbovePercent);
   const hiddenCount = ranked.length - shown.length;
   const visible = filterRoutines(shown, filter, review.statusOf);
-  const highPriorityCount = shown.filter((entry) => entry.band === "high").length;
 
   return (
     <section className={styles.view}>
@@ -63,11 +62,7 @@ export function OverviewView({
           value={String(shown.length)}
           note={`av ${String(ranked.length)} rutiner med henvendelser`}
         />
-        <StatCard
-          label="Høy prioritet"
-          value={String(highPriorityCount)}
-          note="bør tas denne måneden"
-        />
+        
         <StatCard
           label="Til gjennomgang"
           value={String(pendingCount)}
