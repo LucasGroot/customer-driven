@@ -82,33 +82,6 @@ export function RoutineDetailView({
         </div>
       </Card>
 
-      <Card title="Henvendelser knyttet til rutinen">
-        {questionsLowestScoreFirst.map(({ question, byHand }) => (
-          <div key={question.id} className={styles.question}>
-            <div className={styles.questionText}>
-              <p className={styles.quoteText}>{question.text}</p>
-              <div className={styles.quoteMeta}>
-                {question.reference}
-                {byHand ? " · knyttet til rutinen manuelt" : ""}
-              </div>
-            </div>
-            <CoverageMeter coverage={question.coverage} />
-            {byHand ? (
-              <Button
-                variant="link"
-                onClick={() => {
-                  review.undoDecision(question.id);
-                }}
-              >
-                Angre
-              </Button>
-            ) : (
-              <span />
-            )}
-          </div>
-        ))}
-      </Card>
-
       <Card title="Status">
         <div className={styles.statusOptions}>
           {STATUS_OPTIONS.map((status) => (
@@ -144,6 +117,35 @@ export function RoutineDetailView({
           </div>
         </div>
       </Card>
+
+      <Card title="Henvendelser knyttet til rutinen">
+        {questionsLowestScoreFirst.map(({ question, byHand }) => (
+          <div key={question.id} className={styles.question}>
+            <div className={styles.questionText}>
+              <p className={styles.quoteText}>{question.text}</p>
+              <div className={styles.quoteMeta}>
+                {question.reference}
+                {byHand ? " · knyttet til rutinen manuelt" : ""}
+              </div>
+            </div>
+            <CoverageMeter coverage={question.coverage} />
+            {byHand ? (
+              <Button
+                variant="link"
+                onClick={() => {
+                  review.undoDecision(question.id);
+                }}
+              >
+                Angre
+              </Button>
+            ) : (
+              <span />
+            )}
+          </div>
+        ))}
+      </Card>
+
+      
     </section>
   );
 }

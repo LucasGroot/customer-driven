@@ -15,7 +15,7 @@ import type { RoutineStats } from "../../domain/routines";
 import type { AnalysisSnapshot } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { rankRoutines } from "../../domain/priority";
-import type { PriorityWeights, RoutineCode } from "../../domain/types";
+import type { PriorityWeights } from "../../domain/types";
 import {hideWellCovered} from "../overview/routineFilters";
 import styles from "./SummaryView.module.css";
 

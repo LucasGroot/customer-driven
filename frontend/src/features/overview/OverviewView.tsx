@@ -2,8 +2,6 @@ import { Button } from "../../components/Button";
 import { FilterPill } from "../../components/FilterPill";
 import { NumberField } from "../../components/NumberField";
 import { PageIntro } from "../../components/PageIntro";
-import { StatCard } from "../../components/StatCard";
-import { StatGrid } from "../../components/StatGrid";
 import { rankRoutines } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
 import type { PriorityWeights, RoutineCode } from "../../domain/types";
@@ -55,20 +53,6 @@ export function OverviewView({
           Kjør ny analyse
         </Button>
       </div>
-
-      <StatGrid>
-        <StatCard
-          label="Rutiner vist"
-          value={String(shown.length)}
-          note={`av ${String(ranked.length)} rutiner med henvendelser`}
-        />
-        
-        <StatCard
-          label="Til gjennomgang"
-          value={String(pendingCount)}
-          note="henvendelser uten rutine"
-        />
-      </StatGrid>
 
       <div className={styles.filters}>
         {ROUTINE_FILTERS.map((option) => (
