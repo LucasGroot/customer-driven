@@ -1,4 +1,4 @@
-from backend.ai.similarity_metrics.shared_logic import load_corpus, top_k_per_routine
+from backend.ai.similarity_metrics.shared_logic import load_corpus, top_k_per_routine, SIMILARITY_MODEL_NAME
 
 from sentence_transformers import SentenceTransformer
 import json
@@ -21,7 +21,6 @@ api_url = os.environ["API_URL"]
 # vertex_ai/gemini-3.1-pro-preview
 
 DECISION_MODEL = "vertex_ai/gemini-3.8-flash"
-EMBEDDING_MODEL_NAME = "NbAiLab/borealis-embed-212m"
 
 N_ROUTINES = 3  # routines shown to the LLM per question
 DRY_RUN = False  # True: only print prompts, don't call the LLM
@@ -97,7 +96,7 @@ def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
     corpus = load_corpus(questions_path=questions_path, routines_path=routines_path)
     questions_df = corpus.questions
 
-    model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+    model = SentenceTransformer(SIMILARITY_MODEL_NAME)
     question_embeddings = model.encode(questions_df["text"].tolist(), normalize_embeddings=True)
     chunk_embeddings = model.encode(corpus.chunk_texts, normalize_embeddings=True)
     chunk_scores = question_embeddings @ chunk_embeddings.T
