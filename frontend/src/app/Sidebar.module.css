@@ -46,7 +46,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 10px 12px;
-  border-radius: var(--radius-md);
+  border-bottom: 1px solid black;
   font-size: 13.5px;
   line-height: 1.2;
   text-align: left;
