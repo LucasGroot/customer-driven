@@ -98,6 +98,7 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
   }, []);
 
   const routines = routinesWithQuestions(snapshot, review.decisionOf);
+  const routinesByName = [...snapshot.documents].sort((a, b) => a.name.localeCompare(b.name, "nb-NO"));
   const pendingCount = countPendingQuestions(snapshot, review.decisionOf);
   const selectedRoutine = routines.find((stats) => stats.routine.code === selectedRoutineCode);
   // A routine loses its place in the list when its last question is moved away
@@ -150,6 +151,7 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
         {shownView === "detail" && selectedRoutine !== undefined ? (
           <RoutineDetailView
             stats={selectedRoutine}
+            allRoutines={routinesByName}
             documentOwners={snapshot.documentOwners}
             weights={settings.weights}
             review={review}

@@ -129,7 +129,7 @@
 
 .question {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 170px auto;
+  grid-template-columns: minmax(0, 1fr) 170px 260px;
   gap: 16px;
   align-items: center;
   padding: 12px 0;
@@ -168,4 +168,17 @@
   .question {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+.moveActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.moveButtons {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }

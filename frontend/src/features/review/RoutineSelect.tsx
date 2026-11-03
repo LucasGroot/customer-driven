@@ -5,11 +5,12 @@ interface RoutineSelectProps {
   value: RoutineCode;
   /** Every routine, alphabetically. */
   routines: RoutineDocument[];
+  /** When set, an unselectable first option shown while `value` is "". */
+  placeholder?: string;
   onChange: (routineCode: RoutineCode) => void;
 }
 
-/** Picks the routine a question, or a group of questions, belongs to. */
-export function RoutineSelect({ value, routines, onChange }: RoutineSelectProps) {
+export function RoutineSelect({ value, routines, placeholder, onChange }: RoutineSelectProps) {
   return (
     <select
       className={styles.select}
@@ -19,6 +20,11 @@ export function RoutineSelect({ value, routines, onChange }: RoutineSelectProps)
         onChange(event.target.value);
       }}
     >
+      {placeholder !== undefined ? (
+        <option value="" disabled>
+          {placeholder}
+        </option>
+      ) : null}
       {routines.map((routine) => (
         <option key={routine.code} value={routine.code}>
           {routine.name}
