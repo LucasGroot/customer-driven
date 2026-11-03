@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
 import type { CurrentUser } from "../auth/currentUser";
+import { nextSort, type SortState } from "../components/sort";
 import { OverviewView } from "../features/overview/OverviewView";
 import { ReviewView } from "../features/review/ReviewView";
 import { RunAnalysisView } from "../features/run/RunAnalysisView";
@@ -59,6 +60,8 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
   const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(null);
   const [filter, setFilter] = useState<RoutineFilter>("all");
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
+  // Kept here so the sort survives leaving and re-entering the list; null = priority order.
+  const [routineSort, setRoutineSort] = useState<SortState | null>(null);
   const settings = useAnalysisSettings();
   const review = useRoutineReview();
   const run = useAnalysisRun();
@@ -131,6 +134,13 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
             onFilterChange={setFilter}
             hideAbovePercent={hideAbovePercent}
             onHideAboveChange={setHideAbovePercent}
+            sort={routineSort}
+            onSortChange={(sortKey) => {
+              setRoutineSort((current) => nextSort(current, sortKey));
+            }}
+            onResetSort={() => {
+              setRoutineSort(null);
+            }}
             onOpenRoutine={openRoutine}
             onOpenReview={() => { go({ view: "review" }); }}
             onOpenSettings={() => { go({ view: "run" }); }}
