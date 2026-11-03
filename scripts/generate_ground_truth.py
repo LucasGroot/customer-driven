@@ -135,6 +135,7 @@ def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
             "reason": answer.get("reason"),
             "best_routine_score": float(np.nanmax(routine_scores[i])),
         })
+        print(results[-1], flush=True)
 
     results_df = pd.DataFrame(results)
     if not DRY_RUN:
