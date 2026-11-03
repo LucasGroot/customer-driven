@@ -182,3 +182,33 @@
   align-items: center;
   gap: 14px;
 }
+
+.headerSide {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.pdfActions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pdfLink {
+  padding: 8px 14px;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 13.5px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.pdfLink:hover,
+.pdfLink:focus-visible {
+  border-color: var(--color-accent);
+}

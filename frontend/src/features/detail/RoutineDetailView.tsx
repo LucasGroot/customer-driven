@@ -15,7 +15,7 @@ import { classNames } from "../../components/classNames";
 import { useState } from "react";
 import { RoutineSelect } from "../review/RoutineSelect";
 import type { PriorityWeights, RoutineCode, RoutineDocument } from "../../domain/types";
-
+import { routinePdfUrl } from "./routinePdf";
 
 type QuestionItem = RoutineStats["questions"][number];
 
@@ -103,6 +103,7 @@ export function RoutineDetailView({
   onBack,
 }: RoutineDetailViewProps) {
   const { routine } = stats;
+  const pdfUrl = routinePdfUrl(routine);
   const score = priorityScore(stats, weights);
   const band = priorityBand(score);
   const factors = priorityFactors(stats, weights);
@@ -123,7 +124,9 @@ export function RoutineDetailView({
           <h1 className={styles.title}>{routine.name}</h1>
           <p className={styles.summary}>{routine.uploadedLabel}</p>
         </div>
-        <div className={styles.scorePanel}>
+        
+        <div className={styles.headerSide}>
+          <div className={styles.scorePanel}>
           <div className={styles.scoreBlock}>
             <div className={styles.scoreLabel}>Prioritet</div>
             <div className={styles.scoreValue}>{score}</div>
@@ -137,6 +140,18 @@ export function RoutineDetailView({
             <div className={styles.scoreNote}>knyttet til rutinen</div>
           </div>
         </div>
+          {pdfUrl !== null ? (
+            <div className={styles.pdfActions}>
+              <a className={styles.pdfLink} href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                Åpne PDF
+              </a>
+              <a className={styles.pdfLink} href={pdfUrl} download>
+                Last ned PDF
+              </a>
+            </div>
+          ) : null}
+        </div>
+        
       </div>
 
       <Card title="Hvorfor dette havner høyt">

@@ -54,9 +54,9 @@ interface DashboardProps {
 }
 
 function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
-  const [view, setView] = useState<ViewName>("list");
+  const [view, setView] = useState<ViewName>("summary");
   // The detail page can be opened from the list or from search; back returns there.
-  const [returnView, setReturnView] = useState<ViewName>("list");
+  const [returnView, setReturnView] = useState<ViewName>("summary");
   const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(null);
   const [filter, setFilter] = useState<RoutineFilter>("all");
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
@@ -85,7 +85,7 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
 
   useEffect(() => {
     // L'entrée actuelle (la vue de départ) devient la première "page" de l'app
-    window.history.replaceState({ view: "list", returnView: "list", routineCode: null }, "");
+    window.history.replaceState({ view: "summary", returnView: "summary", routineCode: null }, "");
   
     const onPopState = (event: PopStateEvent) => {
       const location = event.state as Location | null;
