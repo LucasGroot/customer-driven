@@ -74,7 +74,7 @@ export function OverviewView({
         ))}
         <div className={styles.hideAbove}>
           <NumberField
-            label="Skjul rutiner med snittscore over"
+            label="Skjul rutiner med snittdekning over"
             value={hideAbovePercent}
             min={0}
             max={100}
@@ -88,7 +88,7 @@ export function OverviewView({
       {hiddenCount > 0 ? (
         <p className={styles.hiddenNote}>
           {hiddenCount} {hiddenCount === 1 ? "rutine er" : "rutiner er"} skjult fordi de svarer
-          godt på henvendelsene sine, med snittscore over {hideAbovePercent} %.
+          godt på henvendelsene sine, med snittdekning over {hideAbovePercent} %.
         </p>
       ) : null}
 

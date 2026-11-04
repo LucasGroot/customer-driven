@@ -77,7 +77,7 @@ export function SummaryView({
       </StatGrid>
 
       <div className={styles.columns}>
-        <Card title="Snittscore for rutinene">
+        <Card title="Snittdekning for rutinene">
           <div className={styles.bands}>
             {coverageCounts.map(({ band, count }) => (
               <div key={band} className={styles.bandRow}>

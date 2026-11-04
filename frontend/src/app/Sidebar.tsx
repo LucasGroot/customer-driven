@@ -38,8 +38,11 @@ export function Sidebar({
   return (
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
-        <div className={styles.brandName}>Kunnskapsgap</div>
-        <div className={styles.brandSubtitle}>ServiceNow × Kvaliteket</div>
+        <button onClick={() => onNavigate("summary")}>
+          <div className={styles.brandName}>Kunnskapsgap</div>
+          <div className={styles.brandSubtitle}>ServiceNow × Kvaliteket</div>
+        </button>
+        
       </div>
 
       <nav className={styles.nav} aria-label="Hovedmeny">
