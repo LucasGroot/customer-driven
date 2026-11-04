@@ -92,24 +92,3 @@
 .sortArrowActive {
   opacity: 1;
 }
-
-.info {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  font-size: 11px;
-  font-style: italic;
-  font-weight: 600;
-  line-height: 1;
-  opacity: 0.6;
-  cursor: help;
-}
-
-.info:hover,
-.info:focus-visible {
-  opacity: 1;
-}

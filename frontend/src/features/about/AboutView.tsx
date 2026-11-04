@@ -1,10 +1,35 @@
+import { useEffect } from "react";
 import { Card } from "../../components/Card";
 import { PageIntro } from "../../components/PageIntro";
+import type { AboutTopic } from "../../domain/aboutTopics";
 import { AboutIcon } from "./AboutIcon";
 import { ABOUT_INTRO, FAQ_SECTIONS, STEPS } from "./aboutContent";
 import styles from "./AboutView.module.css";
 
-export function AboutView() {
+const HIGHLIGHT_MS = 1600;
+
+function questionId(topic: AboutTopic): string {
+  return `om-analysen-${topic}`;
+}
+
+interface AboutViewProps {
+  /** The question to open and scroll to, when the page is reached from an info bubble. */
+  openTopic: AboutTopic | null;
+}
+
+export function AboutView({ openTopic }: AboutViewProps) {
+  useEffect(() => {
+    if (openTopic === null) return;
+    const question = document.getElementById(questionId(openTopic));
+    if (!(question instanceof HTMLDetailsElement)) return;
+    question.open = true;
+    question.scrollIntoView({ behavior: "smooth", block: "center" });
+    question.animate(
+      [{ background: "var(--color-blue-100)" }, { background: "transparent" }],
+      { duration: HIGHLIGHT_MS },
+    );
+  }, [openTopic]);
+
   return (
     <section className={styles.view}>
       <PageIntro title="Om analysen" lead={ABOUT_INTRO} />
@@ -37,7 +62,7 @@ export function AboutView() {
               </div>
             </header>
             {section.questions.map((item) => (
-              <details key={item.question} className={styles.question}>
+              <details key={item.question} id={questionId(item.topic)} className={styles.question}>
                 <summary>
                   {item.question}
                   <AboutIcon name="chevron" className={styles.chevron} />

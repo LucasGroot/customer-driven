@@ -3,6 +3,7 @@
  * constants the dashboard colours with, so the page cannot drift from the numbers.
  */
 
+import type { AboutTopic } from "../../domain/aboutTopics";
 import { GOOD_COVERAGE_FROM, PARTIAL_COVERAGE_FROM } from "../../domain/priority";
 import type { AboutIconName } from "./AboutIcon";
 
@@ -42,6 +43,8 @@ export const STEPS: Step[] = [
 ];
 
 interface Question {
+  /** What other pages link to, so a question can be opened from an info bubble. */
+  topic: AboutTopic;
   question: string;
   /** One entry per paragraph. */
   answer: string[];
@@ -61,6 +64,7 @@ export const FAQ_SECTIONS: Section[] = [
     icon: "chart",
     questions: [
       {
+        topic: "coverage",
         question: "Hvordan beregnes dekning?",
         answer: [
           "Hver rutine deles inn i mindre tekstdeler som sammenlignes med henvendelsene. De mest relevante tekstdelene vurderes deretter av en språkmodell (KI), som måler hvor godt innholdet samsvarer med henvendelsen basert på betydning, ikke bare ordvalg.",
@@ -68,6 +72,7 @@ export const FAQ_SECTIONS: Section[] = [
         ],
       },
       {
+        topic: "bands",
         question: "Hva betyr Svak, Delvis og God dekning?",
         answer: [
           `Dekning under ${String(partialFrom)} % regnes som Svak, ${String(partialFrom)}–${String(goodFrom - 1)} % som Delvis og ${String(goodFrom)} % eller høyere som God. Grensene er satt ut fra hvordan resultatene fordeler seg i dag. Har du innspill til grensene, kan du kontakte oss på admin@kvaliteket.no.`,
@@ -81,12 +86,14 @@ export const FAQ_SECTIONS: Section[] = [
     icon: "flag",
     questions: [
       {
+        topic: "ranking",
         question: "Hvordan rangeres rutinene?",
         answer: [
           "Rutinene rangeres etter snittdekning, fra lavest til høyest. Rutiner med lavest snittdekning får høyest prioritet, ettersom de i gjennomsnitt samsvarer dårligst med de tilknyttede henvendelsene. Rangeringen starter på 1, der et høyere nummer betyr lavere prioritet.",
         ],
       },
       {
+        topic: "status",
         question: "Hva betyr status og rutineeier?",
         answer: [
           "Status viser hvor langt arbeidet med en rutine har kommet: «Ubehandlet» eller «Under behandling». En rutine med status Ubehandlet har ingen eier. Velger du status Under behandling, må du velge en rutineeier, slik at det er tydelig hvem som behandler rutinen.",
@@ -100,18 +107,21 @@ export const FAQ_SECTIONS: Section[] = [
     icon: "search",
     questions: [
       {
+        topic: "suggested-routine",
         question: "Hvordan velges foreslått rutine?",
         answer: [
           "Foreslått rutine er rutinen som passer best til henvendelsen. Det er systemets forslag og ikke en fasit. Hvis forslaget er feil, kan du flytte henvendelsen til en annen rutine.",
         ],
       },
       {
+        topic: "manual-review",
         question: "Hvorfor må noen henvendelser gjennomgås manuelt?",
         answer: [
           `Hvis den beste rutinen passer dårligere enn ${String(MANUAL_REVIEW_BELOW_PERCENT)} % (litt over tilfeldig gjetning), regner ikke systemet henvendelsen som koblet til noen rutine. Den havner da under «Henvendelser til manuell gjennomgang». Henvendelser som handler om det samme samles i grupper. En stor gruppe betyr at flere lurer på det samme uten at en rutine svarer godt nok. Der kan du knytte henvendelsene til en rutine eller forkaste dem.`,
         ],
       },
       {
+        topic: "knowledge-gaps",
         question: "Hvordan identifiserer analysen kunnskapshull?",
         answer: [
           "Et kunnskapshull er noe mange spør om, men som ingen rutine svarer godt på. Det vises på to måter: rutiner med lav snittdekning kommer høyt opp i rangeringen, og grupper av henvendelser uten passende rutine vises til manuell gjennomgang.",
@@ -125,18 +135,21 @@ export const FAQ_SECTIONS: Section[] = [
     icon: "database",
     questions: [
       {
+        topic: "data",
         question: "Hvor kommer henvendelsene og datoene fra?",
         answer: [
           "Henvendelsene kommer fra ServiceNow, og rutinene fra Kvaliteket. Kategorien er tjenesten henvendelsen ble registrert under. Eksporten fra ServiceNow har ikke dato for når henvendelsen ble opprettet, så datoen som vises er dagen filen ble lastet opp.",
         ],
       },
       {
+        topic: "rerun",
         question: "Hva skjer når analysen kjøres på nytt?",
         answer: [
           "Analysen bruker filene som sist ble lastet opp og erstatter forrige resultat. Den tar noen minutter, og du kan bruke resten av dashbordet imens.",
         ],
       },
       {
+        topic: "interpretation",
         question: "Hvordan bør resultatene tolkes?",
         answer: [
           "Analysen måler hvor like tekstene er i betydning. Lav dekning kan bety at rutinen er mangelfull, uklar eller bruker andre ord enn henvendelsen. Høy dekning betyr ikke nødvendigvis at rutinen gir riktig svar.",

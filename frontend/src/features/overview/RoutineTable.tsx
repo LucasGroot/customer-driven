@@ -7,16 +7,44 @@ import type { ScoredRoutine } from "../../domain/priority";
 import type { RoutineCode, RoutineStatus } from "../../domain/types";
 import styles from "./RoutineTable.module.css";
 
-const TOOLTIP = "TODO: complete";
-
 type RoutineSortKey = "rank" | "name" | "coverage" | "questions" | "status";
 
 const COLUMNS: DataTableColumn[] = [
-  { label: "Rutine", tooltip: TOOLTIP, sortKey: "name" },
-  { label: "Snittdekning", width: "170px", tooltip: TOOLTIP, sortKey: "coverage" },
-  { label: "Henvendelser", width: "120px", tooltip: TOOLTIP, sortKey: "questions" },
-  { label: "Status", width: "160px", tooltip: TOOLTIP, sortKey: "status" },
-  { label: "Prioritet", width: "124px", align: "right", tooltip: TOOLTIP, sortKey: "rank" },
+  {
+    label: "Rutine",
+    tooltip: "Rutinen i Kvaliteket som henvendelsene er knyttet til.",
+    aboutTopic: "suggested-routine",
+    sortKey: "name",
+  },
+  {
+    label: "Snittdekning",
+    width: "170px",
+    tooltip: "Gjennomsnittlig dekning for henvendelsene som er knyttet til rutinen.",
+    aboutTopic: "coverage",
+    sortKey: "coverage",
+  },
+  {
+    label: "Henvendelser",
+    width: "120px",
+    tooltip: "Antall henvendelser som er knyttet til rutinen.",
+    aboutTopic: "suggested-routine",
+    sortKey: "questions",
+  },
+  {
+    label: "Status",
+    width: "160px",
+    tooltip: "Hvor langt arbeidet med rutinen har kommet.",
+    aboutTopic: "status",
+    sortKey: "status",
+  },
+  {
+    label: "Prioritet",
+    width: "124px",
+    align: "right",
+    tooltip: "Plassen i rangeringen. Nummer 1 er rutinen som bør følges opp først.",
+    aboutTopic: "ranking",
+    sortKey: "rank",
+  },
 ];
 
 interface RoutineTableProps {
