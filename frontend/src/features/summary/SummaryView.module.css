@@ -59,3 +59,34 @@
   border-radius: 2px;
   flex: none;
 }
+
+.source {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.source:first-child {
+  padding-top: 0;
+}
+
+.source:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sourceName {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sourceDetail {
+  font-size: 13.5px;
+}
+
+.sourceUploaded {
+  color: var(--color-text-soft);
+}
