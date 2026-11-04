@@ -4,7 +4,13 @@
  */
 
 :root {
-  --color-canvas: #f6f5f2;
+  /* Light blue ramp for the page background and the menu states */
+  --color-blue-50: #e5f2ff;
+  --color-blue-100: #cce6ff;
+  --color-blue-200: #b2d9ff;
+  --color-blue-300: #99ccff;
+
+  --color-canvas: var(--color-blue-50);
   --color-surface: #ffffff;
   --color-surface-muted: #fbfaf7;
   --color-surface-quote: #f4f1ea;
