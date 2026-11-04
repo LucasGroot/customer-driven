@@ -7,6 +7,7 @@ pytest
 rank_bm25
 scikit-learn
 fastapi
+python-multipart
 uvicorn
 pydantic
 pyjwt[crypto]

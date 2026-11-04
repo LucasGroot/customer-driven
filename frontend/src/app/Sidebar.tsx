@@ -1,4 +1,4 @@
-import { NAVIGATION, type ViewName } from "./views";
+import { navigationFor, type ViewName } from "./views";
 import styles from "./Sidebar.module.css";
 import type { CurrentUser } from "../auth/currentUser";
 import { Button } from "../components/Button";
@@ -46,7 +46,7 @@ export function Sidebar({
       </div>
 
       <nav className={styles.nav} aria-label="Hovedmeny">
-        {NAVIGATION.map((entry) => {
+        {navigationFor(user.role).map((entry) => {
           const active = entry.view === currentView;
           return (
             <button
@@ -81,9 +81,6 @@ export function Sidebar({
             Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
           </p>
         ) : null}
-        <p className={styles.footerNote}>
-          Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
-        </p>
 
         <div className={styles.footerSection}>
           <div className={styles.footerLabel}>Innlogget</div>
