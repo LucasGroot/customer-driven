@@ -77,6 +77,8 @@ export interface ScoredRoutine {
   stats: RoutineStats;
   score: number;
   band: PriorityBand;
+  /** 1 is the routine to work on first. Set by the full ranking, so filtering a list does not renumber it. */
+  rank: number;
 }
 
 /** Highest priority first - the order the work list is meant to be worked in. */
@@ -86,5 +88,6 @@ export function rankRoutines(routines: RoutineStats[], weights: PriorityWeights)
       const score = priorityScore(stats, weights);
       return { stats, score, band: priorityBand(score) };
     })
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => b.score - a.score)
+    .map((entry, index) => ({ ...entry, rank: index + 1 }));
 }
