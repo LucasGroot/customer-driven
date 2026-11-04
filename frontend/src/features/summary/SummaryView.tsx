@@ -120,7 +120,8 @@ export function SummaryView({
             <div key={source.name} className={styles.source}>
               <span className={styles.sourceName}>{source.name}</span>
               <span className={styles.sourceDetail}>
-                {source.count} {source.unit} · lastet opp {source.uploadedLabel}
+                {source.count} {source.unit}{" "}
+                <span className={styles.sourceUploaded}>· lastet opp {source.uploadedLabel}</span>
               </span>
             </div>
           ))}
