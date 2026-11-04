@@ -114,6 +114,7 @@ export function OverviewView({
       <RoutineTable
         rows={visible}
         statusOf={review.statusOf}
+        ownerOf={review.ownerOf}
         sort={sort}
         onSortChange={onSortChange}
         onOpenRoutine={onOpenRoutine}

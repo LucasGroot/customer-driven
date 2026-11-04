@@ -50,6 +50,7 @@ const COLUMNS: DataTableColumn[] = [
 interface RoutineTableProps {
   rows: ScoredRoutine[];
   statusOf: (routineCode: RoutineCode) => RoutineStatus;
+  ownerOf: (routineCode: RoutineCode) => string | undefined;
   sort: SortState | null;
   onSortChange: (sortKey: string) => void;
   onOpenRoutine: (routineCode: RoutineCode) => void;
@@ -90,7 +91,7 @@ function sortRows(
   });
 }
 
-export function RoutineTable({ rows, statusOf, sort, onSortChange, onOpenRoutine }: RoutineTableProps) {
+export function RoutineTable({ rows, statusOf, ownerOf, sort, onSortChange, onOpenRoutine }: RoutineTableProps) {
   const sorted = sortRows(rows, sort, statusOf);
 
   return (
@@ -129,7 +130,7 @@ export function RoutineTable({ rows, statusOf, sort, onSortChange, onOpenRoutine
           </td>
           <td className={styles.questionCount}>{stats.questionCount}</td>
           <td>
-            <StatusBadge status={statusOf(stats.routine.code)} />
+            <StatusBadge status={statusOf(stats.routine.code)} owner={ownerOf(stats.routine.code)} />
           </td>
           <td>
             <div className={styles.score}>
