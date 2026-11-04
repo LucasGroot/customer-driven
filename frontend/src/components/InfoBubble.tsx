@@ -111,7 +111,7 @@ export function InfoBubble({ text, topic }: InfoBubbleProps) {
                     openAbout(topic);
                   }}
                 >
-                  Les mer i Om analysen
+                  Les mer under «Om analysen»
                 </button>
               ) : null}
             </div>,
