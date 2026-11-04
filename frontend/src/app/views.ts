@@ -2,7 +2,7 @@
 
 import type { CurrentUser } from "../auth/currentUser";
 
-export type ViewName = "list" | "detail" | "review" | "run" | "summary" | "search" | "import";
+export type ViewName = "list" | "detail" | "review" | "run" | "summary" | "search" | "import" | "about";
 
 interface NavigationEntry {
   view: Exclude<ViewName, "detail">;
@@ -17,6 +17,7 @@ export const NAVIGATION: NavigationEntry[] = [
   { view: "run", label: "Kjør analyse" },
   { view: "search", label: "Søk" },
   { view: "import", label: "Importer data", adminOnly: true },
+  { view: "about", label: "Om analysen" },
 ];
 
 /**
