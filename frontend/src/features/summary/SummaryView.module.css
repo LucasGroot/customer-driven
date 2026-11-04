@@ -19,7 +19,7 @@
 
 .bandRow {
   display: grid;
-  grid-template-columns: minmax(130px, 1fr) minmax(80px, 1.4fr) 24px;
+  grid-template-columns: minmax(130px, 1fr) minmax(80px, 1.4fr) 32px;
   align-items: center;
   gap: 16px;
   font-size: 13.5px;
