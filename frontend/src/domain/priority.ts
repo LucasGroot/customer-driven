@@ -16,7 +16,7 @@ export const DEFAULT_WEIGHTS: PriorityWeights = {
 export const WEIGHT_RANGE = { min: 0, max: 60, step: 5 } as const;
 
 /** Number of questions at which a routine scores full marks on volume. */
-const FULL_VOLUME_QUESTIONS = 10;
+export const FULL_VOLUME_QUESTIONS = 10;
 
 /**
  * How strongly a routine scores on each factor, 0-1, before weighting. The
@@ -77,6 +77,8 @@ export interface ScoredRoutine {
   stats: RoutineStats;
   score: number;
   band: PriorityBand;
+  /** 1 is the routine to work on first. Set by the full ranking, so filtering a list does not renumber it. */
+  rank: number;
 }
 
 /** Highest priority first - the order the work list is meant to be worked in. */
@@ -86,5 +88,6 @@ export function rankRoutines(routines: RoutineStats[], weights: PriorityWeights)
       const score = priorityScore(stats, weights);
       return { stats, score, band: priorityBand(score) };
     })
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => b.score - a.score)
+    .map((entry, index) => ({ ...entry, rank: index + 1 }));
 }

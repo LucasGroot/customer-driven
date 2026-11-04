@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
+import { OpenAboutContext } from "../components/AboutLink";
+import type { AboutTopic } from "../domain/aboutTopics";
+import { AboutView } from "../features/about/AboutView";
 import { ImportView } from "../features/import/ImportView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
 import type { CurrentUser } from "../auth/currentUser";
@@ -14,6 +17,7 @@ import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
 import { useRoutineReview } from "../hooks/useRoutineReview";
 import { useSnapshot } from "../hooks/useSnapshot";
 import { DEFAULT_HIDE_ABOVE_PERCENT, isWellCovered } from "../domain/priority";
+import { ownerCandidates } from "../domain/owners";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
 import { Sidebar } from "./Sidebar";
@@ -58,6 +62,7 @@ interface Location {
   view: ViewName;
   returnView: ViewName;
   routineCode: RoutineCode | null;
+  aboutTopic: AboutTopic | null;
 }
 
 interface DashboardProps {
@@ -73,6 +78,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   // The detail page can be opened from the list or from search; back returns there.
   const [returnView, setReturnView] = useState<ViewName>("summary");
   const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(null);
+  const [aboutTopic, setAboutTopic] = useState<AboutTopic | null>(null);
   const [filter, setFilter] = useState<RoutineFilter>("all");
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
   // Kept here so the sort survives leaving and re-entering the list; null = priority order.
@@ -86,6 +92,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
     setView(location.view);
     setReturnView(location.returnView);
     setSelectedRoutineCode(location.routineCode);
+    setAboutTopic(location.aboutTopic);
   };
 
   const go = (next: Partial<Location>) => {
@@ -93,6 +100,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
         view,
         returnView,
         routineCode: selectedRoutineCode,
+        aboutTopic: null,
         ...next,
       };
       window.history.pushState(target, "");
@@ -101,7 +109,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
 
   useEffect(() => {
     // L'entrée actuelle (la vue de départ) devient la première "page" de l'app
-    window.history.replaceState({ view: "summary", returnView: "summary", routineCode: null }, "");
+    window.history.replaceState({ view: "summary", returnView: "summary", routineCode: null, aboutTopic: null }, "");
   
     const onPopState = (event: PopStateEvent) => {
       const location = event.state as Location | null;
@@ -125,91 +133,100 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
     go({ view: "detail", returnView: view, routineCode });
   };
 
+  const openAbout = (topic: AboutTopic) => {
+    go({ view: "about", aboutTopic: topic });
+  };
+
 
   return (
-    <div className={styles.layout}>
-      <Sidebar
-        currentView={shownView === "detail" ? returnView : shownView}
-        routineCount={routines.filter((stats) => !isWellCovered(stats, hideAbovePercent)).length}
-        reviewCount={pendingCount}
-        lastRunLabel={run.hasFinished ? "I dag, nettopp" : snapshot.lastRunLabel}
-        isExample={snapshot.isExample}
-        questionCount={snapshot.questions.length}
-        documentCount={snapshot.documents.length}
-        user={user}
-        onNavigate={(next) => { go({ view: next }); }}
-        onSignOut={onSignOut}
-      />
+    <OpenAboutContext.Provider value={openAbout}>
+      <div className={styles.layout}>
+        <Sidebar
+          currentView={shownView === "detail" ? returnView : shownView}
+          routineCount={routines.filter((stats) => !isWellCovered(stats, hideAbovePercent)).length}
+          reviewCount={pendingCount}
+          lastRunLabel={run.hasFinished ? "I dag, nettopp" : snapshot.lastRunLabel}
+          isExample={snapshot.isExample}
+          questionCount={snapshot.questions.length}
+          documentCount={snapshot.documents.length}
+          user={user}
+          onNavigate={(next) => { go({ view: next }); }}
+          onSignOut={onSignOut}
+        />
 
-      <main className={styles.main}>
-        {shownView === "list" ? (
-          <OverviewView
-            routines={routines}
-            pendingCount={pendingCount}
-            weights={settings.weights}
-            review={review}
-            filter={filter}
-            onFilterChange={setFilter}
-            hideAbovePercent={hideAbovePercent}
-            onHideAboveChange={setHideAbovePercent}
-            sort={routineSort}
-            onSortChange={(sortKey) => {
-              setRoutineSort((current) => nextSort(current, sortKey));
-            }}
-            onResetSort={() => {
-              setRoutineSort(null);
-            }}
-            onOpenRoutine={openRoutine}
-            onOpenReview={() => { go({ view: "review" }); }}
-            onOpenSettings={() => { go({ view: "run" }); }}
-          />
-        ) : null}
+        <main className={styles.main}>
+          {shownView === "list" ? (
+            <OverviewView
+              routines={routines}
+              pendingCount={pendingCount}
+              weights={settings.weights}
+              review={review}
+              filter={filter}
+              onFilterChange={setFilter}
+              hideAbovePercent={hideAbovePercent}
+              onHideAboveChange={setHideAbovePercent}
+              sort={routineSort}
+              onSortChange={(sortKey) => {
+                setRoutineSort((current) => nextSort(current, sortKey));
+              }}
+              onResetSort={() => {
+                setRoutineSort(null);
+              }}
+              onOpenRoutine={openRoutine}
+              onOpenReview={() => { go({ view: "review" }); }}
+              onOpenSettings={() => { go({ view: "run" }); }}
+            />
+          ) : null}
 
-        {shownView === "detail" && selectedRoutine !== undefined ? (
-          <RoutineDetailView
-            stats={selectedRoutine}
-            allRoutines={routinesByName}
-            documentOwners={snapshot.documentOwners}
-            weights={settings.weights}
-            review={review}
-            backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
-            onBack={() => { window.history.back(); }}
-          />
-        ) : null}
+          {shownView === "detail" && selectedRoutine !== undefined ? (
+            <RoutineDetailView
+              key={selectedRoutine.routine.code}
+              stats={selectedRoutine}
+              allRoutines={routinesByName}
+              ownerCandidates={ownerCandidates(snapshot.documentOwners, user.name)}
+              weights={settings.weights}
+              review={review}
+              backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
+              onBack={() => { window.history.back(); }}
+            />
+          ) : null}
 
-        {shownView === "review" ? <ReviewView snapshot={snapshot} review={review} /> : null}
+          {shownView === "review" ? <ReviewView snapshot={snapshot} review={review} /> : null}
 
-        {shownView === "summary" ? (
-          <SummaryView
-            snapshot={snapshot}
-            routines={routines}
-            pendingCount={pendingCount}
-            review={review}
-            hideAbovePercent={hideAbovePercent}
-            weights={settings.weights}
-          />
-        ) : null}
+          {shownView === "summary" ? (
+            <SummaryView
+              snapshot={snapshot}
+              routines={routines}
+              pendingCount={pendingCount}
+              review={review}
+              hideAbovePercent={hideAbovePercent}
+              weights={settings.weights}
+            />
+          ) : null}
 
-        {shownView === "search" ? (
-          <SearchView
-            snapshot={snapshot}
-            routines={routines}
-            review={review}
-            onOpenRoutine={openRoutine}
-          />
-        ) : null}
+          {shownView === "search" ? (
+            <SearchView
+              snapshot={snapshot}
+              routines={routines}
+              review={review}
+              onOpenRoutine={openRoutine}
+            />
+          ) : null}
 
-        {shownView === "run" ? <RunAnalysisView snapshot={snapshot} run={run} canRun={isAdmin} /> : null}
+          {shownView === "run" ? <RunAnalysisView snapshot={snapshot} run={run} canRun={isAdmin} /> : null}
 
-        {shownView === "import" ? (
-          <ImportView
-            accessToken={accessToken}
-            onOpenRun={() => {
-              setView("run");
-            }}
-          />
-        ) : null}
-      </main>
-    </div>
+          {shownView === "import" ? (
+            <ImportView
+              accessToken={accessToken}
+              onOpenRun={() => {
+                setView("run");
+              }}
+            />
+          ) : null}
+
+          {shownView === "about" ? <AboutView openTopic={aboutTopic} /> : null}
+        </main>
+      </div>
+    </OpenAboutContext.Provider>
   );
 }

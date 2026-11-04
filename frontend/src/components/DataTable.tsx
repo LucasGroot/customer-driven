@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
+import type { AboutTopic } from "../domain/aboutTopics";
 import styles from "./DataTable.module.css";
+import { InfoBubble } from "./InfoBubble";
 import type { SortState } from "./sort";
 
 export interface DataTableColumn {
@@ -9,6 +11,8 @@ export interface DataTableColumn {
   align?: "left" | "right";
   /** Text shown in the info bubble next to the label. No bubble when omitted. */
   tooltip?: string;
+  /** The question on "Om analysen" that the bubble links to. */
+  aboutTopic?: AboutTopic;
   /** Makes the column sortable; passed back to `onSortChange` when the header is clicked. */
   sortKey?: string;
 }
@@ -104,15 +108,7 @@ export function DataTable({
                       column.label
                     )}
                     {column.tooltip !== undefined ? (
-                      <span
-                        className={styles.info}
-                        tabIndex={0}
-                        role="img"
-                        aria-label={column.tooltip}
-                        title={column.tooltip}
-                      >
-                        i
-                      </span>
+                      <InfoBubble text={column.tooltip} topic={column.aboutTopic} />
                     ) : null}
                   </span>
                 </th>

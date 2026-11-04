@@ -1,16 +1,38 @@
 import { CoverageMeter } from "../../components/CoverageMeter";
 import { DataTable, type DataTableColumn } from "../../components/DataTable";
-import type { RoutineCode } from "../../domain/types";
+import { StatusBadge } from "../../components/StatusBadge";
+import type { RoutineCode, RoutineStatus } from "../../domain/types";
 import styles from "./SearchTable.module.css";
 import type { SortState } from "../../components/sort";
 import { sortDocumentResults, type DocumentResult } from "./searchResults";
 
-const TOOLTIP = "TODO: complete";
-
 const COLUMNS: DataTableColumn[] = [
-  { label: "Rutine", tooltip: TOOLTIP, sortKey: "name" },
-  { label: "Beste treff for", width: "150px", tooltip: TOOLTIP, sortKey: "count" },
-  { label: "Snittdekning", width: "160px", tooltip: TOOLTIP, sortKey: "coverage" },
+  {
+    label: "Rutine",
+    tooltip: "En rutine i Kvaliteket, med dagen den ble lastet opp.",
+    aboutTopic: "data",
+    sortKey: "name",
+  },
+  {
+    label: "Beste treff for",
+    width: "150px",
+    tooltip: "Antall henvendelser der denne rutinen passer best.",
+    aboutTopic: "suggested-routine",
+    sortKey: "count",
+  },
+  {
+    label: "Snittdekning",
+    width: "160px",
+    tooltip: "Gjennomsnittlig dekning for henvendelsene som er knyttet til rutinen.",
+    aboutTopic: "coverage",
+    sortKey: "coverage",
+  },
+  {
+    label: "Status",
+    width: "170px",
+    tooltip: "Hvor langt arbeidet med rutinen har kommet.",
+    aboutTopic: "status",
+  },
 ];
 
 interface DocumentTableProps {
@@ -18,9 +40,11 @@ interface DocumentTableProps {
   sort: SortState | null;
   onSortChange: (sortKey: string) => void;
   onOpenRoutine: (routineCode: RoutineCode) => void;
+  statusOf: (routineCode: RoutineCode) => RoutineStatus;
+  ownerOf: (routineCode: RoutineCode) => string | undefined;
 }
 
-export function DocumentTable({ results, sort, onSortChange, onOpenRoutine }: DocumentTableProps) {
+export function DocumentTable({ results, sort, onSortChange, onOpenRoutine, statusOf, ownerOf }: DocumentTableProps) {
   const rows = sortDocumentResults(results, sort);
   return (
     <DataTable
@@ -75,6 +99,9 @@ export function DocumentTable({ results, sort, onSortChange, onOpenRoutine }: Do
               ) : (
                 <CoverageMeter coverage={meanCoverage} />
               )}
+            </td>
+            <td>
+              <StatusBadge status={statusOf(document.code)} owner={ownerOf(document.code)} />
             </td>
           </tr>
         );
