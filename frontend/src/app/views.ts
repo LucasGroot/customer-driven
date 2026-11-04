@@ -11,11 +11,11 @@ interface NavigationEntry {
 }
 
 export const NAVIGATION: NavigationEntry[] = [
-  { view: "list", label: "Prioritert liste" },
-  { view: "review", label: "Til gjennomgang" },
-  { view: "run", label: "Kjør analyse" },
   { view: "summary", label: "Oversikt" },
-  { view: "search", label: "Søk og treff" },
+  { view: "list", label: "Prioritert liste" },
+  { view: "review", label: "Uklassifiserte henvendeler til manuell gjennomgang" },
+  { view: "run", label: "Kjør analyse" },
+  { view: "search", label: "Søk" },
   { view: "import", label: "Importer data", adminOnly: true },
 ];
 

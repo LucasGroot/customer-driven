@@ -29,7 +29,7 @@ export function priorityFactors(stats: RoutineStats, weights: PriorityWeights): 
       label: "Treff mot rutine",
       weightLabel: `${String(weights.coverage)} %`,
       value: factor.coverage,
-      note: `Snittscore ${formatPercent(stats.meanCoverage)} på henvendelsene som er knyttet til rutinen`,
+      note: `Snittdekning ${formatPercent(stats.meanCoverage)} på henvendelsene som er knyttet til rutinen`,
     },
   ];
 }

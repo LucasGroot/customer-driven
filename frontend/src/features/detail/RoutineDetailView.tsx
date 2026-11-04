@@ -8,14 +8,84 @@ import { PRIORITY_BAND_COLOR } from "../../components/bandColors";
 import { PRIORITY_BAND_LABEL, STATUS_LABEL, STATUS_OPTIONS } from "../../domain/labels";
 import { priorityBand, priorityScore } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
-import type { PriorityWeights } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { priorityFactors } from "./priorityFactors";
 import styles from "./RoutineDetailView.module.css";
 import { classNames } from "../../components/classNames";
+import { useState } from "react";
+import { RoutineSelect } from "../review/RoutineSelect";
+import type { PriorityWeights, RoutineCode, RoutineDocument } from "../../domain/types";
+import { routinePdfUrl } from "./routinePdf";
+
+type QuestionItem = RoutineStats["questions"][number];
+
+interface QuestionRowProps {
+  item: QuestionItem;
+  /** Every routine except the current one. */
+  otherRoutines: RoutineDocument[];
+  review: RoutineReview;
+}
+
+function QuestionRow({ item: { question, byHand }, otherRoutines, review }: QuestionRowProps) {
+  // Empty until HR picks a routine, so nothing moves by accident.
+  const [targetCode, setTargetCode] = useState<RoutineCode>("");
+
+  return (
+    <div className={styles.question}>
+      <div className={styles.questionText}>
+        <p className={styles.quoteText}>{question.text}</p>
+        <div className={styles.quoteMeta}>
+          {question.reference}
+          {byHand ? " · knyttet til rutinen manuelt" : ""}
+        </div>
+      </div>
+      <CoverageMeter coverage={question.coverage} />
+      <div className={styles.moveActions}>
+        <RoutineSelect
+          value={targetCode}
+          routines={otherRoutines}
+          placeholder="Flytt til rutine …"
+          onChange={setTargetCode}
+        />
+        <div className={styles.moveButtons}>
+          {targetCode !== "" ? (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                review.mapTo(question.id, targetCode);
+              }}
+            >
+              Flytt
+            </Button>
+          ) : null}
+          <Button
+            variant="danger"
+            onClick={() => {
+              review.discard(question.id);
+            }}
+          >
+            Forkast
+          </Button>
+          {byHand ? (
+            <Button
+              variant="link"
+              onClick={() => {
+                review.undoDecision(question.id);
+              }}
+            >
+              Angre
+            </Button>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 interface RoutineDetailViewProps {
   stats: RoutineStats;
+  allRoutines: RoutineDocument[];
   documentOwners: string[];
   weights: PriorityWeights;
   review: RoutineReview;
@@ -25,6 +95,7 @@ interface RoutineDetailViewProps {
 
 export function RoutineDetailView({
   stats,
+  allRoutines,
   documentOwners,
   weights,
   review,
@@ -32,6 +103,7 @@ export function RoutineDetailView({
   onBack,
 }: RoutineDetailViewProps) {
   const { routine } = stats;
+  const pdfUrl = routinePdfUrl(routine);
   const score = priorityScore(stats, weights);
   const band = priorityBand(score);
   const factors = priorityFactors(stats, weights);
@@ -39,6 +111,7 @@ export function RoutineDetailView({
   const questionsLowestScoreFirst = [...stats.questions].sort(
     (a, b) => a.question.coverage - b.question.coverage,
   );
+  const otherRoutines = allRoutines.filter((candidate) => candidate.code !== routine.code);
 
   return (
     <section className={styles.view}>
@@ -51,7 +124,9 @@ export function RoutineDetailView({
           <h1 className={styles.title}>{routine.name}</h1>
           <p className={styles.summary}>{routine.uploadedLabel}</p>
         </div>
-        <div className={styles.scorePanel}>
+        
+        <div className={styles.headerSide}>
+          <div className={styles.scorePanel}>
           <div className={styles.scoreBlock}>
             <div className={styles.scoreLabel}>Prioritet</div>
             <div className={styles.scoreValue}>{score}</div>
@@ -65,6 +140,18 @@ export function RoutineDetailView({
             <div className={styles.scoreNote}>knyttet til rutinen</div>
           </div>
         </div>
+          {pdfUrl !== null ? (
+            <div className={styles.pdfActions}>
+              <a className={styles.pdfLink} href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                Åpne PDF
+              </a>
+              <a className={styles.pdfLink} href={pdfUrl} download>
+                Last ned PDF
+              </a>
+            </div>
+          ) : null}
+        </div>
+        
       </div>
 
       <Card title="Hvorfor dette havner høyt">
@@ -80,33 +167,6 @@ export function RoutineDetailView({
             </div>
           ))}
         </div>
-      </Card>
-
-      <Card title="Henvendelser knyttet til rutinen">
-        {questionsLowestScoreFirst.map(({ question, byHand }) => (
-          <div key={question.id} className={styles.question}>
-            <div className={styles.questionText}>
-              <p className={styles.quoteText}>{question.text}</p>
-              <div className={styles.quoteMeta}>
-                {question.reference}
-                {byHand ? " · knyttet til rutinen manuelt" : ""}
-              </div>
-            </div>
-            <CoverageMeter coverage={question.coverage} />
-            {byHand ? (
-              <Button
-                variant="link"
-                onClick={() => {
-                  review.undoDecision(question.id);
-                }}
-              >
-                Angre
-              </Button>
-            ) : (
-              <span />
-            )}
-          </div>
-        ))}
       </Card>
 
       <Card title="Status">
@@ -144,6 +204,14 @@ export function RoutineDetailView({
           </div>
         </div>
       </Card>
+
+      <Card title="Henvendelser knyttet til rutinen">
+        {questionsLowestScoreFirst.map((item) => (
+          <QuestionRow key={item.question.id} item={item} otherRoutines={otherRoutines} review={review} />
+        ))}
+      </Card>
+
+      
     </section>
   );
 }

@@ -3,6 +3,7 @@ import { RoutineDetailView } from "../features/detail/RoutineDetailView";
 import { ImportView } from "../features/import/ImportView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
 import type { CurrentUser } from "../auth/currentUser";
+import { nextSort, type SortState } from "../components/sort";
 import { OverviewView } from "../features/overview/OverviewView";
 import { ReviewView } from "../features/review/ReviewView";
 import { RunAnalysisView } from "../features/run/RunAnalysisView";
@@ -70,10 +71,12 @@ interface DashboardProps {
 function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced }: DashboardProps) {
   const [view, setView] = useState<ViewName>("list");
   // The detail page can be opened from the list or from search; back returns there.
-  const [returnView, setReturnView] = useState<ViewName>("list");
+  const [returnView, setReturnView] = useState<ViewName>("summary");
   const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(null);
   const [filter, setFilter] = useState<RoutineFilter>("all");
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
+  // Kept here so the sort survives leaving and re-entering the list; null = priority order.
+  const [routineSort, setRoutineSort] = useState<SortState | null>(null);
   const settings = useAnalysisSettings();
   const review = useRoutineReview();
   const isAdmin = user.role === "admin";
@@ -98,7 +101,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
 
   useEffect(() => {
     // L'entrée actuelle (la vue de départ) devient la première "page" de l'app
-    window.history.replaceState({ view: "list", returnView: "list", routineCode: null }, "");
+    window.history.replaceState({ view: "summary", returnView: "summary", routineCode: null }, "");
   
     const onPopState = (event: PopStateEvent) => {
       const location = event.state as Location | null;
@@ -111,6 +114,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   }, []);
 
   const routines = routinesWithQuestions(snapshot, review.decisionOf);
+  const routinesByName = [...snapshot.documents].sort((a, b) => a.name.localeCompare(b.name, "nb-NO"));
   const pendingCount = countPendingQuestions(snapshot, review.decisionOf);
   const selectedRoutine = routines.find((stats) => stats.routine.code === selectedRoutineCode);
   // A routine loses its place in the list when its last question is moved away
@@ -148,6 +152,13 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
             onFilterChange={setFilter}
             hideAbovePercent={hideAbovePercent}
             onHideAboveChange={setHideAbovePercent}
+            sort={routineSort}
+            onSortChange={(sortKey) => {
+              setRoutineSort((current) => nextSort(current, sortKey));
+            }}
+            onResetSort={() => {
+              setRoutineSort(null);
+            }}
             onOpenRoutine={openRoutine}
             onOpenReview={() => { go({ view: "review" }); }}
             onOpenSettings={() => { go({ view: "run" }); }}
@@ -157,6 +168,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
         {shownView === "detail" && selectedRoutine !== undefined ? (
           <RoutineDetailView
             stats={selectedRoutine}
+            allRoutines={routinesByName}
             documentOwners={snapshot.documentOwners}
             weights={settings.weights}
             review={review}
@@ -174,6 +186,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
             pendingCount={pendingCount}
             review={review}
             hideAbovePercent={hideAbovePercent}
+            weights={settings.weights}
           />
         ) : null}
 

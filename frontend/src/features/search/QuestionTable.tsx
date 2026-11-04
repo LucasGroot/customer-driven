@@ -5,19 +5,24 @@ import { DataTable, type DataTableColumn } from "../../components/DataTable";
 import type { Placement } from "../../domain/routines";
 import type { QuestionId, RoutineCode } from "../../domain/types";
 import { PlacementBadge } from "./PlacementBadge";
-import type { QuestionResult } from "./searchResults";
+import { sortQuestionResults, type QuestionResult } from "./searchResults";
 import styles from "./SearchTable.module.css";
+import type { SortState } from "../../components/sort";
+
+const TOOLTIP = "TODO: complete";
 
 const COLUMNS: DataTableColumn[] = [
-  { label: "Henvendelse" },
-  { label: "Kategori", width: "18%" },
-  { label: "Beste rutine", width: "22%" },
-  { label: "Dekning", width: "160px" },
-  { label: "Status", width: "160px" },
+  { label: "Henvendelse", tooltip: TOOLTIP, sortKey: "text" },
+  { label: "Kategori", width: "18%", tooltip: TOOLTIP, sortKey: "category" },
+  { label: "Beste rutine", width: "22%", tooltip: TOOLTIP, sortKey: "routine" },
+  { label: "Dekning", width: "160px", tooltip: TOOLTIP, sortKey: "coverage" },
+  { label: "Status", width: "160px", tooltip: TOOLTIP, sortKey: "status" },
 ];
 
 interface QuestionTableProps {
   results: QuestionResult[];
+  sort: SortState | null;
+  onSortChange: (sortKey: string) => void;
   onOpenRoutine: (routineCode: RoutineCode) => void;
   onRestore: (questionId: QuestionId) => void;
 }
@@ -35,8 +40,10 @@ function placementReason(placement: Placement): string {
   return "Forkastet under gjennomgang.";
 }
 
-export function QuestionTable({ results, onOpenRoutine, onRestore }: QuestionTableProps) {
+export function QuestionTable({ results, sort, onSortChange, onOpenRoutine, onRestore }: QuestionTableProps) {
+  const rows = sortQuestionResults(results, sort);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set());
+  
 
   const toggle = (id: string) => {
     setExpanded((current) => {
@@ -53,8 +60,10 @@ export function QuestionTable({ results, onOpenRoutine, onRestore }: QuestionTab
       isEmpty={results.length === 0}
       emptyMessage="Ingen henvendelser passer til søket."
       minWidth={880}
+      sort={sort}
+      onSortChange={onSortChange}
     >
-      {results.map((result) => {
+      {rows.map((result) => {
         const { question, document, placement } = result;
         const isOpen = expanded.has(question.id);
         const detailId = `question-detail-${question.id}`;
