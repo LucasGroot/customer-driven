@@ -14,6 +14,7 @@ import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
 import { useRoutineReview } from "../hooks/useRoutineReview";
 import { useSnapshot } from "../hooks/useSnapshot";
 import { DEFAULT_HIDE_ABOVE_PERCENT, isWellCovered } from "../domain/priority";
+import { ownerCandidates } from "../domain/owners";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
 import { Sidebar } from "./Sidebar";
@@ -167,9 +168,10 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
 
         {shownView === "detail" && selectedRoutine !== undefined ? (
           <RoutineDetailView
+            key={selectedRoutine.routine.code}
             stats={selectedRoutine}
             allRoutines={routinesByName}
-            documentOwners={snapshot.documentOwners}
+            ownerCandidates={ownerCandidates(snapshot.documentOwners, user.name)}
             weights={settings.weights}
             review={review}
             backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}

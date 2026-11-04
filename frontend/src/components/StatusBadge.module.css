@@ -1,0 +1,12 @@
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.owner {
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--color-text-soft);
+}

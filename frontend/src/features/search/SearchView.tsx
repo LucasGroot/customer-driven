@@ -156,6 +156,8 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
           sort={columnSort}
           onSortChange={handleColumnSort}
           onOpenRoutine={onOpenRoutine}
+          statusOf={review.statusOf}
+          ownerOf={review.ownerOf}
         />
       )}
     </section>

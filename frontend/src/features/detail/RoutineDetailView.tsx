@@ -14,7 +14,7 @@ import styles from "./RoutineDetailView.module.css";
 import { classNames } from "../../components/classNames";
 import { useState } from "react";
 import { RoutineSelect } from "../review/RoutineSelect";
-import type { PriorityWeights, RoutineCode, RoutineDocument } from "../../domain/types";
+import type { PriorityWeights, RoutineCode, RoutineDocument, RoutineStatus } from "../../domain/types";
 import { routinePdfUrl } from "./routinePdf";
 
 type QuestionItem = RoutineStats["questions"][number];
@@ -86,7 +86,8 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
 interface RoutineDetailViewProps {
   stats: RoutineStats;
   allRoutines: RoutineDocument[];
-  documentOwners: string[];
+  /** The people the routine can be given to when it is set to Under behandling. */
+  ownerCandidates: string[];
   weights: PriorityWeights;
   review: RoutineReview;
   backLabel: string;
@@ -96,7 +97,7 @@ interface RoutineDetailViewProps {
 export function RoutineDetailView({
   stats,
   allRoutines,
-  documentOwners,
+  ownerCandidates,
   weights,
   review,
   backLabel,
@@ -108,6 +109,24 @@ export function RoutineDetailView({
   const band = priorityBand(score);
   const factors = priorityFactors(stats, weights);
   const currentStatus = review.statusOf(routine.code);
+  const owner = review.ownerOf(routine.code);
+  const isInProgress = currentStatus === "in-progress";
+  // Under behandling needs an owner, so choosing it first only opens the owner field
+  const [isChoosingOwner, setIsChoosingOwner] = useState(false);
+  const shownStatus: RoutineStatus = isInProgress || isChoosingOwner ? "in-progress" : "unprocessed";
+  const ownerOptions = [
+    ...(owner === undefined ? [{ value: "", label: "Velg rutineeier" }] : []),
+    ...ownerCandidates.map((candidate) => ({ value: candidate, label: candidate })),
+  ];
+
+  const selectStatus = (status: RoutineStatus) => {
+    if (status === "unprocessed") {
+      setIsChoosingOwner(false);
+      if (isInProgress) review.markUnprocessed(routine.code);
+      return;
+    }
+    if (!isInProgress) setIsChoosingOwner(true);
+  };
   const questionsLowestScoreFirst = [...stats.questions].sort(
     (a, b) => a.question.coverage - b.question.coverage,
   );
@@ -175,27 +194,33 @@ export function RoutineDetailView({
             <FilterPill
               key={status}
               label={STATUS_LABEL[status]}
-              selected={currentStatus === status}
+              selected={shownStatus === status}
               onSelect={() => {
-                review.setStatus(routine.code, status);
+                selectStatus(status);
               }}
             />
           ))}
         </div>
 
         <div className={styles.assignment}>
-          <SelectField
-            label="Rutineeier"
-            layout="stacked"
-            value={review.ownerOf(routine.code)}
-            options={documentOwners.map((candidate) => ({
-              value: candidate,
-              label: candidate,
-            }))}
-            onChange={(candidate) => {
-              review.assignOwner(routine.code, candidate);
-            }}
-          />
+          {shownStatus === "in-progress" ? (
+            <SelectField
+              label="Rutineeier"
+              layout="stacked"
+              value={owner ?? ""}
+              options={ownerOptions}
+              onChange={(candidate) => {
+                if (candidate === "") return;
+                setIsChoosingOwner(false);
+                review.startProcessing(routine.code, candidate);
+              }}
+            />
+          ) : (
+            <p className={styles.ownerHint}>En rutine som er ubehandlet har ingen eier.</p>
+          )}
+          {isChoosingOwner ? (
+            <p className={styles.ownerHint}>Velg en rutineeier for å sette status til Under behandling.</p>
+          ) : null}
           <div
             className={classNames(styles.savedNote, review.savedNote !== null && styles.saved)}
             aria-live="polite"
