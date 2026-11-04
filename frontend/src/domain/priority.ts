@@ -16,7 +16,7 @@ export const DEFAULT_WEIGHTS: PriorityWeights = {
 export const WEIGHT_RANGE = { min: 0, max: 60, step: 5 } as const;
 
 /** Number of questions at which a routine scores full marks on volume. */
-const FULL_VOLUME_QUESTIONS = 10;
+export const FULL_VOLUME_QUESTIONS = 10;
 
 /**
  * How strongly a routine scores on each factor, 0-1, before weighting. The

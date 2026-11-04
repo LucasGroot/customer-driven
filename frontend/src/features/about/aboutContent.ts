@@ -4,7 +4,12 @@
  */
 
 import type { AboutTopic } from "../../domain/aboutTopics";
-import { GOOD_COVERAGE_FROM, PARTIAL_COVERAGE_FROM } from "../../domain/priority";
+import {
+  DEFAULT_WEIGHTS,
+  FULL_VOLUME_QUESTIONS,
+  GOOD_COVERAGE_FROM,
+  PARTIAL_COVERAGE_FROM,
+} from "../../domain/priority";
 import type { AboutIconName } from "./AboutIcon";
 
 const partialFrom = Math.round(PARTIAL_COVERAGE_FROM * 100);
@@ -89,7 +94,8 @@ export const FAQ_SECTIONS: Section[] = [
         topic: "ranking",
         question: "Hvordan rangeres rutinene?",
         answer: [
-          "Rutinene rangeres etter snittdekning, fra lavest til høyest. Rutiner med lavest snittdekning får høyest prioritet, ettersom de i gjennomsnitt samsvarer dårligst med de tilknyttede henvendelsene. Rangeringen starter på 1, der et høyere nummer betyr lavere prioritet.",
+          `Rutinene rangeres etter både antall tilknyttede henvendelser og snittdekning, der begge faktorene vektlegges likt (${String(DEFAULT_WEIGHTS.volume)}/${String(DEFAULT_WEIGHTS.coverage)}). Rutiner med mange henvendelser og lav snittdekning får høyest prioritet, fordi de kan ha størst behov for forbedring.`,
+          `Rangeringen starter på 1, der et høyere nummer betyr lavere prioritet. Antall henvendelser teller opp til ${String(FULL_VOLUME_QUESTIONS)} per rutine, slik at rutiner med ${String(FULL_VOLUME_QUESTIONS)} eller flere henvendelser vurderes likt på denne faktoren. For disse rutinene er det snittdekningen som avgjør den innbyrdes rangeringen.`,
         ],
       },
       {
@@ -124,7 +130,7 @@ export const FAQ_SECTIONS: Section[] = [
         topic: "knowledge-gaps",
         question: "Hvordan identifiserer analysen kunnskapshull?",
         answer: [
-          "Et kunnskapshull er noe mange spør om, men som ingen rutine svarer godt på. Det vises på to måter: rutiner med lav snittdekning kommer høyt opp i rangeringen, og grupper av henvendelser uten passende rutine vises til manuell gjennomgang.",
+          "Et kunnskapshull er noe mange spør om, men som ingen rutine svarer godt på. Resultatene brukes til å identifisere mulige forbedringsområder på to måter: Rutiner prioriteres ut fra både antall henvendelser og snittdekning, mens henvendelser uten en passende rutine grupperes og vises til manuell gjennomgang.",
         ],
       },
     ],
