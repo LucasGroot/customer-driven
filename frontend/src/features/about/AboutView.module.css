@@ -74,7 +74,7 @@
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  background: var(--color-surface-quote);
+  background: var(--color-surface-muted);
   border-bottom: 1px solid var(--color-border);
 }
 
