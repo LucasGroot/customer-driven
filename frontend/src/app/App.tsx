@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
+import { AboutView } from "../features/about/AboutView";
 import { ImportView } from "../features/import/ImportView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
 import type { CurrentUser } from "../auth/currentUser";
@@ -209,6 +210,8 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
             }}
           />
         ) : null}
+
+        {shownView === "about" ? <AboutView /> : null}
       </main>
     </div>
   );
