@@ -66,7 +66,7 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
   return (
     <section className={styles.view}>
       <PageIntro
-        title="Søk og treff"
+        title="Søk"
         lead="Se alle henvendelser og alle rutiner med tilhørende treff, også rutinene som svarer godt og derfor er skjult i den prioriterte listen. Bruk siden til å kontrollere hvor en henvendelse har havnet."
       />
 

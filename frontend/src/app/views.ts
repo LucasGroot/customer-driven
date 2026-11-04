@@ -13,7 +13,7 @@ interface NavigationEntry {
 export const NAVIGATION: NavigationEntry[] = [
   { view: "summary", label: "Oversikt" },
   { view: "list", label: "Prioritert liste" },
-  { view: "review", label: "Uklassifiserte henvendeler til manuell gjennomgang" },
+  { view: "review", label: "Henvendelser til manuell gjennomgang" },
   { view: "run", label: "Kjør analyse" },
   { view: "search", label: "Søk" },
   { view: "import", label: "Importer data", adminOnly: true },
