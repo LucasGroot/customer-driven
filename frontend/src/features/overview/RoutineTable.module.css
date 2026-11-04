@@ -7,12 +7,6 @@
   background: var(--color-surface-muted);
 }
 
-.rank {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--color-text-dim);
-}
-
 .nameButton {
   cursor: pointer;
   border: none;
@@ -45,13 +39,6 @@
   font-family: var(--font-mono);
   font-size: 15px;
   font-weight: 500;
-}
-
-.bandMarker {
-  width: 6px;
-  height: 26px;
-  border-radius: 3px;
-  flex: none;
 }
 
 .uploaded {
