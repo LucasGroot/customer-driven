@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
+import { ImportView } from "../features/import/ImportView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
 import type { CurrentUser } from "../auth/currentUser";
 import { OverviewView } from "../features/overview/OverviewView";
@@ -15,7 +16,7 @@ import { DEFAULT_HIDE_ABOVE_PERCENT, isWellCovered } from "../domain/priority";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
 import { Sidebar } from "./Sidebar";
-import type { ViewName } from "./views";
+import { isAdminOnly, type ViewName } from "./views";
 import styles from "./App.module.css";
 
 interface AppProps {
@@ -25,7 +26,9 @@ interface AppProps {
 }
 
 export function App({ user, accessToken, onSignOut }: AppProps) {
-  const state = useSnapshot(accessToken);
+  // Raised when an analysis run finishes, so the new snapshot is fetched
+  const [snapshotVersion, setSnapshotVersion] = useState(0);
+  const state = useSnapshot(accessToken, snapshotVersion);
 
   if (state.status === "loading") {
     return <p className={styles.status}>Henter analysen …</p>;
@@ -37,7 +40,17 @@ export function App({ user, accessToken, onSignOut }: AppProps) {
       </p>
     );
   }
-  return <Dashboard snapshot={state.snapshot} user={user} onSignOut={onSignOut} />;
+  return (
+    <Dashboard
+      snapshot={state.snapshot}
+      user={user}
+      accessToken={accessToken}
+      onSignOut={onSignOut}
+      onSnapshotReplaced={() => {
+        setSnapshotVersion((version) => version + 1);
+      }}
+    />
+  );
 }
 
 interface Location {
@@ -49,10 +62,12 @@ interface Location {
 interface DashboardProps {
   snapshot: AnalysisSnapshot;
   user: CurrentUser;
+  accessToken: string;
   onSignOut: () => void;
+  onSnapshotReplaced: () => void;
 }
 
-function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
+function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced }: DashboardProps) {
   const [view, setView] = useState<ViewName>("list");
   // The detail page can be opened from the list or from search; back returns there.
   const [returnView, setReturnView] = useState<ViewName>("list");
@@ -61,7 +76,8 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
   const settings = useAnalysisSettings();
   const review = useRoutineReview();
-  const run = useAnalysisRun();
+  const isAdmin = user.role === "admin";
+  const run = useAnalysisRun(accessToken, isAdmin, onSnapshotReplaced);
 
   const applyLocation = (location: Location) => {
     setView(location.view);
@@ -98,7 +114,8 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
   const pendingCount = countPendingQuestions(snapshot, review.decisionOf);
   const selectedRoutine = routines.find((stats) => stats.routine.code === selectedRoutineCode);
   // A routine loses its place in the list when its last question is moved away
-  const shownView = view === "detail" && selectedRoutine === undefined ? returnView : view;
+  const reachableView = view === "detail" && selectedRoutine === undefined ? returnView : view;
+  const shownView = isAdminOnly(reachableView) && !isAdmin ? "list" : reachableView;
 
   const openRoutine = (routineCode: RoutineCode) => {
     go({ view: "detail", returnView: view, routineCode });
@@ -115,7 +132,6 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
         isExample={snapshot.isExample}
         questionCount={snapshot.questions.length}
         documentCount={snapshot.documents.length}
-        ticketCount={snapshot.totalTickets}
         user={user}
         onNavigate={(next) => { go({ view: next }); }}
         onSignOut={onSignOut}
@@ -170,7 +186,16 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
           />
         ) : null}
 
-        {shownView === "run" ? <RunAnalysisView snapshot={snapshot} run={run} /> : null}
+        {shownView === "run" ? <RunAnalysisView snapshot={snapshot} run={run} canRun={isAdmin} /> : null}
+
+        {shownView === "import" ? (
+          <ImportView
+            accessToken={accessToken}
+            onOpenRun={() => {
+              setView("run");
+            }}
+          />
+        ) : null}
       </main>
     </div>
   );

@@ -9,13 +9,18 @@ import styles from "./RunAnalysisView.module.css";
 interface RunAnalysisViewProps {
   snapshot: AnalysisSnapshot;
   run: AnalysisRun;
+  canRun: boolean;
 }
 
-export function RunAnalysisView({ snapshot, run }: RunAnalysisViewProps) {
-  const runLabel = run.isRunning ? "Kjører …" : run.hasFinished ? "Kjør på nytt" : "Kjør analyse";
-  const runHint = run.hasFinished
-    ? "Ferdig. Listen er oppdatert."
-    : "Simulert kjøring i prototypen";
+function describeRun(run: AnalysisRun): string {
+  if (run.isRunning) return "Analysen tar noen minutter. Du kan bruke resten av dashbordet imens.";
+  if (run.hasFinished) return "Ferdig. Listen er oppdatert.";
+  if (run.hasFailed) return "Analysen feilet. Sjekk filene under «Importer data», og prøv igjen.";
+  return "Bruker filene som sist ble lastet opp under «Importer data».";
+}
+
+export function RunAnalysisView({ snapshot, run, canRun }: RunAnalysisViewProps) {
+  const runLabel = run.isRunning ? "Kjører …" : run.hasFinished || run.hasFailed ? "Kjør på nytt" : "Kjør analyse";
 
   return (
     <section className={styles.view}>
@@ -37,14 +42,20 @@ export function RunAnalysisView({ snapshot, run }: RunAnalysisViewProps) {
         </div>
       </Card>
 
-      <div className={styles.runRow}>
-        <Button variant="primary" onClick={run.start} disabled={run.isRunning}>
-          {runLabel}
-        </Button>
-        <span className={styles.runHint}>{runHint}</span>
-      </div>
+      {canRun ? (
+        <div className={styles.runRow}>
+          <Button variant="primary" onClick={run.start} disabled={run.isRunning}>
+            {runLabel}
+          </Button>
+          <span className={styles.runHint} role={run.hasFailed ? "alert" : undefined}>
+            {describeRun(run)}
+          </span>
+        </div>
+      ) : (
+        <p className={styles.runHint}>Bare administratorer kan kjøre en ny analyse.</p>
+      )}
 
-      {run.isRunning || run.hasFinished ? (
+      {run.isRunning || run.hasFinished || run.hasFailed ? (
         <ol className={styles.progress} aria-live="polite">
           {RUN_STEPS.map((label, index) => {
             const done = run.completedSteps > index;
