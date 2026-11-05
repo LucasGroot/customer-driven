@@ -16,7 +16,7 @@ interface ReviewGroupCardProps {
 
 /** A group of similar questions, decided on as one, or opened to decide on one question at a time. */
 export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps) {
-  const { heading, items } = view;
+  const { group, heading, items } = view;
   const [chosenCode, setChosenCode] = useState<RoutineCode>(
     mostCommonBestMatch(items) ?? heading.documentCode,
   );
@@ -26,7 +26,8 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
     <Card>
       <div className={styles.header}>
         <div className={styles.headingText}>
-          <p className={styles.heading}>{heading.text}</p>
+          <p className={styles.heading}>{group.title}</p>
+          <p className={styles.example}>«{heading.text}»</p>
           <p className={styles.count}>
             {items.length} {items.length === 1 ? "henvendelse" : "henvendelser"} i gruppen
           </p>
