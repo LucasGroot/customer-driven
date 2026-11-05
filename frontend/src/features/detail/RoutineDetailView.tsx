@@ -14,8 +14,9 @@ import styles from "./RoutineDetailView.module.css";
 import { classNames } from "../../components/classNames";
 import { useState } from "react";
 import { RoutineSelect } from "../review/RoutineSelect";
-import type { PriorityWeights, RoutineCode, RoutineDocument } from "../../domain/types";
+import type { PriorityWeights, RoutineCluster, RoutineCode, RoutineDocument } from "../../domain/types";
 import { routinePdfUrl } from "./routinePdf";
+import { groupRoutineQuestions } from "./routineClusters";
 
 type QuestionItem = RoutineStats["questions"][number];
 
@@ -24,6 +25,10 @@ interface QuestionRowProps {
   /** Every routine except the current one. */
   otherRoutines: RoutineDocument[];
   review: RoutineReview;
+}
+
+function formatQuestionCount(count: number): string {
+  return `${String(count)} ${count === 1 ? "henvendelse" : "henvendelser"}`;
 }
 
 function QuestionRow({ item: { question, byHand }, otherRoutines, review }: QuestionRowProps) {
@@ -85,6 +90,7 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
 
 interface RoutineDetailViewProps {
   stats: RoutineStats;
+  routineClusters: RoutineCluster[];
   allRoutines: RoutineDocument[];
   documentOwners: string[];
   weights: PriorityWeights;
@@ -95,6 +101,7 @@ interface RoutineDetailViewProps {
 
 export function RoutineDetailView({
   stats,
+  routineClusters,
   allRoutines,
   documentOwners,
   weights,
@@ -108,9 +115,8 @@ export function RoutineDetailView({
   const band = priorityBand(score);
   const factors = priorityFactors(stats, weights);
   const currentStatus = review.statusOf(routine.code);
-  const questionsLowestScoreFirst = [...stats.questions].sort(
-    (a, b) => a.question.coverage - b.question.coverage,
-  );
+  const lowestScoreFirst = (a: QuestionItem, b: QuestionItem) => a.question.coverage - b.question.coverage;
+  const { clusters, other } = groupRoutineQuestions(stats.questions, routineClusters, routine.code);
   const otherRoutines = allRoutines.filter((candidate) => candidate.code !== routine.code);
 
   return (
@@ -206,7 +212,26 @@ export function RoutineDetailView({
       </Card>
 
       <Card title="Henvendelser knyttet til rutinen">
-        {questionsLowestScoreFirst.map((item) => (
+        {clusters.map(({ cluster, questions, meanCoverage }) => (
+          <details key={cluster.id} className={styles.cluster}>
+            <summary className={styles.clusterSummary}>
+              <span className={styles.clusterTitle}>{cluster.title}</span>
+              <span className={styles.clusterCount}>{formatQuestionCount(questions.length)}</span>
+              <CoverageMeter coverage={meanCoverage} />
+            </summary>
+            <div className={styles.clusterQuestions}>
+              {[...questions].sort(lowestScoreFirst).map((item) => (
+                <QuestionRow key={item.question.id} item={item} otherRoutines={otherRoutines} review={review} />
+              ))}
+            </div>
+          </details>
+        ))}
+
+        {clusters.length > 0 && other.length > 0 ? (
+          <p className={styles.otherHeading}>Øvrige henvendelser · {other.length}</p>
+        ) : null}
+
+        {[...other].sort(lowestScoreFirst).map((item) => (
           <QuestionRow key={item.question.id} item={item} otherRoutines={otherRoutines} review={review} />
         ))}
       </Card>

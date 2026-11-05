@@ -169,6 +169,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
           <RoutineDetailView
             stats={selectedRoutine}
             allRoutines={routinesByName}
+            routineClusters={snapshot.routineClusters}
             documentOwners={snapshot.documentOwners}
             weights={settings.weights}
             review={review}
