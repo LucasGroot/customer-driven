@@ -26,10 +26,19 @@ class AskedQuestion(CamelCaseModel):
     coverage: float
     needs_review: bool
     group_id: str | None = None
+    routine_cluster_id: str | None = None
 
 
 class ReviewGroup(CamelCaseModel):
     id: str
+    title: str
+    heading_question_id: str
+
+
+class RoutineCluster(CamelCaseModel):
+    id: str
+    routine_code: str
+    title: str
     heading_question_id: str
 
 
@@ -46,6 +55,7 @@ class AnalysisSnapshot(CamelCaseModel):
     last_run_label: str
     questions: list[AskedQuestion]
     review_groups: list[ReviewGroup]
+    routine_clusters: list[RoutineCluster]
     documents: list[RoutineDocument]
     sources: list[DataSource]
 
