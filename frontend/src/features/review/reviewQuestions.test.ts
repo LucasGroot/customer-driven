@@ -56,7 +56,7 @@ describe("matchesReviewFilter", () => {
   });
 });
 
-const GROUP = { id: "r0", headingQuestionId: "b" };
+const GROUP = { id: "r0", title: "Gruppe 0", headingQuestionId: "b" };
 
 function pendingItems(questions: AskedQuestion[], decisions: Record<string, ReviewDecision> = {}) {
   return reviewItems(questions, decisionsFrom(decisions));
@@ -69,7 +69,7 @@ describe("groupPendingItems", () => {
     makeQuestion({ id: "c", groupId: "r1" }),
     makeQuestion({ id: "alone" }),
   ];
-  const groups = [GROUP, { id: "r1", headingQuestionId: "c" }];
+  const groups = [GROUP, { id: "r1", title: "Gruppe 1", headingQuestionId: "c" }];
 
   it("puts the questions of a group together and the others alone", () => {
     const { groups: views, alone } = groupPendingItems(pendingItems(questions), groups);
@@ -131,7 +131,7 @@ describe("a restored question", () => {
     makeQuestion({ id: "a", groupId: "r0" }),
     makeQuestion({ id: "b", groupId: "r0" }),
   ];
-  const groups = [{ id: "r0", headingQuestionId: "a" }];
+  const groups = [{ id: "r0", title: "Gruppe 0", headingQuestionId: "a" }];
 
   it("comes back to its group once the decision is undone", () => {
     const discarded = { b: { kind: "discarded" } } as const;

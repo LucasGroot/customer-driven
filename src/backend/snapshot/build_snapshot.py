@@ -9,7 +9,14 @@ import re
 from pathlib import Path
 
 from backend.ai.similarity_metrics.shared_logic import SERVICE_COLUMN
-from backend.snapshot.models import AnalysisSnapshot, AskedQuestion, DataSource, ReviewGroup, RoutineDocument
+from backend.snapshot.models import (
+    AnalysisSnapshot,
+    AskedQuestion,
+    DataSource,
+    ReviewGroup,
+    RoutineCluster,
+    RoutineDocument,
+)
 
 
 ROUTINE_FILENAME_PATTERN = re.compile(r"^(\d{4}-\d+)-(.+)$")
@@ -84,16 +91,58 @@ def questions_needing_review(scores):
     return best_score.index[best_score < MIN_RELEVANCE]
 
 
-def build_snapshot(questions, scores, last_run, questions_uploaded, routines_uploaded, review_groups=()):
+def index_review_groups(review_groups):
+    """
+    Turns the titled groups of questions needing review into the groups the snapshot
+    lists, and returns them with the group each question belongs to.
+    """
+    groups = [
+        ReviewGroup(id=f"r{number}", title=titled.title, heading_question_id=str(titled.question_ids[0]))
+        for number, titled in enumerate(review_groups)
+    ]
+    group_of_question = {
+        str(question_id): group.id
+        for group, titled in zip(groups, review_groups)
+        for question_id in titled.question_ids
+    }
+
+    return groups, group_of_question
+
+
+def index_routine_clusters(routine_clusters):
+    """
+    Turns the titled clusters of every routine's questions into the clusters the
+    snapshot lists, and returns them with the cluster each question belongs to.
+    routine_clusters maps the PDF filename of a routine to its titled clusters.
+    """
+    clusters = []
+    cluster_of_question = {}
+    for filename, titled_clusters in routine_clusters.items():
+        for titled in titled_clusters:
+            cluster = RoutineCluster(
+                id=f"c{len(clusters)}",
+                routine_code=split_routine_filename(filename)[0],
+                title=titled.title,
+                heading_question_id=str(titled.question_ids[0]),
+            )
+            clusters.append(cluster)
+            cluster_of_question.update({str(question_id): cluster.id for question_id in titled.question_ids})
+
+    return clusters, cluster_of_question
+
+
+def build_snapshot(questions, scores, last_run, questions_uploaded, routines_uploaded,
+                   review_groups=(), routine_clusters=None):
     """
     Builds the snapshot for one analysis run.
     questions is indexed by question ID with the columns Tjenestetilbud and text,
     and scores is the questions x routines table with the same rows in the same
     order. last_run and questions_uploaded are datetime.date values, and
     routines_uploaded maps the PDF filename of each routine to its date.
-    review_groups is a list of groups of question IDs from the questions that need
-    review, each with the question that stands for the group first. Questions in
-    no group stand alone.
+    review_groups is a list of TitledGroups from the questions that need review.
+    routine_clusters maps the PDF filename of a routine to the TitledGroups of the
+    questions that matched it. In both, the question that stands for a group comes
+    first, and questions in no group stand alone.
     """
 
     scores = scores.dropna(axis=1, how="all")
@@ -103,15 +152,8 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
     categories = questions[SERVICE_COLUMN].fillna(UNKNOWN_CATEGORY)
     # The export has no creation date for a ticket, so every ticket gets the day it was uploaded
     uploaded = format_short_norwegian_date(questions_uploaded)
-    groups = [
-        ReviewGroup(id=f"r{number}", heading_question_id=str(member_ids[0]))
-        for number, member_ids in enumerate(review_groups)
-    ]
-    group_of_question = {
-        str(question_id): group.id
-        for group, member_ids in zip(groups, review_groups)
-        for question_id in member_ids
-    }
+    groups, group_of_question = index_review_groups(review_groups)
+    clusters, cluster_of_question = index_routine_clusters(routine_clusters or {})
 
     asked_questions = [
         AskedQuestion(
@@ -123,6 +165,7 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
             coverage=round(float(coverage), 3),
             needs_review=bool(flagged),
             group_id=group_of_question.get(str(question_id)),
+            routine_cluster_id=cluster_of_question.get(str(question_id)),
         )
         for question_id, text, category, filename, coverage, flagged in zip(
             questions.index, questions["text"], categories, best_filename, best_score, needs_review
@@ -140,6 +183,7 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
         last_run_label=format_norwegian_date(last_run),
         questions=asked_questions,
         review_groups=groups,
+        routine_clusters=clusters,
         documents=documents,
         sources=[
             DataSource(
