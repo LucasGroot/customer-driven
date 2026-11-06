@@ -45,6 +45,7 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
           value={targetCode}
           routines={otherRoutines}
           placeholder="Flytt til rutine …"
+          label={`Flytt henvendelse ${question.reference} til rutine`}
           onChange={setTargetCode}
         />
         <div className={styles.moveButtons}>
@@ -55,7 +56,7 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
                 review.mapTo(question.id, targetCode);
               }}
             >
-              Flytt
+              Flytt<span className="visuallyHidden"> henvendelse {question.reference}</span>
             </Button>
           ) : null}
           <Button
@@ -64,7 +65,7 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
               review.discard(question.id);
             }}
           >
-            Forkast
+            Forkast<span className="visuallyHidden"> henvendelse {question.reference}</span>
           </Button>
           {byHand ? (
             <Button
@@ -73,7 +74,7 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
                 review.undoDecision(question.id);
               }}
             >
-              Angre
+              Angre<span className="visuallyHidden"> for henvendelse {question.reference}</span>
             </Button>
           ) : null}
         </div>
@@ -135,12 +136,15 @@ export function RoutineDetailView({
   return (
     <section className={styles.view}>
       <Button variant="link" onClick={onBack}>
-        ← {backLabel}
+        <span aria-hidden="true">← </span>
+        {backLabel}
       </Button>
 
       <div className={styles.header}>
         <div className={styles.headerText}>
-          <h1 className={styles.title}>{routine.name}</h1>
+          <h1 className={styles.title} tabIndex={-1}>
+            {routine.name}
+          </h1>
           <p className={styles.summary}>{routine.uploadedLabel}</p>
         </div>
         
@@ -162,7 +166,7 @@ export function RoutineDetailView({
           {pdfUrl !== null ? (
             <div className={styles.pdfActions}>
               <a className={styles.pdfLink} href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                Åpne PDF
+                Åpne PDF<span className="visuallyHidden"> (åpnes i ny fane)</span>
               </a>
               <a className={styles.pdfLink} href={pdfUrl} download>
                 Last ned PDF
@@ -189,7 +193,7 @@ export function RoutineDetailView({
       </Card>
 
       <Card title="Status">
-        <div className={styles.statusOptions}>
+        <div className={styles.statusOptions} role="group" aria-label="Status for rutinen">
           {STATUS_OPTIONS.map((status) => (
             <FilterPill
               key={status}
@@ -218,9 +222,12 @@ export function RoutineDetailView({
           ) : (
             <p className={styles.ownerHint}>En rutine som er ubehandlet har ingen eier.</p>
           )}
-          {isChoosingOwner ? (
-            <p className={styles.ownerHint}>Velg en rutineeier for å sette status til Under behandling.</p>
-          ) : null}
+          {/* Always rendered, so screen readers announce the hint when it appears */}
+          <div role="status">
+            {isChoosingOwner ? (
+              <p className={styles.ownerHint}>Velg en rutineeier for å sette status til Under behandling.</p>
+            ) : null}
+          </div>
           <div
             className={classNames(styles.savedNote, review.savedNote !== null && styles.saved)}
             aria-live="polite"

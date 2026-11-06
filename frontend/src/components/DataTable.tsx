@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { AboutTopic } from "../domain/aboutTopics";
+import { classNames } from "./classNames";
 import styles from "./DataTable.module.css";
 import { InfoBubble } from "./InfoBubble";
 import type { SortState } from "./sort";
@@ -44,7 +45,7 @@ function ariaSort(
 }
 
 function sortArrow(column: DataTableColumn, sort: SortState | null | undefined): string {
-  if (sort?.key !== column.sortKey) return "↕";
+  if (sort?.key === undefined || sort.key !== column.sortKey) return "↕";
   return sort.direction === "asc" ? "▲" : "▼";
 }
 
@@ -94,11 +95,7 @@ export function DataTable({
                       >
                         {column.label}
                         <span
-                          className={
-                            sort?.key === sortKey
-                              ? `${styles.sortArrow} ${styles.sortArrowActive}`
-                              : styles.sortArrow
-                          }
+                          className={classNames(styles.sortArrow, sort?.key === sortKey && styles.sortArrowActive)}
                           aria-hidden="true"
                         >
                           {sortArrow(column, sort)}
@@ -108,7 +105,7 @@ export function DataTable({
                       column.label
                     )}
                     {column.tooltip !== undefined ? (
-                      <InfoBubble text={column.tooltip} topic={column.aboutTopic} />
+                      <InfoBubble subject={column.label} text={column.tooltip} topic={column.aboutTopic} />
                     ) : null}
                   </span>
                 </th>

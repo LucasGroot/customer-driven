@@ -28,6 +28,15 @@ export interface RoutineReview {
   undoDecisions: (questionIds: QuestionId[]) => void;
 }
 
+/**
+ * Says what happened as well as when, since the question that was acted on
+ * disappears from view and screen readers only hear this note.
+ */
+function describeChange(count: number, what: string): string {
+  const questions = count === 1 ? "1 henvendelse" : `${String(count)} henvendelser`;
+  return `${questions} ${what}. ${formatSavedAt(new Date())}`;
+}
+
 export function useRoutineReview(): RoutineReview {
   const [owners, setOwners] = useState<Record<RoutineCode, string>>({});
   const [decisions, setDecisions] = useState<Record<QuestionId, ReviewDecision>>({});
@@ -40,7 +49,7 @@ export function useRoutineReview(): RoutineReview {
 
   const markUnprocessed = useCallback((routineCode: RoutineCode) => {
     setOwners((current) => Object.fromEntries(Object.entries(current).filter(([code]) => code !== routineCode)));
-    setSavedNote(formatSavedAt(new Date()));
+    setSavedNote(`Satt til Ubehandlet. ${formatSavedAt(new Date())}`);
   }, []);
 
   const decide = useCallback((questionIds: QuestionId[], decision: ReviewDecision) => {
@@ -48,7 +57,8 @@ export function useRoutineReview(): RoutineReview {
       ...current,
       ...Object.fromEntries(questionIds.map((questionId) => [questionId, decision])),
     }));
-    setSavedNote(formatSavedAt(new Date()));
+    const what = decision.kind === "discarded" ? "forkastet" : "knyttet til rutine";
+    setSavedNote(describeChange(questionIds.length, what));
   }, []);
 
   const discardMany = useCallback(
@@ -83,7 +93,7 @@ export function useRoutineReview(): RoutineReview {
     setDecisions((current) =>
       Object.fromEntries(Object.entries(current).filter(([id]) => !questionIds.includes(id))),
     );
-    setSavedNote(formatSavedAt(new Date()));
+    setSavedNote(describeChange(questionIds.length, "lagt tilbake"));
   }, []);
 
   const undoDecision = useCallback(

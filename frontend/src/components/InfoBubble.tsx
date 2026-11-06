@@ -9,6 +9,8 @@ const SCREEN_MARGIN = 12;
 const GAP_BELOW_BUTTON = 8;
 
 interface InfoBubbleProps {
+  /** What the bubble explains, e.g. "Snittdekning". Names the button for screen readers. */
+  subject: string;
   text: string;
   /** The question on "Om analysen" that "Les mer" opens. No link when omitted. */
   topic?: AboutTopic | undefined;
@@ -24,7 +26,7 @@ interface Position {
  * link to the full answer on "Om analysen". It is drawn on the page itself, so a
  * table that scrolls or clips its content cannot cut it off.
  */
-export function InfoBubble({ text, topic }: InfoBubbleProps) {
+export function InfoBubble({ subject, text, topic }: InfoBubbleProps) {
   const openAbout = useContext(OpenAboutContext);
   const [position, setPosition] = useState<Position | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -45,10 +47,25 @@ export function InfoBubble({ text, topic }: InfoBubbleProps) {
       if (bubbleRef.current?.contains(target) === true || buttonRef.current?.contains(target) === true) return;
       close();
     };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
+    const closeAndReturn = () => {
       close();
       buttonRef.current?.focus();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeAndReturn();
+        return;
+      }
+      // The bubble sits at the end of the page, so tabbing out of it would leave
+      // the table behind. Tabbing past either end returns to the (i) instead.
+      const bubble = bubbleRef.current;
+      if (event.key !== "Tab" || bubble === null || !bubble.contains(document.activeElement)) return;
+      const link = bubble.querySelector("button");
+      const movingToLink = !event.shiftKey && link !== null && document.activeElement === bubble;
+      if (!movingToLink) {
+        event.preventDefault();
+        closeAndReturn();
+      }
     };
 
     window.addEventListener("pointerdown", onPointerDown);
@@ -84,7 +101,7 @@ export function InfoBubble({ text, topic }: InfoBubbleProps) {
         ref={buttonRef}
         type="button"
         className={styles.button}
-        aria-label="Mer informasjon"
+        aria-label={`Mer om ${subject.toLowerCase()}`}
         aria-expanded={isOpen}
         aria-controls={isOpen ? bubbleId : undefined}
         onClick={toggle}
@@ -97,6 +114,8 @@ export function InfoBubble({ text, topic }: InfoBubbleProps) {
             <div
               ref={bubbleRef}
               id={bubbleId}
+              role="dialog"
+              aria-label={subject}
               className={styles.bubble}
               style={{ top: position.top, left: position.left, width: BUBBLE_WIDTH }}
               tabIndex={-1}

@@ -62,16 +62,18 @@ export function OverviewView({
       </div>
 
       <div className={styles.filters}>
-        {ROUTINE_FILTERS.map((option) => (
-          <FilterPill
-            key={option.key}
-            label={`${option.label} · ${String(filterRoutines(shown, option.key, review.statusOf).length)}`}
-            selected={filter === option.key}
-            onSelect={() => {
-              onFilterChange(option.key);
-            }}
-          />
-        ))}
+        <div className={styles.filterPills} role="group" aria-label="Filtrer rutinene">
+          {ROUTINE_FILTERS.map((option) => (
+            <FilterPill
+              key={option.key}
+              label={`${option.label} · ${String(filterRoutines(shown, option.key, review.statusOf).length)}`}
+              selected={filter === option.key}
+              onSelect={() => {
+                onFilterChange(option.key);
+              }}
+            />
+          ))}
+        </div>
         <div className={styles.hideAbove}>
           <NumberField
             label="Skjul rutiner med snittdekning over"
@@ -82,6 +84,10 @@ export function OverviewView({
             suffix="%"
             onChange={onHideAboveChange}
           />
+          {/* Reads out what a new limit did; the note below shows the same to sighted users */}
+          <span className="visuallyHidden" role="status">
+            {hiddenCount} {hiddenCount === 1 ? "rutine" : "rutiner"} skjult
+          </span>
         </div>
       </div>
 

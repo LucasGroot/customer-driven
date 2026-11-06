@@ -41,7 +41,7 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
         lead="Henvendelser der ingen rutine passer godt nok. De som ligner hverandre er samlet i grupper: en stor gruppe betyr at flere lurer på det samme uten at en rutine svarer godt nok. Behandle en hel gruppe om gangen, eller åpne den og vurder henvendelsene hver for seg. Valgene teller med når rutinene prioriteres."
       />
 
-      <div className={styles.pills}>
+      <div className={styles.pills} role="group" aria-label="Vis henvendelser">
         {REVIEW_FILTERS.map((option) => (
           <FilterPill
             key={option.key}

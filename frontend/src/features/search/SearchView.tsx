@@ -71,7 +71,7 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
       />
 
       {/* Row 1: the two tabs */}
-      <div className={styles.pills}>
+      <div className={styles.pills} role="group" aria-label="Søk i">
         {tabs.map((option) => (
           <FilterPill
             key={option.key}
