@@ -28,6 +28,11 @@ export function navigationFor(role: CurrentUser["role"]): NavigationEntry[] {
   return NAVIGATION.filter((entry) => role === "admin" || entry.adminOnly !== true);
 }
 
+/** The page's name in the browser tab. The detail page uses the routine's name instead. */
+export function pageLabel(view: ViewName): string {
+  return NAVIGATION.find((entry) => entry.view === view)?.label ?? "Rutine";
+}
+
 export function isAdminOnly(view: ViewName): boolean {
   return NAVIGATION.some((entry) => entry.view === view && entry.adminOnly === true);
 }

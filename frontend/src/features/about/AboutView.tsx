@@ -23,11 +23,17 @@ export function AboutView({ openTopic }: AboutViewProps) {
     const question = document.getElementById(questionId(openTopic));
     if (!(question instanceof HTMLDetailsElement)) return;
     question.open = true;
-    question.scrollIntoView({ behavior: "smooth", block: "center" });
-    question.animate(
-      [{ background: "var(--color-blue-100)" }, { background: "transparent" }],
-      { duration: HIGHLIGHT_MS },
-    );
+    // Focus follows, so a keyboard or screen reader user lands on the question too
+    question.querySelector("summary")?.focus({ preventScroll: true });
+    // The global reduced-motion rule does not reach scripted motion, so it is checked here
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    question.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    if (!reduceMotion) {
+      question.animate(
+        [{ background: "var(--color-blue-100)" }, { background: "transparent" }],
+        { duration: HIGHLIGHT_MS },
+      );
+    }
   }, [openTopic]);
 
   return (

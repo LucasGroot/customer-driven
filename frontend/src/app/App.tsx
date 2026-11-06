@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
 import { OpenAboutContext } from "../components/AboutLink";
 import type { AboutTopic } from "../domain/aboutTopics";
@@ -14,6 +14,7 @@ import { SearchView } from "../features/search/SearchView";
 import { SummaryView } from "../features/summary/SummaryView";
 import { useAnalysisRun } from "../hooks/useAnalysisRun";
 import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
+import { usePageFocus } from "../hooks/usePageFocus";
 import { useRoutineReview } from "../hooks/useRoutineReview";
 import { useSnapshot } from "../hooks/useSnapshot";
 import { DEFAULT_HIDE_ABOVE_PERCENT, isWellCovered } from "../domain/priority";
@@ -21,7 +22,7 @@ import { ownerCandidates } from "../domain/owners";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
 import { Sidebar } from "./Sidebar";
-import { isAdminOnly, type ViewName } from "./views";
+import { isAdminOnly, pageLabel, type ViewName } from "./views";
 import styles from "./App.module.css";
 
 interface AppProps {
@@ -36,7 +37,11 @@ export function App({ user, accessToken, onSignOut }: AppProps) {
   const state = useSnapshot(accessToken, snapshotVersion);
 
   if (state.status === "loading") {
-    return <p className={styles.status}>Henter analysen …</p>;
+    return (
+      <p className={styles.status} role="status">
+        Henter analysen …
+      </p>
+    );
   }
   if (state.status === "error") {
     return (
@@ -87,6 +92,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   const review = useRoutineReview();
   const isAdmin = user.role === "admin";
   const run = useAnalysisRun(accessToken, isAdmin, onSnapshotReplaced);
+  const mainRef = useRef<HTMLElement>(null);
 
   const applyLocation = (location: Location) => {
     setView(location.view);
@@ -137,9 +143,25 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
     go({ view: "about", aboutTopic: topic });
   };
 
+  const pageTitle =
+    shownView === "detail" && selectedRoutine !== undefined
+      ? selectedRoutine.routine.name
+      : pageLabel(shownView);
+  usePageFocus(mainRef, `${shownView}:${selectedRoutineCode ?? ""}`, pageTitle, aboutTopic !== null);
 
   return (
     <OpenAboutContext.Provider value={openAbout}>
+      <a
+        className="skipLink"
+        href="#hovedinnhold"
+        onClick={(event) => {
+          // Moving focus by hand keeps the jump out of the back button's history
+          event.preventDefault();
+          mainRef.current?.focus();
+        }}
+      >
+        Hopp til hovedinnholdet
+      </a>
       <div className={styles.layout}>
         <Sidebar
           currentView={shownView === "detail" ? returnView : shownView}
@@ -154,7 +176,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
           onSignOut={onSignOut}
         />
 
-        <main className={styles.main}>
+        <main ref={mainRef} id="hovedinnhold" tabIndex={-1} className={styles.main}>
           {shownView === "list" ? (
             <OverviewView
               routines={routines}
