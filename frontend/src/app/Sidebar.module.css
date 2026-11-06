@@ -10,6 +10,8 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  /* At 200 % zoom the menu is taller than the window; it must scroll, or "Logg ut" is out of reach */
+  overflow-y: auto;
 }
 
 .brand {
@@ -98,7 +100,8 @@
 .navBadge {
   font-family: var(--font-mono);
   font-size: 11px;
-  opacity: 0.6;
+  font-weight: 400;
+  color: var(--color-text-subtle);
 }
 
 .footer {

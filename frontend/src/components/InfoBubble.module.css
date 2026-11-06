@@ -1,4 +1,5 @@
 .button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -14,14 +15,19 @@
   font-weight: 600;
   line-height: 1;
   color: inherit;
-  opacity: 0.6;
   cursor: pointer;
 }
 
+/* Widens the area that reacts to a click or tap to 24 × 24 px without making the icon bigger */
+.button::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+
 .button:hover,
-.button:focus-visible,
 .button[aria-expanded="true"] {
-  opacity: 1;
+  background: var(--color-accent-surface);
 }
 
 .button:focus-visible {

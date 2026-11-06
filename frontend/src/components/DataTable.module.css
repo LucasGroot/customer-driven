@@ -87,9 +87,10 @@
   opacity: 1;
 }
 
+/* Faded only so far that the arrow still stands out 3:1 from the header */
 .sortArrow {
   font-size: 0.75em;
-  opacity: 0.4;
+  opacity: 0.7;
 }
 
 .sortArrowActive {
