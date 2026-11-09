@@ -88,10 +88,15 @@ export function InfoBubble({ subject, text, topic }: InfoBubbleProps) {
     }
     const rect = buttonRef.current?.getBoundingClientRect();
     if (rect === undefined) return;
-    const furthestLeft = window.innerWidth - BUBBLE_WIDTH - SCREEN_MARGIN;
+    // The page is zoomed through CSS (see global.css). The button's rect is in screen
+    // pixels, but a fixed position is multiplied by the zoom again, so it is divided here.
+    const zoom = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--ui-zoom")) || 1;
+    const bubbleWidthOnScreen = BUBBLE_WIDTH * zoom;
+    const centered = rect.left + rect.width / 2 - bubbleWidthOnScreen / 2;
+    const furthestLeft = window.innerWidth - bubbleWidthOnScreen - SCREEN_MARGIN * zoom;
     setPosition({
-      top: rect.bottom + GAP_BELOW_BUTTON,
-      left: Math.max(SCREEN_MARGIN, Math.min(rect.left, furthestLeft)),
+      top: rect.bottom / zoom + GAP_BELOW_BUTTON,
+      left: Math.max(SCREEN_MARGIN * zoom, Math.min(centered, furthestLeft)) / zoom,
     });
   };
 

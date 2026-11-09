@@ -55,7 +55,7 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
       </div>
 
       <p className={styles.note} aria-live="polite">
-        {review.savedNote ?? "Valg lagres automatisk i denne økten."}
+        {review.questionNote ?? "Valg lagres automatisk i denne økten."}
       </p>
 
       {filter === "pending" ? (

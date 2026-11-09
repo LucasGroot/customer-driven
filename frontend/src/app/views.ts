@@ -12,10 +12,10 @@ interface NavigationEntry {
 
 export const NAVIGATION: NavigationEntry[] = [
   { view: "summary", label: "Oversikt" },
-  { view: "list", label: "Prioritert liste" },
+  { view: "list", label: "Prioriterte rutiner" },
   { view: "review", label: "Henvendelser til manuell gjennomgang" },
-  { view: "run", label: "Kjør analyse" },
   { view: "search", label: "Søk" },
+  { view: "run", label: "Kjør analyse" },
   { view: "import", label: "Importer data", adminOnly: true },
   { view: "about", label: "Om analysen" },
 ];
