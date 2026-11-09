@@ -14,11 +14,13 @@ import styles from "./RoutineDetailView.module.css";
 import { classNames } from "../../components/classNames";
 import { useState } from "react";
 import { RoutineSelect } from "../review/RoutineSelect";
-<<<<<<< HEAD
-import type { PriorityWeights, RoutineCluster, RoutineCode, RoutineDocument } from "../../domain/types";
-=======
-import type { PriorityWeights, RoutineCode, RoutineDocument, RoutineStatus } from "../../domain/types";
->>>>>>> origin/dev
+import type {
+  PriorityWeights,
+  RoutineCluster,
+  RoutineCode,
+  RoutineDocument,
+  RoutineStatus,
+} from "../../domain/types";
 import { routinePdfUrl } from "./routinePdf";
 import { groupRoutineQuestions } from "./routineClusters";
 
