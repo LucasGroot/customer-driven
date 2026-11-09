@@ -1,5 +1,5 @@
 from psycopg2.extras import execute_values
-from backend.src.db.db import get_conn
+from src.backend.db.db import get_conn
 
 
 def save_analysis(routines, questions, matches, themes):

@@ -4,10 +4,10 @@ from dotenv import load_dotenv
 import os
 import datetime
 
-from backend.src.db.create_db import *
-from backend.src.db.mockup import *
-from backend.src.db.get_info import *
-from backend.src.db.review_service import *
+from src.backend.db.create_db import *
+from src.backend.db.mockup import *
+from src.backend.db.get_info import *
+from src.backend.db.review_service import *
 
 load_dotenv()
 dbname = os.getenv('DBNAME')

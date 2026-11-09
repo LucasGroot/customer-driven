@@ -5,12 +5,12 @@ import psycopg2
 import pytest
 from dotenv import load_dotenv
 
-from backend.src.db.create_db import (
+from src.backend.db.create_db import (
     add_type, create_leader, create_routine, create_question, create_settings,
     create_question_theme, create_routine_theme, create_routine_answer_question,
     create_question_decision,
 )
-from backend.src.db.analysis_service import save_analysis
+from src.backend.db.analysis_service import save_analysis
 
 load_dotenv()
 conn = psycopg2.connect(

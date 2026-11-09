@@ -1,5 +1,5 @@
 from psycopg2.extras import RealDictCursor, execute_values
-from backend.src.db.db import get_conn
+from src.backend.db.db import get_conn
 
 STATUS_TO_DB = {"new": "new", "updating": "under consideration", "done": "processed"}
 STATUS_FROM_DB = {db: front for front, db in STATUS_TO_DB.items()}
