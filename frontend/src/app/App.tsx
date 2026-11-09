@@ -22,7 +22,7 @@ import { ownerCandidates } from "../domain/owners";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
 import { Sidebar } from "./Sidebar";
-import { NAVIGATION, isAdminOnly, pageLabel, type ViewName } from "./views";
+import { NAVIGATION, isAdminOnly, type ViewName } from "./views";
 import styles from "./App.module.css";
 
 interface AppProps {
@@ -155,11 +155,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
     go({ view: "about", aboutTopic: topic });
   };
 
-  const pageTitle =
-    shownView === "detail" && selectedRoutine !== undefined
-      ? selectedRoutine.routine.name
-      : pageLabel(shownView);
-  usePageFocus(mainRef, `${shownView}:${selectedRoutineCode ?? ""}`, pageTitle, aboutTopic !== null);
+  usePageFocus(mainRef, `${shownView}:${selectedRoutineCode ?? ""}`, aboutTopic !== null);
 
   return (
     <OpenAboutContext.Provider value={openAbout}>
