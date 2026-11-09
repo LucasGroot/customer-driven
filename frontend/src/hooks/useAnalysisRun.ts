@@ -27,58 +27,6 @@ export interface AnalysisRun {
   start: () => void;
 }
 
-export function useAnalysisRun(): AnalysisRun {
-  const [completedSteps, setCompletedSteps] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [hasFinished, setHasFinished] = useState(false);
-  const [hasFailed, setHasFailed] = useState(false);
-  const pollRef = useRef<number | undefined>(undefined);
-
-  const stopPolling = useCallback(() => {
-    window.clearInterval(pollRef.current);
-  }, []);
-
-  useEffect(() => stopPolling, [stopPolling]);
-
-  const start = useCallback(() => {
-    if (isRunning) return;
-    setCompletedSteps(0);
-    setHasFinished(false);
-    setHasFailed(false);
-    setIsRunning(true);
-
-    startAnalysis()
-      .then(() => {
-        pollRef.current = window.setInterval(() => {
-          fetchAnalysisStatus().then(
-            (status) => {
-              setCompletedSteps(status.completedSteps);
-              if (status.status === "done") {
-                stopPolling();
-                setIsRunning(false);
-                setHasFinished(true);
-              } else if (status.status === "error") {
-                stopPolling();
-                setIsRunning(false);
-                setHasFailed(true);
-              }
-            },
-            () => {
-              stopPolling();
-              setIsRunning(false);
-              setHasFailed(true);
-            },
-          );
-        }, POLL_MS);
-      })
-      .catch(() => {
-        setIsRunning(false);
-        setHasFailed(true);
-      });
-  }, [isRunning, stopPolling]);
-
-  return { isRunning, hasFinished, hasFailed, completedSteps, start };
-}
 export function useAnalysisRun(accessToken: string, canRun: boolean, onFinished: () => void): AnalysisRun {
   const [status, setStatus] = useState<AnalysisStatus>({ state: "idle", completedSteps: 0 });
   const [isFollowing, setIsFollowing] = useState(false);

@@ -23,6 +23,8 @@ from backend.api.auth import (
 from backend.api.config import Settings, load_settings
 from backend.snapshot.router import router as snapshot_router
 
+from backend.review.router import router as review_router
+
 bearer = HTTPBearer(auto_error=False)
 
 
@@ -95,5 +97,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # The snapshot used to be served without login by backend.snapshot.dev_app;
     # here every snapshot route requires a valid Microsoft token.
     app.include_router(snapshot_router, dependencies=[Depends(get_current_user)])
+
+    # HR's decisions: any signed-in user, like the snapshot
+    app.include_router(review_router, dependencies=[Depends(get_current_user)])
 
     return app

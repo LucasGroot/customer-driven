@@ -1,47 +1,36 @@
-import type { QuestionId, ReviewDecision, RoutineCode, RoutineStatus } from "../domain/types";
+import type { QuestionId, ReviewDecision, RoutineCode } from "../domain/types";
 
 export interface ReviewState {
-  statuses: Record<RoutineCode, RoutineStatus>;
   owners: Record<RoutineCode, string>;
   decisions: Record<QuestionId, ReviewDecision>;
 }
 
-async function send(method: "PUT" | "POST", url: string, body: unknown): Promise<void> {
-  const response = await fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) {
-    throw new Error(`Backend svarte ${String(response.status)} på ${url}.`);
-  }
+// Adapte l'en-tête à ce que fait api/adminApi.ts
+function headers(accessToken: string) {
+  return { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" };
 }
 
-export async function fetchReview(signal: AbortSignal): Promise<ReviewState> {
-  const response = await fetch("/api/review", { signal });
-  if (!response.ok) {
-    throw new Error(`Backend svarte ${String(response.status)} på /api/review.`);
-  }
+async function send(method: "PUT" | "POST", url: string, accessToken: string, body: unknown) {
+  const response = await fetch(url, { method, headers: headers(accessToken), body: JSON.stringify(body) });
+  if (!response.ok) throw new Error(`Backend svarte ${String(response.status)} på ${url}.`);
+}
+
+export async function fetchReview(accessToken: string, signal?: AbortSignal): Promise<ReviewState> {
+  const response = await fetch("/api/review", { signal, headers: headers(accessToken) });
+  if (!response.ok) throw new Error(`Backend svarte ${String(response.status)} på /api/review.`);
   return (await response.json()) as ReviewState;
 }
 
-export function saveStatus(routineCode: RoutineCode, status: RoutineStatus) {
-  return send("PUT", `/api/routines/${encodeURIComponent(routineCode)}/status`, { status });
+/** owner = null puts the routine back to unprocessed. */
+export function saveOwner(accessToken: string, routineCode: RoutineCode, owner: string | null) {
+  return send("PUT", `/api/routines/${encodeURIComponent(routineCode)}/owner`, accessToken, { owner });
 }
 
-export function saveOwner(routineCode: RoutineCode, owner: string) {
-  return send("PUT", `/api/routines/${encodeURIComponent(routineCode)}/owner`, { owner });
-}
-
-export function saveDecisions(questionIds: QuestionId[], decision: ReviewDecision) {
+export function saveDecisions(accessToken: string, questionIds: QuestionId[], decision: ReviewDecision) {
   const routineCode = decision.kind === "mapped" ? decision.routineCode : undefined;
-  return send("PUT", "/api/questions/decisions", {
-    questionIds,
-    kind: decision.kind,
-    routineCode,
-  });
+  return send("PUT", "/api/questions/decisions", accessToken, { questionIds, kind: decision.kind, routineCode });
 }
 
-export function undoDecisions(questionIds: QuestionId[]) {
-  return send("POST", "/api/questions/decisions/undo", { questionIds });
+export function saveUndo(accessToken: string, questionIds: QuestionId[]) {
+  return send("POST", "/api/questions/decisions/undo", accessToken, { questionIds });
 }
