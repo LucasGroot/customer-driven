@@ -15,7 +15,10 @@ export interface RoutineReview {
   /** Undefined for a routine nobody is working on. */
   ownerOf: (routineCode: RoutineCode) => string | undefined;
   decisionOf: DecisionOf;
+  /** The latest change of any kind, shown on the routine page. */
   savedNote: string | null;
+  /** The latest change to a question only, shown on the review page where an owner means nothing. */
+  questionNote: string | null;
   /** Sets the routine to Under behandling, with this owner. */
   startProcessing: (routineCode: RoutineCode, owner: string) => void;
   /** Sets the routine back to Ubehandlet, which has no owner. */
@@ -41,6 +44,7 @@ export function useRoutineReview(): RoutineReview {
   const [owners, setOwners] = useState<Record<RoutineCode, string>>({});
   const [decisions, setDecisions] = useState<Record<QuestionId, ReviewDecision>>({});
   const [savedNote, setSavedNote] = useState<string | null>(null);
+  const [questionNote, setQuestionNote] = useState<string | null>(null);
 
   const startProcessing = useCallback((routineCode: RoutineCode, owner: string) => {
     setOwners((current) => ({ ...current, [routineCode]: owner }));
@@ -58,7 +62,9 @@ export function useRoutineReview(): RoutineReview {
       ...Object.fromEntries(questionIds.map((questionId) => [questionId, decision])),
     }));
     const what = decision.kind === "discarded" ? "forkastet" : "knyttet til rutine";
-    setSavedNote(describeChange(questionIds.length, what));
+    const note = describeChange(questionIds.length, what);
+    setSavedNote(note);
+    setQuestionNote(note);
   }, []);
 
   const discardMany = useCallback(
@@ -93,7 +99,9 @@ export function useRoutineReview(): RoutineReview {
     setDecisions((current) =>
       Object.fromEntries(Object.entries(current).filter(([id]) => !questionIds.includes(id))),
     );
-    setSavedNote(describeChange(questionIds.length, "lagt tilbake"));
+    const note = describeChange(questionIds.length, "lagt tilbake");
+    setSavedNote(note);
+    setQuestionNote(note);
   }, []);
 
   const undoDecision = useCallback(
@@ -122,6 +130,7 @@ export function useRoutineReview(): RoutineReview {
     ownerOf,
     decisionOf,
     savedNote,
+    questionNote,
     startProcessing,
     markUnprocessed,
     discard,
