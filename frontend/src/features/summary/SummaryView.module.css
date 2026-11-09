@@ -19,7 +19,7 @@
 
 .bandRow {
   display: grid;
-  grid-template-columns: minmax(130px, 1fr) minmax(80px, 1.4fr) 24px;
+  grid-template-columns: minmax(130px, 1fr) minmax(80px, 1.4fr) 32px;
   align-items: center;
   gap: 16px;
   font-size: 13.5px;
@@ -58,4 +58,35 @@
   height: 10px;
   border-radius: 2px;
   flex: none;
+}
+
+.source {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.source:first-child {
+  padding-top: 0;
+}
+
+.source:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sourceName {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sourceDetail {
+  font-size: 13.5px;
+}
+
+.sourceUploaded {
+  color: var(--color-text-soft);
 }

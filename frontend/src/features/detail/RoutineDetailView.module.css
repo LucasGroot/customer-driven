@@ -117,6 +117,12 @@
   padding-top: 16px;
 }
 
+.ownerHint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-soft);
+}
+
 .savedNote {
   margin-left: auto;
   font-size: 12.5px;

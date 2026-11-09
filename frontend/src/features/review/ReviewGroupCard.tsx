@@ -28,12 +28,18 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
         <div className={styles.headingText}>
           <p className={styles.heading}>{group.title}</p>
           <p className={styles.example}>«{heading.text}»</p>
+          <h2 className={styles.heading}>{heading.text}</h2>
           <p className={styles.count}>
             {items.length} {items.length === 1 ? "henvendelse" : "henvendelser"} i gruppen
           </p>
         </div>
         <div className={styles.actions}>
-          <RoutineSelect value={chosenCode} routines={routines} onChange={setChosenCode} />
+          <RoutineSelect
+            value={chosenCode}
+            routines={routines}
+            label={`Rutine for gruppen «${heading.text}»`}
+            onChange={setChosenCode}
+          />
           <div className={styles.buttons}>
             <Button
               variant="secondary"
@@ -41,7 +47,7 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
                 review.mapManyTo(questionIds, chosenCode);
               }}
             >
-              Knytt alle til rutine
+              Knytt alle til rutine<span className="visuallyHidden"> i gruppen «{heading.text}»</span>
             </Button>
             <Button
               variant="danger"
@@ -49,14 +55,16 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
                 review.discardMany(questionIds);
               }}
             >
-              Forkast alle
+              Forkast alle<span className="visuallyHidden"> i gruppen «{heading.text}»</span>
             </Button>
           </div>
         </div>
       </div>
 
       <details className={styles.details}>
-        <summary className={styles.summary}>Vis henvendelsene</summary>
+        <summary className={styles.summary}>
+          Vis henvendelsene<span className="visuallyHidden"> i gruppen «{heading.text}»</span>
+        </summary>
         <ReviewTable items={items} routines={routines} review={review} emptyMessage="" />
       </details>
     </Card>

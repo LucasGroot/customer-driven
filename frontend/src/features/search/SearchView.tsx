@@ -66,12 +66,12 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
   return (
     <section className={styles.view}>
       <PageIntro
-        title="Søk og treff"
+        title="Søk"
         lead="Se alle henvendelser og alle rutiner med tilhørende treff, også rutinene som svarer godt og derfor er skjult i den prioriterte listen. Bruk siden til å kontrollere hvor en henvendelse har havnet."
       />
 
       {/* Row 1: the two tabs */}
-      <div className={styles.pills}>
+      <div className={styles.pills} role="group" aria-label="Søk i">
         {tabs.map((option) => (
           <FilterPill
             key={option.key}
@@ -156,6 +156,8 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
           sort={columnSort}
           onSortChange={handleColumnSort}
           onOpenRoutine={onOpenRoutine}
+          statusOf={review.statusOf}
+          ownerOf={review.ownerOf}
         />
       )}
     </section>

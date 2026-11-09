@@ -1,20 +1,44 @@
 .sidebar {
-  background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
-  padding: 26px 16px;
+  --sidebar-padding: 16px;
+  --sidebar-edge: 1px;
+  background: var(--color-blue-100);
+  border-right: var(--sidebar-edge) solid var(--color-blue-200);
+  padding: 26px var(--sidebar-padding);
   display: flex;
   flex-direction: column;
   gap: 26px;
   position: sticky;
   top: 0;
   height: 100vh;
+  /* At 200 % zoom the menu is taller than the window; it must scroll, or "Logg ut" is out of reach */
+  overflow-y: auto;
 }
 
 .brand {
+  padding: 0 4px;
+}
+
+.brand button {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 5px;
-  padding: 0 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.brand button:hover .brandName {
+  text-decoration: underline;
+}
+
+.brand button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 .brandName {
@@ -26,7 +50,7 @@
 
 .brandSubtitle {
   font-size: 10.5px;
-  color: var(--color-text-faint);
+  color: var(--color-text-subtle);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -34,40 +58,50 @@
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  border-top: 1px solid var(--color-blue-300);
 }
 
 .navItem {
   cursor: pointer;
-  border: none;
-  background: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 1px solid black;
+  padding: 11px 12px;
+  border: none;
+  border-bottom: 1px solid var(--color-blue-300);
+  background: none;
   font-size: 13.5px;
   line-height: 1.2;
   text-align: left;
-  color: var(--color-text-muted);
+  color: var(--color-text);
+  transition: background 120ms ease;
 }
 
 .navItem:hover {
-  background: var(--color-surface-muted);
+  background: var(--color-blue-50);
+}
+
+.navItem:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 .navItemActive,
 .navItemActive:hover {
-  background: var(--color-accent-surface);
+  margin-right: calc(-1 * (var(--sidebar-padding) + var(--sidebar-edge)));
+  padding-right: calc(12px + var(--sidebar-padding) + var(--sidebar-edge));
+  background: var(--color-canvas);
+  box-shadow: inset 3px 0 0 var(--color-accent);
   color: var(--color-accent);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .navBadge {
   font-family: var(--font-mono);
   font-size: 11px;
-  opacity: 0.6;
+  font-weight: 400;
+  color: var(--color-text-subtle);
 }
 
 .footer {
@@ -75,7 +109,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-blue-300);
   padding-top: 16px;
 }
 
@@ -87,7 +121,7 @@
 
 .footerLabel {
   font-size: 10.5px;
-  color: var(--color-text-faint);
+  color: var(--color-text-subtle);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -98,7 +132,7 @@
 
 .footerNote {
   font-size: 12px;
-  color: var(--color-text-soft);
+  color: var(--color-text-subtle);
   line-height: 1.5;
 }
 
@@ -107,12 +141,18 @@
     position: static;
     height: auto;
     border-right: none;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-blue-200);
   }
 
   .nav {
     flex-direction: row;
     flex-wrap: wrap;
+  }
+
+  .navItemActive,
+  .navItemActive:hover {
+    margin-right: 0;
+    padding-right: 12px;
   }
 
   .footer {

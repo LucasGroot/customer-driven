@@ -14,7 +14,11 @@ import styles from "./RoutineDetailView.module.css";
 import { classNames } from "../../components/classNames";
 import { useState } from "react";
 import { RoutineSelect } from "../review/RoutineSelect";
+<<<<<<< HEAD
 import type { PriorityWeights, RoutineCluster, RoutineCode, RoutineDocument } from "../../domain/types";
+=======
+import type { PriorityWeights, RoutineCode, RoutineDocument, RoutineStatus } from "../../domain/types";
+>>>>>>> origin/dev
 import { routinePdfUrl } from "./routinePdf";
 import { groupRoutineQuestions } from "./routineClusters";
 
@@ -50,6 +54,7 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
           value={targetCode}
           routines={otherRoutines}
           placeholder="Flytt til rutine …"
+          label={`Flytt henvendelse ${question.reference} til rutine`}
           onChange={setTargetCode}
         />
         <div className={styles.moveButtons}>
@@ -60,7 +65,7 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
                 review.mapTo(question.id, targetCode);
               }}
             >
-              Flytt
+              Flytt<span className="visuallyHidden"> henvendelse {question.reference}</span>
             </Button>
           ) : null}
           <Button
@@ -69,7 +74,7 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
               review.discard(question.id);
             }}
           >
-            Forkast
+            Forkast<span className="visuallyHidden"> henvendelse {question.reference}</span>
           </Button>
           {byHand ? (
             <Button
@@ -78,7 +83,7 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
                 review.undoDecision(question.id);
               }}
             >
-              Angre
+              Angre<span className="visuallyHidden"> for henvendelse {question.reference}</span>
             </Button>
           ) : null}
         </div>
@@ -92,7 +97,8 @@ interface RoutineDetailViewProps {
   stats: RoutineStats;
   routineClusters: RoutineCluster[];
   allRoutines: RoutineDocument[];
-  documentOwners: string[];
+  /** The people the routine can be given to when it is set to Under behandling. */
+  ownerCandidates: string[];
   weights: PriorityWeights;
   review: RoutineReview;
   backLabel: string;
@@ -103,7 +109,7 @@ export function RoutineDetailView({
   stats,
   routineClusters,
   allRoutines,
-  documentOwners,
+  ownerCandidates,
   weights,
   review,
   backLabel,
@@ -117,17 +123,41 @@ export function RoutineDetailView({
   const currentStatus = review.statusOf(routine.code);
   const lowestScoreFirst = (a: QuestionItem, b: QuestionItem) => a.question.coverage - b.question.coverage;
   const { clusters, other } = groupRoutineQuestions(stats.questions, routineClusters, routine.code);
+  const owner = review.ownerOf(routine.code);
+  const isInProgress = currentStatus === "in-progress";
+  // Under behandling needs an owner, so choosing it first only opens the owner field
+  const [isChoosingOwner, setIsChoosingOwner] = useState(false);
+  const shownStatus: RoutineStatus = isInProgress || isChoosingOwner ? "in-progress" : "unprocessed";
+  const ownerOptions = [
+    ...(owner === undefined ? [{ value: "", label: "Velg rutineeier" }] : []),
+    ...ownerCandidates.map((candidate) => ({ value: candidate, label: candidate })),
+  ];
+
+  const selectStatus = (status: RoutineStatus) => {
+    if (status === "unprocessed") {
+      setIsChoosingOwner(false);
+      if (isInProgress) review.markUnprocessed(routine.code);
+      return;
+    }
+    if (!isInProgress) setIsChoosingOwner(true);
+  };
+  const questionsLowestScoreFirst = [...stats.questions].sort(
+    (a, b) => a.question.coverage - b.question.coverage,
+  );
   const otherRoutines = allRoutines.filter((candidate) => candidate.code !== routine.code);
 
   return (
     <section className={styles.view}>
       <Button variant="link" onClick={onBack}>
-        ← {backLabel}
+        <span aria-hidden="true">← </span>
+        {backLabel}
       </Button>
 
       <div className={styles.header}>
         <div className={styles.headerText}>
-          <h1 className={styles.title}>{routine.name}</h1>
+          <h1 className={styles.title} tabIndex={-1}>
+            {routine.name}
+          </h1>
           <p className={styles.summary}>{routine.uploadedLabel}</p>
         </div>
         
@@ -149,7 +179,7 @@ export function RoutineDetailView({
           {pdfUrl !== null ? (
             <div className={styles.pdfActions}>
               <a className={styles.pdfLink} href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                Åpne PDF
+                Åpne PDF<span className="visuallyHidden"> (åpnes i ny fane)</span>
               </a>
               <a className={styles.pdfLink} href={pdfUrl} download>
                 Last ned PDF
@@ -176,32 +206,41 @@ export function RoutineDetailView({
       </Card>
 
       <Card title="Status">
-        <div className={styles.statusOptions}>
+        <div className={styles.statusOptions} role="group" aria-label="Status for rutinen">
           {STATUS_OPTIONS.map((status) => (
             <FilterPill
               key={status}
               label={STATUS_LABEL[status]}
-              selected={currentStatus === status}
+              selected={shownStatus === status}
               onSelect={() => {
-                review.setStatus(routine.code, status);
+                selectStatus(status);
               }}
             />
           ))}
         </div>
 
         <div className={styles.assignment}>
-          <SelectField
-            label="Rutineeier"
-            layout="stacked"
-            value={review.ownerOf(routine.code)}
-            options={documentOwners.map((candidate) => ({
-              value: candidate,
-              label: candidate,
-            }))}
-            onChange={(candidate) => {
-              review.assignOwner(routine.code, candidate);
-            }}
-          />
+          {shownStatus === "in-progress" ? (
+            <SelectField
+              label="Rutineeier"
+              layout="stacked"
+              value={owner ?? ""}
+              options={ownerOptions}
+              onChange={(candidate) => {
+                if (candidate === "") return;
+                setIsChoosingOwner(false);
+                review.startProcessing(routine.code, candidate);
+              }}
+            />
+          ) : (
+            <p className={styles.ownerHint}>En rutine som er ubehandlet har ingen eier.</p>
+          )}
+          {/* Always rendered, so screen readers announce the hint when it appears */}
+          <div role="status">
+            {isChoosingOwner ? (
+              <p className={styles.ownerHint}>Velg en rutineeier for å sette status til Under behandling.</p>
+            ) : null}
+          </div>
           <div
             className={classNames(styles.savedNote, review.savedNote !== null && styles.saved)}
             aria-live="polite"

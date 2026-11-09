@@ -42,6 +42,36 @@ input[type="range"] {
   accent-color: var(--color-accent);
 }
 
+/* Browsers draw placeholders paler than 4.5:1 on their own */
+::placeholder {
+  color: var(--color-text-soft);
+  opacity: 1;
+}
+
+/* The first thing a keyboard user reaches; hidden until it has focus. */
+.skipLink {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 50;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-weight: 500;
+  transform: translateY(-200%);
+}
+
+.skipLink:focus {
+  transform: none;
+}
+
+/* Page headings and the main area receive focus after navigation and the skip
+   link. They are not something to click, so they show no ring. */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

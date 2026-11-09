@@ -7,14 +7,19 @@ interface RoutineSelectProps {
   routines: RoutineDocument[];
   /** When set, an unselectable first option shown while `value` is "". */
   placeholder?: string;
+  /**
+   * Read by screen readers. Name the question or group, since a page can hold
+   * many of these and a list of identical names says nothing.
+   */
+  label: string;
   onChange: (routineCode: RoutineCode) => void;
 }
 
-export function RoutineSelect({ value, routines, placeholder, onChange }: RoutineSelectProps) {
+export function RoutineSelect({ value, routines, placeholder, label, onChange }: RoutineSelectProps) {
   return (
     <select
       className={styles.select}
-      aria-label="Rutinen det hører til"
+      aria-label={label}
       value={value}
       onChange={(event) => {
         onChange(event.target.value);

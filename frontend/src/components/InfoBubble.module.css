@@ -1,0 +1,76 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: none;
+  font-family: inherit;
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Widens the area that reacts to a click or tap to 24 × 24 px without making the icon bigger */
+.button::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+
+.button:hover,
+.button[aria-expanded="true"] {
+  background: var(--color-accent-surface);
+}
+
+.button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.bubble {
+  position: fixed;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-body);
+}
+
+.bubble:focus {
+  outline: none;
+}
+
+.link {
+  align-self: flex-start;
+  text-align: left;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 500;
+  color: var(--color-accent);
+  cursor: pointer;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}

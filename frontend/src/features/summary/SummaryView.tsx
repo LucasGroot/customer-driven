@@ -37,6 +37,9 @@ export function SummaryView({
   weights,
 }: SummaryViewProps) {
   const total = routines.length || 1;
+  // The coverage bars show every routine, also those no question points to
+  const routineCount = snapshot.documents.length || 1;
+  const withoutQuestionsCount = snapshot.documents.length - routines.length;
   const shownCount = routines.filter((stats) => !isWellCovered(stats, hideAbovePercent)).length;
   const coverageCounts = COVERAGE_BANDS.map((band) => ({
     band,
@@ -82,10 +85,15 @@ export function SummaryView({
             {coverageCounts.map(({ band, count }) => (
               <div key={band} className={styles.bandRow}>
                 <span>{COVERAGE_BAND_RANGE_LABEL[band]}</span>
-                <MeterBar value={count / total} color={COVERAGE_BAND_COLOR[band]} />
+                <MeterBar value={count / routineCount} color={COVERAGE_BAND_COLOR[band]} />
                 <span className={styles.count}>{count}</span>
               </div>
             ))}
+            <div className={styles.bandRow}>
+              <span>Uten henvendelser</span>
+              <MeterBar value={withoutQuestionsCount / routineCount} color="var(--color-text-dim)" />
+              <span className={styles.count}>{withoutQuestionsCount}</span>
+            </div>
           </div>
         </Card>
 
@@ -120,7 +128,8 @@ export function SummaryView({
             <div key={source.name} className={styles.source}>
               <span className={styles.sourceName}>{source.name}</span>
               <span className={styles.sourceDetail}>
-                {source.count} {source.unit} · lastet opp {source.uploadedLabel}
+                {source.count} {source.unit}{" "}
+                <span className={styles.sourceUploaded}>· lastet opp {source.uploadedLabel}</span>
               </span>
             </div>
           ))}
