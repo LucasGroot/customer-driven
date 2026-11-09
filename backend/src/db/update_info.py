@@ -31,9 +31,9 @@ def delete_question_from_raq(question_to_delete):
                 where question_id = %s ;""",
                 (question_to_delete))
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 
 def delete_question(question_to_delete):
@@ -44,9 +44,9 @@ def delete_question(question_to_delete):
                 where question_id = %s ;""",
                 (question_to_delete))
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 #########################################################################################################
 #                                                                                                       #
@@ -63,9 +63,9 @@ def delete_routine_from_raq(routine_to_delete):
                 where routine_id = %s ;""",
                 (routine_to_delete))
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 
 def delete_routine(routine_to_delete):
@@ -76,6 +76,6 @@ def delete_routine(routine_to_delete):
                 where routine_id = %s ;""",
                 (routine_to_delete))
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)

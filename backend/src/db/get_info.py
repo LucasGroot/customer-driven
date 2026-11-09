@@ -32,11 +32,11 @@ def select_question(question_id):
         ;""", (question_id,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -47,15 +47,15 @@ def select_question_on_theme(question_theme):
         cur = conn.cursor()
         try:
             cur.execute(""" select question_id from question_theme
-            where question_theme = %s
+            where question_tags = %s
         ;""", (question_theme,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -69,11 +69,11 @@ def select_question_before_date(date):
         ;""", (date,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -87,11 +87,11 @@ def select_question_after_date(date):
         ;""", (date,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -105,11 +105,11 @@ def select_question_in_date_order():
         ;""")
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -123,11 +123,11 @@ def select_question_in_last_date_order():
         ;""")
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -147,11 +147,11 @@ def select_routine(routine_id):
         ;""", (routine_id,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -161,15 +161,15 @@ def select_routine_on_theme(routine_theme):
         cur = conn.cursor()
         try:
             cur.execute(""" select * from routine
-            where routine_theme = %s
+            where routine_tags = %s
         ;""", (routine_theme,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -183,11 +183,11 @@ def select_routine_on_status(routine_status):
         ;""", (routine_status,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -201,11 +201,11 @@ def select_routine_before_date(date):
         ;""", (date,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -219,11 +219,11 @@ def select_routine_after_date(date):
         ;""", (date,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -238,11 +238,11 @@ def select_routine_in_date_order():
         ;""")
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -256,11 +256,11 @@ def select_routine_in_last_date_order():
         ;""")
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -274,11 +274,11 @@ def get_routine_owner(routine_id):
         ;""", (routine_id,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -292,11 +292,11 @@ def count_routine_status(status):
         ;""", (status,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -328,11 +328,11 @@ def select_similarity_under_x(x):
         ;""", (x,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -346,11 +346,11 @@ def select_similarity_over_x(x):
         ;""", (x,))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -364,11 +364,11 @@ def select_similarity_between_x_and_y(x, y):
         ;""", (x, y))
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 
@@ -377,14 +377,14 @@ def get_decision():
         cur = conn.cursor()
         try:
             cur.execute(""" select * from question_decision
-        ;""", (x, y))
+        ;""")
             return cur.fetchall()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
             conn.rollback()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
         conn.rollback()
         return []
 

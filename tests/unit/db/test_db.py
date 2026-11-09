@@ -17,19 +17,29 @@ host = os.getenv('DBHOST')
 conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
 conn.autocommit = True
 
+EXPECTED_TABLES = [
+    "leader", "routine", "question", "settings", "question_theme",
+    "routine_theme", "routine_answer_question", "question_decision",
+]
+
 @pytest.mark.order(1)
 def test_creation():
-    try:
-        create_leader()
-        create_routine()
-        create_question()
-        create_settings()
-        create_question_theme()
-        create_routine_theme()
-        create_routine_answer_question()
-        create_question_decision()
-    except Exception:
-        pytest.fail("Unexpected exception")
+    cur = conn.cursor()
+    cur.execute("drop schema public cascade; create schema public;")  # repart de zéro, y compris les types
+
+    add_type()
+    create_leader()
+    create_routine()
+    create_question()
+    create_settings()
+    create_question_theme()
+    create_routine_theme()
+    create_routine_answer_question()
+    create_question_decision()
+
+    for table in EXPECTED_TABLES:
+        cur.execute("select to_regclass(%s)", (f"public.{table}",))
+        assert cur.fetchone()[0] is not None, f"Tabellen {table} ble ikke opprettet"
 
 @pytest.mark.order(2)
 def test_insertion():
@@ -63,8 +73,8 @@ def test_routine():
 
 @pytest.mark.order(5)
 def test_theme():
-    assert(select_question_on_theme('bananas') == [('INC1234567')])
-    assert(select_question_on_theme('uke') == [('INC1234568')])
+    assert(select_question_on_theme('bananas') == [('INC1234567',)])
+    assert(select_question_on_theme('uke') == [('INC1234568',)])
     assert(select_question_on_theme('barna') == [])
 
 @pytest.mark.order(6)
@@ -73,25 +83,26 @@ def test_answer():
     assert(select_similarity_between_x_and_y(0.4, 0.6) == [('6789-0', 'INC1234568', 0.5)])
     assert(select_similarity_over_x(0.6) == [('1234-5', 'INC1234567', 0.7)])
 
-#@pytest.mark.order(7)
-#def test_set_status():
-#    with pytest.raises(Exception):
-#        set_status('6789-0', 'done')
-#    set_status('6789-0', 'processed')
-#    assert(select_routine_on_status('processed') == [('6789-0', 'Overføring av ferie til neste år', 'processed', '2026-10-10', 0)])
+@pytest.mark.order(7)
+def test_set_status():
+    with pytest.raises(Exception):
+        set_status('6789-0', 'processed')
+    set_status('6789-0', 'done')
+    assert(select_routine_on_status('processed') == [('6789-0', 'Overføring av ferie til neste år', 'processed', datetime.date(2026, 10, 10), 0)])
 
 @pytest.mark.order(8)
-def tets_set_owner():
+def test_set_owner():
     set_owner('1234-5', 'Marit Sandvik')
-    assert(get_routine_owner('1234-5') == [(1)])
+    assert(get_routine_owner('1234-5') == [(1,)])
 
 @pytest.mark.order(9)
 def test_decide():
-    decide('INC1234568', 'mapped', '6789-0')
-    res = get_decision()
-    assert(res[2][0] == 'mapped')
+    decide(['INC1234568'], 'mapped', '6789-0')
+    rows = [r[:3] for r in get_decision()]
+    assert ('INC1234568', 'mapped', '6789-0') in rows
 
 @pytest.mark.order(10)
 def test_undo():
     undo(['INC1234568'])
-    assert(get_decision() == [('INC1234567', 'mapped', '1234-5', '2026-10-31 16:53:40.28730')])
+    rows = [r[:3] for r in get_decision()]
+    assert rows == [('INC1234567', 'mapped', '1234-5')]

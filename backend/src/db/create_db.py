@@ -17,9 +17,9 @@ def add_type():
             cur.execute("""create type status as enum ('new', 'under consideration', 'processed');""")
             cur.execute("""create type rights as enum ('admin', 'normal');""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def create_leader():
     try:
@@ -31,9 +31,9 @@ def create_leader():
         surname varchar(50),
         rights rights);""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def create_routine():
     try:
@@ -47,9 +47,9 @@ def create_routine():
         routine_responsible int references leader
         );""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def create_question():
     try:
@@ -64,9 +64,9 @@ def create_question():
         question_need_review boolean default false
         );""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def create_settings():
     try:
@@ -78,9 +78,9 @@ def create_settings():
         setting_medium int,
         setting_good int);""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def create_question_theme():
     try:
@@ -92,9 +92,9 @@ def create_question_theme():
         primary key (question_id, question_tags)
         );""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def create_routine_theme():
     try:
@@ -106,9 +106,9 @@ def create_routine_theme():
         primary key (routine_id, routine_tags)
         );""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 
 def create_routine_answer_question():
@@ -122,9 +122,9 @@ def create_routine_answer_question():
         primary key (routine_id, question_id)
         );""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def create_question_decision():
     try:
@@ -138,9 +138,9 @@ def create_question_decision():
         check ((kind = 'mapped') = (routine_id is not null))
         );""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 
 if __name__ == "__main__":

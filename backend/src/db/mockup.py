@@ -21,9 +21,9 @@ def add_leader():
             (2, 'Lene', 'Fjeld', 'normal')
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def add_settings():
     try:
@@ -35,9 +35,9 @@ def add_settings():
             (2, 15, 50, 69)
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def add_routine():
     try:
@@ -49,9 +49,9 @@ def add_routine():
 
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def add_question():
     try:
@@ -62,9 +62,9 @@ def add_question():
             ('INC1234568', 'pru', 'noen i uke', 'Vi har delt omsorg annenhver uke. Teller dagene bare når barnet bor hos meg?', '2026-08-28')
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def add_theme():
     try:
@@ -81,9 +81,9 @@ def add_theme():
             ('6789-0', 'uke')
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 def add_answer():
     try:
@@ -95,9 +95,9 @@ def add_answer():
             ('6789-0', 'INC1234567', 0.1)
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 
 def add_decision():
@@ -108,9 +108,9 @@ def add_decision():
             ('INC1234567', 'mapped', '1234-5', '2026-10-31 16:53:40.28730')
             ;""")
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            raise(error)
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        raise(error)
 
 
 
