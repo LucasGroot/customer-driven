@@ -1,4 +1,5 @@
 import { Card } from "../../components/Card";
+import { InfoBubble } from "../../components/InfoBubble";
 import { MeterBar } from "../../components/MeterBar";
 import { PageIntro } from "../../components/PageIntro";
 import { StatCard } from "../../components/StatCard";
@@ -6,6 +7,7 @@ import { StatGrid } from "../../components/StatGrid";
 import { COVERAGE_BAND_COLOR, STATUS_COLOR } from "../../components/bandColors";
 import {
   COVERAGE_BANDS,
+  COVERAGE_BAND_DESCRIPTION,
   COVERAGE_BAND_RANGE_LABEL,
   STATUS_LABEL,
   STATUS_OPTIONS,
@@ -52,32 +54,32 @@ export function SummaryView({
         lead="Status for siste analyse: hvor mange henvendelser og rutiner som er sammenlignet, og hvordan rutinene fordeler seg."
       />
 
-      <StatGrid>
-        <StatCard label="Henvendelser" value={String(snapshot.questions.length)} note="analysert" />
-        <StatCard
-          label="Rutiner med henvendelser"
-          value={`${String(routines.length)} / ${String(snapshot.documents.length)}`}
-          note={`${String(shownCount)} vises i listen`}
-        />
-        <StatCard
-          label="Til gjennomgang"
-          value={String(pendingCount)}
-          note="henvendelser uten rutine"
-        />
-      </StatGrid>
-
       <div className={styles.columns}>
         <Card title="Snittdekning for rutinene">
           <div className={styles.bands}>
             {coverageCounts.map(({ band, count }) => (
               <div key={band} className={styles.bandRow}>
-                <span>{COVERAGE_BAND_RANGE_LABEL[band]}</span>
+                <span className={styles.bandLabel}>
+                  {COVERAGE_BAND_RANGE_LABEL[band]}
+                  <InfoBubble
+                    subject={COVERAGE_BAND_RANGE_LABEL[band]}
+                    text={COVERAGE_BAND_DESCRIPTION[band]}
+                    topic="bands"
+                  />
+                </span>
                 <MeterBar value={count / routineCount} color={COVERAGE_BAND_COLOR[band]} />
                 <span className={styles.count}>{count}</span>
               </div>
             ))}
             <div className={styles.bandRow}>
-              <span>Uten henvendelser</span>
+              <span className={styles.bandLabel}>
+                Uten henvendelser
+                <InfoBubble
+                  subject="Uten henvendelser"
+                  text="Rutiner som ikke er beste treff for noen henvendelse, og som derfor ikke har noen snittdekning. De vises ikke i Prioritert liste, men kan finnes under Søk."
+                  topic="suggested-routine"
+                />
+              </span>
               <MeterBar value={withoutQuestionsCount / routineCount} color="var(--color-text-dim)" />
               <span className={styles.count}>{withoutQuestionsCount}</span>
             </div>
@@ -109,6 +111,21 @@ export function SummaryView({
           </ul>
         </Card>
       </div>
+
+      <StatGrid>
+        <StatCard
+          label="Til gjennomgang"
+          value={String(pendingCount)}
+          note="henvendelser uten rutine"
+        />
+        <StatCard
+          label="Rutiner med henvendelser"
+          value={`${String(routines.length)} / ${String(snapshot.documents.length)}`}
+          note={`${String(shownCount)} vises i listen`}
+        />
+        <StatCard label="Henvendelser" value={String(snapshot.questions.length)} note="analysert" />
+      </StatGrid>
+
       <Card title="Datagrunnlag">
         <div>
           {snapshot.sources.map((source) => (
