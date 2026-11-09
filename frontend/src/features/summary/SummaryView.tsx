@@ -76,7 +76,7 @@ export function SummaryView({
                 Uten henvendelser
                 <InfoBubble
                   subject="Uten henvendelser"
-                  text="Rutiner som ikke er beste treff for noen henvendelse, og som derfor ikke har noen snittdekning. De vises ikke i Prioritert liste, men kan finnes under Søk."
+                  text="Rutiner som ikke er beste treff for noen henvendelse, og som derfor ikke har noen snittdekning. De vises ikke i Prioriterte rutiner, men kan finnes under Søk."
                   topic="suggested-routine"
                 />
               </span>
