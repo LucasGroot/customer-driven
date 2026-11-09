@@ -204,6 +204,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
           <RoutineDetailView
             key={selectedRoutine.routine.code}
             stats={selectedRoutine}
+            routines={routines}
             allRoutines={routinesByName}
             routineClusters={snapshot.routineClusters}
             ownerCandidates={ownerCandidates(snapshot.documentOwners, user.name)}
