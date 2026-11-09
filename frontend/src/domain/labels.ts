@@ -34,6 +34,12 @@ export const COVERAGE_BAND_RANGE_LABEL: Record<CoverageBand, string> = {
   good: `${COVERAGE_BAND_LABEL.good} (${String(goodFrom)} % og over)`,
 };
 
+export const COVERAGE_BAND_DESCRIPTION: Record<CoverageBand, string> = {
+  weak: `Snittdekning under ${String(partialFrom)} %. Henvendelsene passer dårlig til rutinen, som kan mangle innhold eller være uklar.`,
+  partial: `Snittdekning på ${String(partialFrom)}–${String(goodFrom - 1)} %. Rutinen svarer delvis på henvendelsene og kan trenge å utdypes.`,
+  good: `Snittdekning på ${String(goodFrom)} % eller mer. Rutinen passer godt til henvendelsene den er knyttet til.`,
+};
+
 export const COVERAGE_BANDS: CoverageBand[] = ["weak", "partial", "good"];
 
 export const STATUS_LABEL: Record<RoutineStatus, string> = {

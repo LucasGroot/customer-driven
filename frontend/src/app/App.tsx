@@ -22,7 +22,7 @@ import { ownerCandidates } from "../domain/owners";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
 import { Sidebar } from "./Sidebar";
-import { isAdminOnly, type ViewName } from "./views";
+import { NAVIGATION, isAdminOnly, type ViewName } from "./views";
 import styles from "./App.module.css";
 
 interface AppProps {
@@ -70,6 +70,17 @@ interface Location {
   aboutTopic: AboutTopic | null;
 }
 
+// The browser keeps the history entry's state through a refresh, so reading it
+// back puts the user on the page they were on.
+function locationBeforeRefresh(): Location {
+  const saved = window.history.state as Location | null;
+  const knownViews: ViewName[] = ["detail", ...NAVIGATION.map((entry) => entry.view)];
+  if (saved === null || !knownViews.includes(saved.view)) {
+    return { view: "summary", returnView: "summary", routineCode: null, aboutTopic: null };
+  }
+  return saved;
+}
+
 interface DashboardProps {
   snapshot: AnalysisSnapshot;
   user: CurrentUser;
@@ -79,11 +90,12 @@ interface DashboardProps {
 }
 
 function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced }: DashboardProps) {
-  const [view, setView] = useState<ViewName>("list");
+  const [startLocation] = useState(locationBeforeRefresh);
+  const [view, setView] = useState<ViewName>(startLocation.view);
   // The detail page can be opened from the list or from search; back returns there.
-  const [returnView, setReturnView] = useState<ViewName>("summary");
-  const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(null);
-  const [aboutTopic, setAboutTopic] = useState<AboutTopic | null>(null);
+  const [returnView, setReturnView] = useState<ViewName>(startLocation.returnView);
+  const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(startLocation.routineCode);
+  const [aboutTopic, setAboutTopic] = useState<AboutTopic | null>(startLocation.aboutTopic);
   const [filter, setFilter] = useState<RoutineFilter>("all");
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
   // Kept here so the sort survives leaving and re-entering the list; null = priority order.
@@ -115,7 +127,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
 
   useEffect(() => {
     // L'entrée actuelle (la vue de départ) devient la première "page" de l'app
-    window.history.replaceState({ view: "summary", returnView: "summary", routineCode: null, aboutTopic: null }, "");
+    window.history.replaceState(startLocation, "");
   
     const onPopState = (event: PopStateEvent) => {
       const location = event.state as Location | null;
@@ -200,6 +212,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
           <RoutineDetailView
             key={selectedRoutine.routine.code}
             stats={selectedRoutine}
+            routines={routines}
             allRoutines={routinesByName}
             routineClusters={snapshot.routineClusters}
             ownerCandidates={ownerCandidates(snapshot.documentOwners, user.name)}
@@ -219,7 +232,6 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               pendingCount={pendingCount}
               review={review}
               hideAbovePercent={hideAbovePercent}
-              weights={settings.weights}
             />
           ) : null}
 
