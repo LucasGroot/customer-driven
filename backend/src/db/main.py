@@ -10,9 +10,9 @@ import threading
 
 
 from fastapi import BackgroundTasks, HTTPException
-from src.db.analysis_service import save_analysis
-from src.db.ai_adapter import run_ai
-from src.db import review_service
+from backend.src.db.analysis_service import save_analysis
+from backend.src.db.ai_adapter import run_ai
+from backend.src.db import review_service
 
 
 _lock = threading.Lock()
