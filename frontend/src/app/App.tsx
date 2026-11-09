@@ -223,7 +223,6 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               pendingCount={pendingCount}
               review={review}
               hideAbovePercent={hideAbovePercent}
-              weights={settings.weights}
             />
           ) : null}
 

@@ -14,9 +14,6 @@ import { coverageBand, isWellCovered } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
 import type { AnalysisSnapshot } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
-import { rankRoutines } from "../../domain/priority";
-import type { PriorityWeights } from "../../domain/types";
-import {hideWellCovered} from "../overview/routineFilters";
 import styles from "./SummaryView.module.css";
 
 interface SummaryViewProps {
@@ -25,7 +22,6 @@ interface SummaryViewProps {
   pendingCount: number;
   review: RoutineReview;
   hideAbovePercent: number;
-  weights: PriorityWeights;
 }
 
 export function SummaryView({
@@ -34,7 +30,6 @@ export function SummaryView({
   pendingCount,
   review,
   hideAbovePercent,
-  weights,
 }: SummaryViewProps) {
   const total = routines.length || 1;
   // The coverage bars show every routine, also those no question points to
@@ -49,9 +44,6 @@ export function SummaryView({
     status,
     count: routines.filter((stats) => review.statusOf(stats.routine.code) === status).length,
   }));
-  const ranked = rankRoutines(routines, weights);
-  const shown = hideWellCovered(ranked, hideAbovePercent);
-  const highPriorityCount = shown.filter((entry) => entry.band === "high").length;
 
   return (
     <section className={styles.view}>
@@ -71,11 +63,6 @@ export function SummaryView({
           label="Til gjennomgang"
           value={String(pendingCount)}
           note="henvendelser uten rutine"
-        />
-        <StatCard
-          label="Høy prioritet"
-          value={String(highPriorityCount)}
-          note="bør tas denne måneden"
         />
       </StatGrid>
 
