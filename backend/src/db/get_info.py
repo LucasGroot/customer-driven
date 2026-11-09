@@ -8,7 +8,7 @@ user = os.getenv('DBUSER')
 password = os.getenv('DBPASSWORD')
 host = os.getenv('DBHOST')
 conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
-
+conn.autocommit = True
 
 #####
 # question
