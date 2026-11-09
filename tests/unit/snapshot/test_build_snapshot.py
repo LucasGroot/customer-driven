@@ -17,6 +17,7 @@ from backend.snapshot.build_snapshot import (
     split_routine_filename,
 )
 from backend.snapshot.models import AnalysisSnapshot, snapshot_to_json_dict
+from backend.snapshot.question_groups import TitledGroup
 from backend.snapshot.router import SAMPLE_SNAPSHOT_PATH
 
 
@@ -153,17 +154,19 @@ def test_the_bundled_sample_matches_the_contract_exactly():
     assert snapshot_to_json_dict(AnalysisSnapshot.model_validate(sample)) == sample
 
 
-def test_review_groups_give_their_questions_a_group_and_a_heading():
+def test_review_groups_give_their_questions_a_group_a_title_and_a_heading():
     snapshot = build_snapshot(
         QUESTIONS,
         SCORES,
         last_run=date(2026, 10, 19),
         questions_uploaded=date(2026, 9, 12),
         routines_uploaded=ROUTINES_UPLOADED,
-        review_groups=[["INC3", "INC2"]],
+        review_groups=[TitledGroup("Lønn og tillegg", ["INC3", "INC2"])],
     )
 
-    assert [(group.id, group.heading_question_id) for group in snapshot.review_groups] == [("r0", "INC3")]
+    assert [(group.id, group.title, group.heading_question_id) for group in snapshot.review_groups] == [
+        ("r0", "Lønn og tillegg", "INC3")
+    ]
     group_of = {question.id: question.group_id for question in snapshot.questions}
     assert (group_of["INC2"], group_of["INC3"], group_of["INC1"]) == ("r0", "r0", None)
 
@@ -176,16 +179,58 @@ def test_json_leaves_out_the_group_of_questions_in_no_group():
             last_run=date(2026, 10, 19),
             questions_uploaded=date(2026, 9, 12),
             routines_uploaded=ROUTINES_UPLOADED,
-            review_groups=[["INC3", "INC2"]],
+            review_groups=[TitledGroup("Lønn og tillegg", ["INC3", "INC2"])],
         )
     )
 
     assert data["questions"][1]["groupId"] == "r0"
     assert "groupId" not in data["questions"][0]
-    assert data["reviewGroups"] == [{"id": "r0", "headingQuestionId": "INC3"}]
+    assert data["reviewGroups"] == [{"id": "r0", "title": "Lønn og tillegg", "headingQuestionId": "INC3"}]
 
 
 def test_questions_needing_review_are_the_ones_under_the_threshold(monkeypatch):
     monkeypatch.setattr(snapshot_builder, "MIN_RELEVANCE", 0.35)
 
     assert list(snapshot_builder.questions_needing_review(SCORES)) == ["INC2", "INC3"]
+
+
+def snapshot_with_routine_clusters():
+    return build_snapshot(
+        QUESTIONS,
+        SCORES,
+        last_run=date(2026, 10, 19),
+        questions_uploaded=date(2026, 9, 12),
+        routines_uploaded=ROUTINES_UPLOADED,
+        routine_clusters={
+            "2000-1-Vernerunde.pdf": [
+                TitledGroup("Vernerunde i felt", ["INC9", "INC8"]),
+                TitledGroup("Verneombud", ["INC5", "INC4", "INC6"]),
+            ]
+        },
+    )
+
+
+def test_routine_clusters_belong_to_their_routine_and_have_a_title_and_a_heading():
+    snapshot = snapshot_with_routine_clusters()
+
+    assert [
+        (cluster.id, cluster.routine_code, cluster.title, cluster.heading_question_id)
+        for cluster in snapshot.routine_clusters
+    ] == [
+        ("c0", "2000-1", "Vernerunde i felt", "INC9"),
+        ("c1", "2000-1", "Verneombud", "INC5"),
+    ]
+
+
+def test_questions_point_to_their_routine_cluster_and_the_others_to_none():
+    cluster_of = {question.id: question.routine_cluster_id for question in snapshot_with_routine_clusters().questions}
+
+    assert (cluster_of["INC8"], cluster_of["INC9"], cluster_of["INC4"]) == ("c0", "c0", "c1")
+    assert (cluster_of["INC1"], cluster_of["INC7"]) == (None, None)
+
+
+def test_a_snapshot_without_routine_clusters_has_an_empty_list_and_no_cluster_on_any_question():
+    data = snapshot_to_json_dict(make_snapshot())
+
+    assert data["routineClusters"] == []
+    assert all("routineClusterId" not in question for question in data["questions"])

@@ -1,5 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import fs from "node:fs";
+import path from "node:path";
+import type { IncomingMessage, ServerResponse } from "node:http";
+import type { Plugin } from "vite";
 
 /*
  * Security headers, applied to the dev and preview servers so that a header the
@@ -11,13 +15,14 @@ import react from "@vitejs/plugin-react";
  *
  *   Content-Security-Policy: default-src 'self'; script-src 'self';
  *     style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';
- *     connect-src 'self'; object-src 'none'; base-uri 'none';
- *     form-action 'none'; frame-ancestors 'none'
+ *     connect-src 'self' https://login.microsoftonline.com; object-src 'none';
+ *     base-uri 'none'; form-action 'none'; frame-ancestors 'none'
  *   Strict-Transport-Security: max-age=31536000; includeSubDomains
  *
  * style-src needs 'unsafe-inline' because the coverage and weighting meters set
- * their width through an inline style attribute. If the src ever lands on a
- * different origin, that origin has to be added to connect-src.
+ * their width through an inline style attribute. connect-src allows Microsoft's
+ * sign-in endpoint, where MSAL fetches and renews tokens. If the backend ever
+ * lands on a different origin, that origin has to be added to connect-src.
  */
 const securityHeaders = {
   "X-Content-Type-Options": "nosniff",
@@ -26,14 +31,48 @@ const securityHeaders = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=(), interest-cohort=()",
 };
 
+// The API runs as its own server (see README). Proxying /api to it keeps the
+// dashboard and the API on one origin, so connect-src 'self' covers it.
+const apiProxy = { "/api": "http://localhost:8000" };
+
 export default defineConfig({
   plugins: [react()],
-  server: {
-    headers: securityHeaders,
-    // The browser only ever talks to this server; /api goes on to the backend,
-    // so connect-src 'self' in the CSP stays enough.
-    proxy: { "/api": "http://localhost:8000" },
-  },
-  preview: { headers: securityHeaders },
+  // The dashboard and the API share the root .env; Vite only hands the
+  // VITE_-prefixed variables to the browser, so the API's settings stay out.
+  envDir: "..",
+  server: { headers: securityHeaders, proxy: apiProxy }, // Arlinade proxy: { "/api": "http://localhost:8000" }
+  preview: { headers: securityHeaders, proxy: apiProxy },
   build: { sourcemap: false },
 });
+
+function servePdfs(): Plugin {
+  const dataDir = path.resolve(__dirname, "../data");
+
+  const handler = (req: IncomingMessage, res: ServerResponse) => {
+    let file = "";
+    try {
+      // basename() blocks any attempt to leave the data folder (../ and the like)
+      file = path.basename(decodeURIComponent((req.url ?? "").split("?")[0]));
+    } catch {
+      /* malformed URL: handled as not found below */
+    }
+    const fullPath = path.join(dataDir, file);
+    if (file === "" || path.extname(file).toLowerCase() !== ".pdf" || !fs.existsSync(fullPath)) {
+      res.statusCode = 404;
+      res.end("PDF not found");
+      return;
+    }
+    res.setHeader("Content-Type", "application/pdf");
+    fs.createReadStream(fullPath).pipe(res);
+  };
+
+  return {
+    name: "serve-routine-pdfs",
+    configureServer(server) {
+      server.middlewares.use("/pdf", handler);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use("/pdf", handler);
+    },
+  };
+}

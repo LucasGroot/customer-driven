@@ -16,7 +16,6 @@ export const COVERAGE_BAND_COLOR: Record<CoverageBand, string> = {
 };
 
 export const STATUS_COLOR: Record<RoutineStatus, string> = {
-  new: "var(--color-accent)",
-  updating: "var(--color-band-medium)",
-  done: "var(--color-band-low)",
+  unprocessed: "var(--color-accent)",
+  "in-progress": "var(--color-band-medium)",
 };

@@ -91,6 +91,11 @@ describe("rankRoutines", () => {
     expect(ranked[0]?.band).toBe("high");
   });
 
+  it("numbers the routines from 1, where 1 has the highest score", () => {
+    const ranked = rankRoutines(routines, EVEN_WEIGHTS);
+    expect(ranked.map((entry) => entry.rank)).toEqual([1, 2, 3]);
+  });
+
   it("reorders the list when the weights change", () => {
     const busyButCovered = makeStats(10, 0.9, "busy");
     const quietButPoor = makeStats(1, 0.1, "quiet");

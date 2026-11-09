@@ -1,5 +1,7 @@
-import { NAVIGATION, type ViewName } from "./views";
+import { navigationFor, type ViewName } from "./views";
 import styles from "./Sidebar.module.css";
+import type { CurrentUser } from "../auth/currentUser";
+import { Button } from "../components/Button";
 import { classNames } from "../components/classNames";
 
 interface SidebarProps {
@@ -10,13 +12,21 @@ interface SidebarProps {
   isExample: boolean;
   questionCount: number;
   documentCount: number;
+  user: CurrentUser;
   onNavigate: (view: ViewName) => void;
+  onSignOut: () => void;
 }
 
-function navigationBadge(view: ViewName, routineCount: number, reviewCount: number): string {
-  if (view === "list") return String(routineCount);
-  if (view === "review") return String(reviewCount);
-  return "";
+interface NavigationBadge {
+  count: string;
+  /** What the number counts, for screen readers, which would otherwise read a bare number. */
+  meaning: string;
+}
+
+function navigationBadge(view: ViewName, routineCount: number, reviewCount: number): NavigationBadge | null {
+  if (view === "list") return { count: String(routineCount), meaning: "rutiner i listen" };
+  if (view === "review") return { count: String(reviewCount), meaning: "henvendelser venter" };
+  return null;
 }
 
 export function Sidebar({
@@ -27,18 +37,28 @@ export function Sidebar({
   isExample,
   questionCount,
   documentCount,
+  user,
   onNavigate,
+  onSignOut,
 }: SidebarProps) {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
-        <div className={styles.brandName}>Kunnskapsgap</div>
-        <div className={styles.brandSubtitle}>ServiceNow × Kvaliteket</div>
+        <button
+          type="button"
+          onClick={() => {
+            onNavigate("summary");
+          }}
+        >
+          <span className={styles.brandName}>Kunnskapsgap</span>
+          <span className={styles.brandSubtitle}>ServiceNow × Kvaliteket</span>
+        </button>
       </div>
 
       <nav className={styles.nav} aria-label="Hovedmeny">
-        {NAVIGATION.map((entry) => {
+        {navigationFor(user.role).map((entry) => {
           const active = entry.view === currentView;
+          const badge = navigationBadge(entry.view, routineCount, reviewCount);
           return (
             <button
               key={entry.view}
@@ -50,9 +70,14 @@ export function Sidebar({
               }}
             >
               <span>{entry.label}</span>
-              <span className={styles.navBadge}>
-                {navigationBadge(entry.view, routineCount, reviewCount)}
-              </span>
+              {badge === null ? null : (
+                <span className={styles.navBadge}>
+                  <span aria-hidden="true">{badge.count}</span>
+                  <span className="visuallyHidden">
+                    , {badge.count} {badge.meaning}
+                  </span>
+                </span>
+              )}
             </button>
           );
         })}
@@ -72,6 +97,19 @@ export function Sidebar({
             Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
           </p>
         ) : null}
+
+        <div className={styles.footerSection}>
+          <div className={styles.footerLabel}>Innlogget</div>
+          <div className={styles.footerValue} title={user.email}>
+            {user.name}
+          </div>
+          {user.role === "admin" ? (
+            <div className={styles.footerNote}>Administrator</div>
+          ) : null}
+          <Button variant="link" onClick={onSignOut}>
+            Logg ut
+          </Button>
+        </div>
       </div>
     </aside>
   );

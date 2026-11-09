@@ -5,20 +5,31 @@ interface RoutineSelectProps {
   value: RoutineCode;
   /** Every routine, alphabetically. */
   routines: RoutineDocument[];
+  /** When set, an unselectable first option shown while `value` is "". */
+  placeholder?: string;
+  /**
+   * Read by screen readers. Name the question or group, since a page can hold
+   * many of these and a list of identical names says nothing.
+   */
+  label: string;
   onChange: (routineCode: RoutineCode) => void;
 }
 
-/** Picks the routine a question, or a group of questions, belongs to. */
-export function RoutineSelect({ value, routines, onChange }: RoutineSelectProps) {
+export function RoutineSelect({ value, routines, placeholder, label, onChange }: RoutineSelectProps) {
   return (
     <select
       className={styles.select}
-      aria-label="Rutinen det hører til"
+      aria-label={label}
       value={value}
       onChange={(event) => {
         onChange(event.target.value);
       }}
     >
+      {placeholder !== undefined ? (
+        <option value="" disabled>
+          {placeholder}
+        </option>
+      ) : null}
       {routines.map((routine) => (
         <option key={routine.code} value={routine.code}>
           {routine.name}

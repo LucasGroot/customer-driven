@@ -13,11 +13,20 @@
   gap: 6px;
 }
 
+/* An h2 so screen readers can jump between groups, styled as the quote it is */
 .heading {
   font-family: var(--font-serif);
   font-size: 15.5px;
+  font-weight: 400;
   line-height: 1.45;
   color: var(--color-text-strong);
+}
+
+.example {
+  font-family: var(--font-serif);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-text-soft);
 }
 
 .count {

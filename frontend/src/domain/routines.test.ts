@@ -22,6 +22,7 @@ function makeSnapshot(questions: AskedQuestion[]): AnalysisSnapshot {
     lastRunLabel: "",
     questions,
     reviewGroups: [],
+    routineClusters: [],
     documents: [
       { code: "A", name: "Rutine A", uploadedLabel: "" },
       { code: "B", name: "Rutine B", uploadedLabel: "" },

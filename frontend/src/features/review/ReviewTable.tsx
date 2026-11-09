@@ -45,7 +45,12 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
       <td>
         {placement.kind === "pending" ? (
           <div className={styles.actions}>
-            <RoutineSelect value={chosenCode} routines={routines} onChange={setChosenCode} />
+            <RoutineSelect
+              value={chosenCode}
+              routines={routines}
+              label={`Rutine for henvendelse ${question.reference}`}
+              onChange={setChosenCode}
+            />
             <div className={styles.buttons}>
               <Button
                 variant="secondary"
@@ -53,7 +58,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
                   review.mapTo(question.id, chosenCode);
                 }}
               >
-                Knytt til rutine
+                Knytt til rutine<span className="visuallyHidden"> henvendelse {question.reference}</span>
               </Button>
               <Button
                 variant="danger"
@@ -61,7 +66,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
                   review.discard(question.id);
                 }}
               >
-                Forkast
+                Forkast<span className="visuallyHidden"> henvendelse {question.reference}</span>
               </Button>
             </div>
           </div>
@@ -80,6 +85,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
                 }}
               >
                 {placement.kind === "discarded" ? "Gjenopprett" : "Angre"}
+                <span className="visuallyHidden"> henvendelse {question.reference}</span>
               </Button>
             </div>
           </div>

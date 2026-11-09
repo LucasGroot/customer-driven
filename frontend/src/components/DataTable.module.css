@@ -56,3 +56,43 @@
   padding: 28px 20px;
   color: var(--color-text-soft);
 }
+
+.headerContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Sort buttons already show the label in plain case; a label without one should match */
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.alignRight .headerContent {
+  justify-content: flex-end;
+}
+
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sortButton:hover .sortArrow,
+.sortButton:focus-visible .sortArrow {
+  opacity: 1;
+}
+
+/* Faded only so far that the arrow still stands out 3:1 from the header */
+.sortArrow {
+  font-size: 0.75em;
+  opacity: 0.7;
+}
+
+.sortArrowActive {
+  opacity: 1;
+}

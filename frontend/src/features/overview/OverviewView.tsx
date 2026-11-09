@@ -2,8 +2,7 @@ import { Button } from "../../components/Button";
 import { FilterPill } from "../../components/FilterPill";
 import { NumberField } from "../../components/NumberField";
 import { PageIntro } from "../../components/PageIntro";
-import { StatCard } from "../../components/StatCard";
-import { StatGrid } from "../../components/StatGrid";
+import type { SortState } from "../../components/sort";
 import { rankRoutines } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
 import type { PriorityWeights, RoutineCode } from "../../domain/types";
@@ -21,6 +20,9 @@ interface OverviewViewProps {
   onFilterChange: (filter: RoutineFilter) => void;
   hideAbovePercent: number;
   onHideAboveChange: (percent: number) => void;
+  sort: SortState | null;
+  onSortChange: (sortKey: string) => void;
+  onResetSort: () => void;
   onOpenRoutine: (routineCode: RoutineCode) => void;
   onOpenReview: () => void;
   onOpenSettings: () => void;
@@ -35,6 +37,9 @@ export function OverviewView({
   onFilterChange,
   hideAbovePercent,
   onHideAboveChange,
+  sort,
+  onSortChange,
+  onResetSort,
   onOpenRoutine,
   onOpenReview,
   onOpenSettings,
@@ -43,7 +48,6 @@ export function OverviewView({
   const shown = hideWellCovered(ranked, hideAbovePercent);
   const hiddenCount = ranked.length - shown.length;
   const visible = filterRoutines(shown, filter, review.statusOf);
-  const highPriorityCount = shown.filter((entry) => entry.band === "high").length;
 
   return (
     <section className={styles.view}>
@@ -57,38 +61,22 @@ export function OverviewView({
         </Button>
       </div>
 
-      <StatGrid>
-        <StatCard
-          label="Rutiner vist"
-          value={String(shown.length)}
-          note={`av ${String(ranked.length)} rutiner med henvendelser`}
-        />
-        <StatCard
-          label="Høy prioritet"
-          value={String(highPriorityCount)}
-          note="bør tas denne måneden"
-        />
-        <StatCard
-          label="Til gjennomgang"
-          value={String(pendingCount)}
-          note="henvendelser uten rutine"
-        />
-      </StatGrid>
-
       <div className={styles.filters}>
-        {ROUTINE_FILTERS.map((option) => (
-          <FilterPill
-            key={option.key}
-            label={`${option.label} · ${String(filterRoutines(shown, option.key, review.statusOf).length)}`}
-            selected={filter === option.key}
-            onSelect={() => {
-              onFilterChange(option.key);
-            }}
-          />
-        ))}
+        <div className={styles.filterPills} role="group" aria-label="Filtrer rutinene">
+          {ROUTINE_FILTERS.map((option) => (
+            <FilterPill
+              key={option.key}
+              label={`${option.label} · ${String(filterRoutines(shown, option.key, review.statusOf).length)}`}
+              selected={filter === option.key}
+              onSelect={() => {
+                onFilterChange(option.key);
+              }}
+            />
+          ))}
+        </div>
         <div className={styles.hideAbove}>
           <NumberField
-            label="Skjul rutiner med snittscore over"
+            label="Skjul rutiner med snittdekning over"
             value={hideAbovePercent}
             min={0}
             max={100}
@@ -96,13 +84,17 @@ export function OverviewView({
             suffix="%"
             onChange={onHideAboveChange}
           />
+          {/* Reads out what a new limit did; the note below shows the same to sighted users */}
+          <span className="visuallyHidden" role="status">
+            {hiddenCount} {hiddenCount === 1 ? "rutine" : "rutiner"} skjult
+          </span>
         </div>
       </div>
 
       {hiddenCount > 0 ? (
         <p className={styles.hiddenNote}>
           {hiddenCount} {hiddenCount === 1 ? "rutine er" : "rutiner er"} skjult fordi de svarer
-          godt på henvendelsene sine, med snittscore over {hideAbovePercent} %.
+          godt på henvendelsene sine, med snittdekning over {hideAbovePercent} %.
         </p>
       ) : null}
 
@@ -116,7 +108,23 @@ export function OverviewView({
         </p>
       ) : null}
 
-      <RoutineTable rows={visible} statusOf={review.statusOf} onOpenRoutine={onOpenRoutine} />
+      {sort !== null ? (
+        <p className={styles.hiddenNote}>
+          Tabellen er sortert på en egen kolonne.{" "}
+          <Button variant="link" onClick={onResetSort}>
+            Nullstill sortering
+          </Button>
+        </p>
+      ) : null}
+
+      <RoutineTable
+        rows={visible}
+        statusOf={review.statusOf}
+        ownerOf={review.ownerOf}
+        sort={sort}
+        onSortChange={onSortChange}
+        onOpenRoutine={onOpenRoutine}
+      />
 
       <p className={styles.footnote}>
         Prioritet 0–100 bygger på to ting: hvor mange henvendelser som er knyttet til rutinen, og hvor

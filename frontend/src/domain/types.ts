@@ -8,6 +8,7 @@
 export type RoutineCode = string;
 export type QuestionId = string;
 export type GroupId = string;
+export type RoutineClusterId = string;
 
 /** One Kvaliteket routine, as listed on the search page. */
 export interface RoutineDocument {
@@ -34,6 +35,8 @@ export interface AskedQuestion {
   needsReview: boolean;
   /** The group of similar questions it belongs to. Left out for a question that stands alone. */
   groupId?: GroupId;
+  /** The cluster within its best routine it belongs to. Left out for a question in none, and for one that needs review. */
+  routineClusterId?: RoutineClusterId;
 }
 
 /**
@@ -42,7 +45,23 @@ export interface AskedQuestion {
  */
 export interface ReviewGroup {
   id: GroupId;
+  /** Short title written for the group, e.g. "Vaktbytte i turnus". */
+  title: string;
   /** The question closest to the middle of the group, which stands for it. */
+  headingQuestionId: QuestionId;
+}
+
+/**
+ * Questions that matched the same routine and are about the same subtopic of it. A routine
+ * with a large cluster is asked about one particular thing again and again.
+ */
+export interface RoutineCluster {
+  id: RoutineClusterId;
+  /** The routine its questions matched. */
+  routineCode: RoutineCode;
+  /** Short title written for the cluster, e.g. "Overføring av ferie". */
+  title: string;
+  /** The question closest to the middle of the cluster, which stands for it. */
   headingQuestionId: QuestionId;
 }
 
@@ -62,6 +81,7 @@ export interface AnalysisSnapshot {
   lastRunLabel: string;
   questions: AskedQuestion[];
   reviewGroups: ReviewGroup[];
+  routineClusters: RoutineCluster[];
   documents: RoutineDocument[];
   sources: DataSource[];
 }
@@ -72,8 +92,8 @@ export interface PriorityWeights {
   coverage: number;
 }
 
-/** Where a routine is in HR's work: untouched, being worked on, or dealt with. */
-export type RoutineStatus = "new" | "updating" | "done";
+/** Where a routine is in HR's work: nobody has started on it, or someone is working on it. */
+export type RoutineStatus = "unprocessed" | "in-progress";
 
 /** What HR decided about a question the analysis could not place. */
 export type ReviewDecision =

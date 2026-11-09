@@ -8,12 +8,17 @@ import type { QuestionId, ReviewDecision, RoutineCode, RoutineStatus } from "../
 
 export interface RoutineReview {
   statusOf: (routineCode: RoutineCode) => RoutineStatus;
-  ownerOf: (routineCode: RoutineCode) => string;
+  /** Undefined for a routine nobody is working on. */
+  ownerOf: (routineCode: RoutineCode) => string | undefined;
   decisionOf: DecisionOf;
   savedNote: string | null;
   saveError: string | null;
   setStatus: (routineCode: RoutineCode, status: RoutineStatus) => void;
   assignOwner: (routineCode: RoutineCode, owner: string) => void;
+  /** Sets the routine to Under behandling, with this owner. */
+  startProcessing: (routineCode: RoutineCode, owner: string) => void;
+  /** Sets the routine back to Ubehandlet, which has no owner. */
+  markUnprocessed: (routineCode: RoutineCode) => void;
   discard: (questionId: QuestionId) => void;
   discardMany: (questionIds: QuestionId[]) => void;
   mapTo: (questionId: QuestionId, routineCode: RoutineCode) => void;
@@ -22,8 +27,16 @@ export interface RoutineReview {
   undoDecisions: (questionIds: QuestionId[]) => void;
 }
 
+/**
+ * Says what happened as well as when, since the question that was acted on
+ * disappears from view and screen readers only hear this note.
+ */
+function describeChange(count: number, what: string): string {
+  const questions = count === 1 ? "1 henvendelse" : `${String(count)} henvendelser`;
+  return `${questions} ${what}. ${formatSavedAt(new Date())}`;
+}
+
 export function useRoutineReview(): RoutineReview {
-  const [statuses, setStatuses] = useState<Record<RoutineCode, RoutineStatus>>({});
   const [owners, setOwners] = useState<Record<RoutineCode, string>>({});
   const [decisions, setDecisions] = useState<Record<QuestionId, ReviewDecision>>({});
   const [savedNote, setSavedNote] = useState<string | null>(null);
@@ -95,6 +108,24 @@ export function useRoutineReview(): RoutineReview {
     },
     [save],
   );
+  const startProcessing = useCallback((routineCode: RoutineCode, owner: string) => {
+    setOwners((current) => ({ ...current, [routineCode]: owner }));
+    setSavedNote(`Tildelt ${owner}`);
+  }, []);
+
+  const markUnprocessed = useCallback((routineCode: RoutineCode) => {
+    setOwners((current) => Object.fromEntries(Object.entries(current).filter(([code]) => code !== routineCode)));
+    setSavedNote(`Satt til Ubehandlet. ${formatSavedAt(new Date())}`);
+  }, []);
+
+  const decide = useCallback((questionIds: QuestionId[], decision: ReviewDecision) => {
+    setDecisions((current) => ({
+      ...current,
+      ...Object.fromEntries(questionIds.map((questionId) => [questionId, decision])),
+    }));
+    const what = decision.kind === "discarded" ? "forkastet" : "knyttet til rutine";
+    setSavedNote(describeChange(questionIds.length, what));
+  }, []);
 
   const discardMany = useCallback(
     (questionIds: QuestionId[]) => {
@@ -124,15 +155,12 @@ export function useRoutineReview(): RoutineReview {
     [mapManyTo],
   );
 
-  const undoDecisionsFor = useCallback(
-    (questionIds: QuestionId[]) => {
-      setDecisions((current) =>
-        Object.fromEntries(Object.entries(current).filter(([id]) => !questionIds.includes(id))),
-      );
-      save(undoDecisions(questionIds), formatSavedAt(new Date()));
-    },
-    [save],
-  );
+  const undoDecisions = useCallback((questionIds: QuestionId[]) => {
+    setDecisions((current) =>
+      Object.fromEntries(Object.entries(current).filter(([id]) => !questionIds.includes(id))),
+    );
+    setSavedNote(describeChange(questionIds.length, "lagt tilbake"));
+  }, []);
 
   const undoDecision = useCallback(
     (questionId: QuestionId) => {
@@ -141,13 +169,12 @@ export function useRoutineReview(): RoutineReview {
     [undoDecisionsFor],
   );
 
-  const statusOf = useCallback(
-    (routineCode: RoutineCode): RoutineStatus => statuses[routineCode] ?? "new",
-    [statuses],
-  );
+  const ownerOf = useCallback((routineCode: RoutineCode) => owners[routineCode], [owners]);
 
-  const ownerOf = useCallback(
-    (routineCode: RoutineCode) => owners[routineCode] ?? UNASSIGNED_OWNER,
+  /** A routine is under treatment exactly when someone owns it, so the two can never disagree. */
+  const statusOf = useCallback(
+    (routineCode: RoutineCode): RoutineStatus =>
+      owners[routineCode] === undefined ? "unprocessed" : "in-progress",
     [owners],
   );
 
@@ -160,5 +187,17 @@ export function useRoutineReview(): RoutineReview {
     statusOf, ownerOf, decisionOf, savedNote, saveError,
     setStatus, assignOwner, discard, discardMany, mapTo, mapManyTo,
     undoDecision, undoDecisions: undoDecisionsFor,
+    statusOf,
+    ownerOf,
+    decisionOf,
+    savedNote,
+    startProcessing,
+    markUnprocessed,
+    discard,
+    discardMany,
+    mapTo,
+    mapManyTo,
+    undoDecision,
+    undoDecisions,
   };
 }

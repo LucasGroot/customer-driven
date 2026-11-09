@@ -37,14 +37,13 @@ export const COVERAGE_BAND_RANGE_LABEL: Record<CoverageBand, string> = {
 export const COVERAGE_BANDS: CoverageBand[] = ["weak", "partial", "good"];
 
 export const STATUS_LABEL: Record<RoutineStatus, string> = {
-  new: "Ny",
-  updating: "Under oppdatering",
-  done: "Behandlet",
+  unprocessed: "Ubehandlet",
+  "in-progress": "Under behandling",
 };
 
 export const UNASSIGNED_OWNER = "Ikke tildelt";
 
-export const STATUS_OPTIONS: RoutineStatus[] = ["new", "updating", "done"];
+export const STATUS_OPTIONS: RoutineStatus[] = ["unprocessed", "in-progress"];
 
 export function formatPercent(fraction: number): string {
   return `${String(Math.round(fraction * 100))} %`;

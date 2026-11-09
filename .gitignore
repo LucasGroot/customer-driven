@@ -10,10 +10,25 @@ data/processed/*.json
 data/raw/kvaliteket/
 src/node_modules/
 
+# uploaded data and analysis output, including half-written temporary files
+data/raw/**
+!data/raw/**/
+!data/raw/README.md
+data/processed/*
+!data/processed/README.md
+*.tmp
+
 # secrets such as API keys; only the example file with empty values is committed
 .env
 
 # ignoring dev environment
 /venv
 /env
-*env
+node_modules/
+dist/
+*.tsbuildinfo
+
+# local settings and secrets; .env.example is the committed template
+.env
+.env.*
+!.env.example
