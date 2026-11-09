@@ -47,7 +47,8 @@ export function RunAnalysisView({ snapshot, run, canRun }: RunAnalysisViewProps)
           <Button variant="primary" onClick={run.start} disabled={run.isRunning}>
             {runLabel}
           </Button>
-          <span className={styles.runHint} role={run.hasFailed ? "alert" : undefined}>
+          {/* A status the whole time, so the change to running, finished or failed is read out */}
+          <span className={styles.runHint} role="status">
             {describeRun(run)}
           </span>
         </div>
@@ -73,6 +74,10 @@ export function RunAnalysisView({ snapshot, run, canRun }: RunAnalysisViewProps)
                   {done ? "✓" : active ? "·" : ""}
                 </span>
                 <span>{label}</span>
+                {/* The mark and colour only show the state to those who can see them */}
+                <span className="visuallyHidden">
+                  {done ? " – ferdig" : active ? " – pågår" : " – venter"}
+                </span>
               </li>
             );
           })}

@@ -105,16 +105,12 @@ export function ImportView({ accessToken, onOpenRun }: ImportViewProps) {
         <Button variant="primary" disabled={chosenCount === 0 || isUploading} onClick={upload}>
           {isUploading ? "Laster opp …" : "Last opp"}
         </Button>
-        {outcome === null ? (
-          <span className={styles.hint}>Filene lagres bare på dashbordets egen server.</span>
-        ) : (
-          <span
-            className={outcome.kind === "failed" ? styles.error : styles.hint}
-            role={outcome.kind === "failed" ? "alert" : "status"}
-          >
-            {outcome.message}
-          </span>
-        )}
+        {/* One element the whole time: screen readers often skip a status that appears with its text already in it */}
+        <span className={outcome?.kind === "failed" ? styles.error : styles.hint} role="status">
+          {isUploading
+            ? "Laster opp …"
+            : (outcome?.message ?? "Filene lagres bare på dashbordets egen server.")}
+        </span>
         {outcome?.kind === "saved" ? (
           <Button variant="link" onClick={onOpenRun}>
             Gå til «Kjør analyse»

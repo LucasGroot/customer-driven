@@ -2,7 +2,7 @@
 
 import type { CurrentUser } from "../auth/currentUser";
 
-export type ViewName = "list" | "detail" | "review" | "run" | "summary" | "search" | "import";
+export type ViewName = "list" | "detail" | "review" | "run" | "summary" | "search" | "import" | "about";
 
 interface NavigationEntry {
   view: Exclude<ViewName, "detail">;
@@ -13,10 +13,11 @@ interface NavigationEntry {
 export const NAVIGATION: NavigationEntry[] = [
   { view: "summary", label: "Oversikt" },
   { view: "list", label: "Prioritert liste" },
-  { view: "review", label: "Uklassifiserte henvendeler til manuell gjennomgang" },
+  { view: "review", label: "Henvendelser til manuell gjennomgang" },
   { view: "run", label: "Kjør analyse" },
   { view: "search", label: "Søk" },
   { view: "import", label: "Importer data", adminOnly: true },
+  { view: "about", label: "Om analysen" },
 ];
 
 /**
@@ -25,6 +26,11 @@ export const NAVIGATION: NavigationEntry[] = [
  */
 export function navigationFor(role: CurrentUser["role"]): NavigationEntry[] {
   return NAVIGATION.filter((entry) => role === "admin" || entry.adminOnly !== true);
+}
+
+/** The page's name in the browser tab. The detail page uses the routine's name instead. */
+export function pageLabel(view: ViewName): string {
+  return NAVIGATION.find((entry) => entry.view === view)?.label ?? "Rutine";
 }
 
 export function isAdminOnly(view: ViewName): boolean {

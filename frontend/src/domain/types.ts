@@ -72,8 +72,8 @@ export interface PriorityWeights {
   coverage: number;
 }
 
-/** Where a routine is in HR's work: untouched, being worked on, or dealt with. */
-export type RoutineStatus = "new" | "updating" | "done";
+/** Where a routine is in HR's work: nobody has started on it, or someone is working on it. */
+export type RoutineStatus = "unprocessed" | "in-progress";
 
 /** What HR decided about a question the analysis could not place. */
 export type ReviewDecision =

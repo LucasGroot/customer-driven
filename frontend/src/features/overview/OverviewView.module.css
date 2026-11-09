@@ -19,6 +19,12 @@
   align-items: center;
 }
 
+.filterPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .hideAbove {
   margin-left: auto;
 }

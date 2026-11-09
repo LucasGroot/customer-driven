@@ -9,14 +9,41 @@ import { sortQuestionResults, type QuestionResult } from "./searchResults";
 import styles from "./SearchTable.module.css";
 import type { SortState } from "../../components/sort";
 
-const TOOLTIP = "TODO: complete";
-
 const COLUMNS: DataTableColumn[] = [
-  { label: "Henvendelse", tooltip: TOOLTIP, sortKey: "text" },
-  { label: "Kategori", width: "18%", tooltip: TOOLTIP, sortKey: "category" },
-  { label: "Beste rutine", width: "22%", tooltip: TOOLTIP, sortKey: "routine" },
-  { label: "Dekning", width: "160px", tooltip: TOOLTIP, sortKey: "coverage" },
-  { label: "Status", width: "160px", tooltip: TOOLTIP, sortKey: "status" },
+  {
+    label: "Henvendelse",
+    tooltip: "Henvendelsen slik den ble stilt i ServiceNow.",
+    aboutTopic: "data",
+    sortKey: "text",
+  },
+  {
+    label: "Kategori",
+    width: "18%",
+    tooltip: "Tjenesten henvendelsen ble registrert under i ServiceNow.",
+    aboutTopic: "data",
+    sortKey: "category",
+  },
+  {
+    label: "Beste rutine",
+    width: "22%",
+    tooltip: "Rutinen som passer best til henvendelsen. Det er et forslag og ikke en fasit.",
+    aboutTopic: "suggested-routine",
+    sortKey: "routine",
+  },
+  {
+    label: "Dekning",
+    width: "160px",
+    tooltip: "Hvor godt rutinen passer til henvendelsen, i prosent.",
+    aboutTopic: "coverage",
+    sortKey: "coverage",
+  },
+  {
+    label: "Status",
+    width: "160px",
+    tooltip: "Om henvendelsen er knyttet til en rutine eller må gjennomgås manuelt.",
+    aboutTopic: "manual-review",
+    sortKey: "status",
+  },
 ];
 
 interface QuestionTableProps {
