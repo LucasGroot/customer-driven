@@ -9,7 +9,8 @@
   gap: 26px;
   position: sticky;
   top: 0;
-  height: 100vh;
+  /* Divided by the zoom, or the zoomed sidebar becomes taller than the window */
+  height: calc(100vh / var(--ui-zoom));
   /* At 200 % zoom the menu is taller than the window; it must scroll, or "Logg ut" is out of reach */
   overflow-y: auto;
 }
