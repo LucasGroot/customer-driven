@@ -256,7 +256,10 @@ export function RoutineDetailView({
         {clusters.map(({ cluster, questions, meanCoverage }) => (
           <details key={cluster.id} className={styles.cluster}>
             <summary className={styles.clusterSummary}>
-              <span className={styles.clusterTitle}>{cluster.title}</span>
+              <span className={styles.clusterHead}>
+                <span className={styles.clusterToggle} aria-hidden="true" />
+                <span className={styles.clusterTitle}>{cluster.title}</span>
+              </span>
               <span className={styles.clusterCount}>{formatQuestionCount(questions.length)}</span>
               <CoverageMeter coverage={meanCoverage} />
             </summary>

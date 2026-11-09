@@ -1,6 +1,16 @@
 @import "./fonts.css";
 @import "./tokens.css";
 
+/* Default zoom of the whole interface. The sizes are in px, so the text is scaled
+   here once. The browser's own zoom (Ctrl +/-) still works on top of this. */
+:root {
+  --ui-zoom: 1.1;
+}
+
+html {
+  zoom: var(--ui-zoom);
+}
+
 *,
 *::before,
 *::after {
