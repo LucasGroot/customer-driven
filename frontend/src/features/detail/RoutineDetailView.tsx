@@ -11,7 +11,6 @@ import type { RoutineStats } from "../../domain/routines";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { priorityFactors } from "./priorityFactors";
 import styles from "./RoutineDetailView.module.css";
-import { classNames } from "../../components/classNames";
 import { useState } from "react";
 import { RoutineSelect } from "../review/RoutineSelect";
 import type {
@@ -243,10 +242,7 @@ export function RoutineDetailView({
               <p className={styles.ownerHint}>Velg en rutineeier for å sette status til Under behandling.</p>
             ) : null}
           </div>
-          <div
-            className={classNames(styles.savedNote, review.savedNote !== null && styles.saved)}
-            aria-live="polite"
-          >
+          <div className={styles.savedNote} aria-live="polite">
             {review.savedNote ?? "Endringer lagres automatisk"}
           </div>
         </div>
