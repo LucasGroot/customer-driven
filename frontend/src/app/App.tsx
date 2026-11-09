@@ -200,18 +200,19 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
             />
           ) : null}
 
-          {shownView === "detail" && selectedRoutine !== undefined ? (
-            <RoutineDetailView
-              key={selectedRoutine.routine.code}
-              stats={selectedRoutine}
-              allRoutines={routinesByName}
-              ownerCandidates={ownerCandidates(snapshot.documentOwners, user.name)}
-              weights={settings.weights}
-              review={review}
-              backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
-              onBack={() => { window.history.back(); }}
-            />
-          ) : null}
+        {shownView === "detail" && selectedRoutine !== undefined ? (
+          <RoutineDetailView
+            key={selectedRoutine.routine.code}
+            stats={selectedRoutine}
+            allRoutines={routinesByName}
+            routineClusters={snapshot.routineClusters}
+            ownerCandidates={ownerCandidates(snapshot.documentOwners, user.name)}
+            weights={settings.weights}
+            review={review}
+            backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
+            onBack={() => { window.history.back(); }}
+          />
+        ) : null}
 
           {shownView === "review" ? <ReviewView snapshot={snapshot} review={review} /> : null}
 
