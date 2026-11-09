@@ -4,9 +4,8 @@ import { CoverageMeter } from "../../components/CoverageMeter";
 import { FilterPill } from "../../components/FilterPill";
 import { MeterBar } from "../../components/MeterBar";
 import { SelectField } from "../../components/SelectField";
-import { PRIORITY_BAND_COLOR } from "../../components/bandColors";
-import { PRIORITY_BAND_LABEL, STATUS_LABEL, STATUS_OPTIONS } from "../../domain/labels";
-import { priorityBand, priorityScore } from "../../domain/priority";
+import { STATUS_LABEL, STATUS_OPTIONS } from "../../domain/labels";
+import { rankRoutines } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { priorityFactors } from "./priorityFactors";
@@ -96,6 +95,8 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
 
 interface RoutineDetailViewProps {
   stats: RoutineStats;
+  /** Every routine that has questions. The rank is this routine's place among them. */
+  routines: RoutineStats[];
   routineClusters: RoutineCluster[];
   allRoutines: RoutineDocument[];
   /** The people the routine can be given to when it is set to Under behandling. */
@@ -108,6 +109,7 @@ interface RoutineDetailViewProps {
 
 export function RoutineDetailView({
   stats,
+  routines,
   routineClusters,
   allRoutines,
   ownerCandidates,
@@ -118,8 +120,8 @@ export function RoutineDetailView({
 }: RoutineDetailViewProps) {
   const { routine } = stats;
   const pdfUrl = routinePdfUrl(routine);
-  const score = priorityScore(stats, weights);
-  const band = priorityBand(score);
+  const ranking = rankRoutines(routines, weights);
+  const rank = ranking.find((entry) => entry.stats.routine.code === routine.code)?.rank;
   const factors = priorityFactors(stats, weights);
   const currentStatus = review.statusOf(routine.code);
   const lowestScoreFirst = (a: QuestionItem, b: QuestionItem) => a.question.coverage - b.question.coverage;
@@ -166,10 +168,8 @@ export function RoutineDetailView({
           <div className={styles.scorePanel}>
           <div className={styles.scoreBlock}>
             <div className={styles.scoreLabel}>Prioritet</div>
-            <div className={styles.scoreValue}>{score}</div>
-            <div className={styles.scoreNote} style={{ color: PRIORITY_BAND_COLOR[band] }}>
-              {PRIORITY_BAND_LABEL[band]}
-            </div>
+            <div className={styles.scoreValue}>{rank}</div>
+            <div className={styles.scoreNote}>av {ranking.length} rutiner</div>
           </div>
           <div className={styles.scoreBlock}>
             <div className={styles.scoreLabel}>Henvendelser</div>
