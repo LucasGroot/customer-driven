@@ -65,7 +65,7 @@ afterEach(() => {
 describe("every page meets WCAG 2.1 AA", () => {
   it.each([
     ["Oversikt", "Oversikt"],
-    ["Prioritert liste", "Rutiner som bør oppdateres først"],
+    ["Prioriterte rutiner", "Rutiner som bør oppdateres først"],
     ["Henvendelser til manuell gjennomgang", "Henvendelser til manuell gjennomgang"],
     ["Kjør analyse", "Kjør analyse"],
     ["Søk", "Søk"],
