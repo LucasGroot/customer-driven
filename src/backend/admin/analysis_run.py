@@ -31,7 +31,7 @@ def analyse_uploaded_files(report_progress):
     Runs the analysis on the uploaded files and add the served snapshot.
     """
     # Imported here so the API starts without loading the embedding model's libraries
-    #from backend.snapshot.run_analysis import run_analysis
+    from backend.snapshot.run_analysis import run_analysis
     
     run_analysis(uploads.QUESTIONS_PATH, uploads.ROUTINES_FOLDER, report_progress)
 

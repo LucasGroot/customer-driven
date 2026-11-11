@@ -33,10 +33,11 @@ create trigger snapshot_no_truncate
     before truncate on snapshot
     for each statement execute function forbid_snapshot_change();
 
--- le propriétaire (migrations) est un autre rôle que celui de l'API
-revoke all on snapshot from app_role;
-grant select, insert on snapshot to app_role;
-grant usage on sequence snapshot_id_seq to app_role;
+
+-- MIGRATION : IF THE OWNER HAS ANOTHER ROLE THAN THE API
+-- revoke all on snapshot from app_role;
+-- grant select, insert on snapshot to app_role;
+-- grant usage on sequence snapshot_id_seq to app_role;
 """
 
 

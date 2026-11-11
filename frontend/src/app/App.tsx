@@ -89,7 +89,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   // Kept here so the sort survives leaving and re-entering the list; null = priority order.
   const [routineSort, setRoutineSort] = useState<SortState | null>(null);
   const settings = useAnalysisSettings();
-  const review = useRoutineReview();
+  const review = useRoutineReview(accessToken);
   const isAdmin = user.role === "admin";
   const run = useAnalysisRun(accessToken, isAdmin, onSnapshotReplaced);
   const mainRef = useRef<HTMLElement>(null);

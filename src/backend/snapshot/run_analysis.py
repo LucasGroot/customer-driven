@@ -17,6 +17,7 @@ from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, lo
 from backend.snapshot.build_snapshot import build_snapshot, questions_needing_review, split_routine_filename
 from backend.snapshot.models import snapshot_to_json_dict
 from backend.snapshot.question_groups import group_similar_questions, title_groups
+from backend.db.snapshot_store import save_snapshot
 
 
 def modified_date(path):
@@ -37,7 +38,7 @@ def titled_groups_of(question_ids, embeddings, question_texts, routine_name=None
     return title_groups(groups, question_texts, routine_name)
 
 
-def rrun_analysis(questions_path, routines_path, report_progress=lambda completed_steps: None):
+def run_analysis(questions_path, routines_path, report_progress=lambda completed_steps: None):
     """
     Scores every question against the routines, groups the questions that need
     review and the questions of each routine by what they are about, titles the

@@ -7,7 +7,7 @@ from backend.db.connection import get_conn
 
 
 def _fernet():
-    # SNAPSHOT_KEYS: clés séparées par des virgules, la première sert à chiffrer
+    # SNAPSHOT_KEYS: keys separated by commas, the first one is used to encrypt data
     return MultiFernet([Fernet(k) for k in os.environ["SNAPSHOT_KEYS"].split(",")])
 
 
