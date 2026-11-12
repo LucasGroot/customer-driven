@@ -24,6 +24,7 @@ interface SummaryViewProps {
   pendingCount: number;
   review: RoutineReview;
   hideAbovePercent: number;
+  onOpenReview?: () => void;
 }
 
 export function SummaryView({
@@ -32,6 +33,7 @@ export function SummaryView({
   pendingCount,
   review,
   hideAbovePercent,
+  onOpenReview,
 }: SummaryViewProps) {
   const total = routines.length || 1;
   // The coverage bars show every routine, also those no question points to
@@ -117,6 +119,7 @@ export function SummaryView({
           label="Til gjennomgang"
           value={String(pendingCount)}
           note="henvendelser uten rutine"
+          onClick={onOpenReview}
         />
         <StatCard
           label="Rutiner med henvendelser"

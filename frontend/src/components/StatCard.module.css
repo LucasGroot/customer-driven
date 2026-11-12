@@ -27,3 +27,18 @@
   color: var(--color-text-soft);
   line-height: 1.45;
 }
+
+.card[role="button"] {
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.card[role="button"]:hover {
+  background-color: var(--color-surface-muted);
+  border-color: var(--color-border-soft);
+}
+
+.card[role="button"]:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
