@@ -6,7 +6,6 @@
 import type { AboutTopic } from "../../domain/aboutTopics";
 import {
   DEFAULT_WEIGHTS,
-  FULL_VOLUME_QUESTIONS,
   GOOD_COVERAGE_FROM,
   PARTIAL_COVERAGE_FROM,
 } from "../../domain/priority";
@@ -95,7 +94,7 @@ export const FAQ_SECTIONS: Section[] = [
         question: "Hvordan rangeres rutinene?",
         answer: [
           `Rutinene rangeres etter både antall tilknyttede henvendelser og snittdekning, der begge faktorene vektlegges likt (${String(DEFAULT_WEIGHTS.volume)}/${String(DEFAULT_WEIGHTS.coverage)}). Rutiner med mange henvendelser og lav snittdekning får høyest prioritet, fordi de kan ha størst behov for forbedring.`,
-          `Rangeringen starter på 1, der et høyere nummer betyr lavere prioritet. Antall henvendelser teller opp til ${String(FULL_VOLUME_QUESTIONS)} per rutine, slik at rutiner med ${String(FULL_VOLUME_QUESTIONS)} eller flere henvendelser vurderes likt på denne faktoren. For disse rutinene er det snittdekningen som avgjør den innbyrdes rangeringen.`,
+          `Rangeringen starter på 1, der et høyere nummer betyr lavere prioritet. Hver faktor regnes om til hvor rutinen står i forhold til de andre rutinene, slik at antall henvendelser og snittdekning teller like mye ved lik vekt. Rutiner med like mange henvendelser får samme score på denne faktoren.`,
         ],
       },
       {

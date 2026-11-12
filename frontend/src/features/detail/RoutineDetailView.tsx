@@ -122,7 +122,7 @@ export function RoutineDetailView({
   const pdfUrl = routinePdfUrl(routine);
   const ranking = rankRoutines(routines, weights);
   const rank = ranking.find((entry) => entry.stats.routine.code === routine.code)?.rank;
-  const factors = priorityFactors(stats, weights);
+  const factors = priorityFactors(stats, weights, routines);
   const currentStatus = review.statusOf(routine.code);
   const lowestScoreFirst = (a: QuestionItem, b: QuestionItem) => a.question.coverage - b.question.coverage;
   const { clusters, other } = groupRoutineQuestions(stats.questions, routineClusters, routine.code);
