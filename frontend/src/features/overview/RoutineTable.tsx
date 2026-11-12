@@ -11,6 +11,14 @@ type RoutineSortKey = "rank" | "name" | "coverage" | "questions" | "status";
 
 const COLUMNS: DataTableColumn[] = [
   {
+    label: "Prioritet",
+    width: "110px",
+    align: "right",
+    tooltip: "Plassen i rangeringen. Nummer 1 er rutinen som bør følges opp først.",
+    aboutTopic: "ranking",
+    sortKey: "rank",
+  },
+  {
     label: "Rutine",
     tooltip: "Rutinen i Kvaliteket som henvendelsene er knyttet til.",
     aboutTopic: "suggested-routine",
@@ -36,14 +44,6 @@ const COLUMNS: DataTableColumn[] = [
     tooltip: "Hvor langt arbeidet med rutinen har kommet.",
     aboutTopic: "status",
     sortKey: "status",
-  },
-  {
-    label: "Prioritet",
-    width: "124px",
-    align: "right",
-    tooltip: "Plassen i rangeringen. Nummer 1 er rutinen som bør følges opp først.",
-    aboutTopic: "ranking",
-    sortKey: "rank",
   },
 ];
 
@@ -113,6 +113,11 @@ export function RoutineTable({ rows, statusOf, ownerOf, sort, onSortChange, onOp
           }}
         >
           <td>
+            <div className={styles.score}>
+              <span className={styles.scoreValue}>{rank}</span>
+            </div>
+          </td>
+          <td>
             <button
               type="button"
               className={styles.nameButton}
@@ -131,11 +136,6 @@ export function RoutineTable({ rows, statusOf, ownerOf, sort, onSortChange, onOp
           <td className={styles.questionCount}>{stats.questionCount}</td>
           <td>
             <StatusBadge status={statusOf(stats.routine.code)} owner={ownerOf(stats.routine.code)} />
-          </td>
-          <td>
-            <div className={styles.score}>
-              <span className={styles.scoreValue}>{rank}</span>
-            </div>
           </td>
         </tr>
       ))}
