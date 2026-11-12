@@ -33,7 +33,7 @@ async function violations(): Promise<string[]> {
 
 async function openDashboard() {
   render(<App user={ADMIN} accessToken="token" onSignOut={() => {}} />);
-  await screen.findByRole("heading", { level: 1, name: "Rutiner som bør oppdateres først" });
+  await screen.findByRole("heading", { level: 1, name: "Oversikt" });
 }
 
 function openPage(label: string) {
@@ -43,8 +43,10 @@ function openPage(label: string) {
 }
 
 beforeEach(() => {
+  window.history.replaceState(null, "");
   // As in index.html, which the test page does not load
   document.documentElement.lang = "nb";
+  document.title = "Kunnskapsgap";
   vi.stubGlobal(
     "fetch",
     vi.fn((url: string) =>
@@ -81,6 +83,7 @@ describe("every page meets WCAG 2.1 AA", () => {
 
   it("a routine's own page", async () => {
     await openDashboard();
+    openPage("Prioriterte rutiner");
     const table = screen.getByRole("table");
     const firstRoutine = within(table).getAllByRole("button").find((button) => button.closest("tbody") !== null);
     if (firstRoutine === undefined) throw new Error("The sample has no routines in the list");
@@ -92,6 +95,7 @@ describe("every page meets WCAG 2.1 AA", () => {
 
   it("an open info bubble", async () => {
     await openDashboard();
+    openPage("Prioriterte rutiner");
     fireEvent.click(screen.getByRole("button", { name: "Mer om snittdekning" }));
 
     expect(screen.getByRole("dialog", { name: "Snittdekning" })).toBeDefined();
