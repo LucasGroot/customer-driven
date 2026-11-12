@@ -33,7 +33,7 @@ export function groupRoutineQuestions(
         ({ question, byHand }) => !byHand && question.routineClusterId === cluster.id,
       );
       if (members.length === 0) return [];
-      const totalCoverage = members.reduce((sum, { question }) => sum + question.coverage, 0);
+      const totalCoverage = members.reduce((sum, { coverage }) => sum + coverage, 0);
       return [{ cluster, questions: members, meanCoverage: totalCoverage / members.length }];
     });
 
