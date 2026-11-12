@@ -7,9 +7,11 @@
 import { placementOf, type DecisionOf, type Placement, type RoutineStats } from "../../domain/routines";
 import type { AskedQuestion, RoutineDocument } from "../../domain/types";
 import type { SortState } from "../../components/sort";
+import { coverageBand, type CoverageBand } from "../../domain/priority";
 
 export type SearchTab = "questions" | "documents";
 export type PlacementFilter = "all" | Placement["kind"];
+export type CoverageBandFilter = "all" | CoverageBand | "no-questions";
 export type SortOrder = "coverage-asc" | "coverage-desc" | "alphabetical";
 
 export const PLACEMENT_FILTERS: { key: PlacementFilter; label: string }[] = [
@@ -17,6 +19,14 @@ export const PLACEMENT_FILTERS: { key: PlacementFilter; label: string }[] = [
   { key: "routine", label: "Knyttet til rutine" },
   { key: "pending", label: "Til gjennomgang" },
   { key: "discarded", label: "Forkastet" },
+];
+
+export const COVERAGE_BAND_FILTERS: { key: CoverageBandFilter; label: string }[] = [
+  { key: "all", label: "Alle" },
+  { key: "weak", label: "Svak" },
+  { key: "partial", label: "Delvis" },
+  { key: "good", label: "God" },
+  { key: "no-questions", label: "Uten henvendelser" },
 ];
 
 export const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
@@ -99,12 +109,13 @@ export interface DocumentResult {
 interface DocumentSearch {
   query: string;
   sort: SortOrder;
+  filter: CoverageBandFilter;
 }
 
 export function searchDocuments(
   documents: RoutineDocument[],
   routines: RoutineStats[],
-  { query, sort }: DocumentSearch,
+  { query, sort, filter }: DocumentSearch,
 ): DocumentResult[] {
   const statsByCode = new Map(routines.map((stats) => [stats.routine.code, stats]));
   return documents
@@ -116,6 +127,11 @@ export function searchDocuments(
         questionCount: stats?.questionCount ?? 0,
         meanCoverage: stats?.meanCoverage ?? null,
       };
+    })
+    .filter((result) => {
+      if (filter === "all") return true;
+      if (filter === "no-questions") return result.meanCoverage === null;
+      return result.meanCoverage !== null && coverageBand(result.meanCoverage) === filter;
     })
     .sort((a, b) =>
       sort === "alphabetical"

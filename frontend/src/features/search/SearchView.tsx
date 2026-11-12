@@ -11,10 +11,12 @@ import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { DocumentTable } from "./DocumentTable";
 import { QuestionTable } from "./QuestionTable";
 import {
+  COVERAGE_BAND_FILTERS,
   PLACEMENT_FILTERS,
   SORT_OPTIONS,
   searchDocuments,
   searchQuestions,
+  type CoverageBandFilter,
   type PlacementFilter,
   type SearchTab,
   type SortOrder,
@@ -29,7 +31,12 @@ interface SearchViewProps {
 }
 
 // PLACEMENT_FILTERS uses { key, label }, but SelectField expects { value, label }.
-const FILTER_OPTIONS = PLACEMENT_FILTERS.map((option) => ({
+const PLACEMENT_FILTER_OPTIONS = PLACEMENT_FILTERS.map((option) => ({
+  value: option.key,
+  label: option.label,
+}));
+
+const COVERAGE_BAND_FILTER_OPTIONS = COVERAGE_BAND_FILTERS.map((option) => ({
   value: option.key,
   label: option.label,
 }));
@@ -39,7 +46,9 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
   const [tab, setTab] = useState<SearchTab>("documents");
   const [query, setQuery] = useState("");
   // Placement filter (Alle / Knyttet til rutine / ...), only used on the questions tab.
-  const [filter, setFilter] = useState<PlacementFilter>("all");
+  const [placementFilter, setPlacementFilter] = useState<PlacementFilter>("all");
+  // Coverage band filter (Alle / Svak / Delvis / God / Uten henvendelser), only used on the documents tab.
+  const [coverageBandFilter, setCoverageBandFilter] = useState<CoverageBandFilter>("all");
   // The "Sorter" dropdown: the base order of the list.
   const [sort, setSort] = useState<SortOrder>("coverage-asc");
   // A click on a column header. Applied on top of the dropdown order; null = no column sort.
@@ -48,11 +57,11 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
   const { questions, documents } = snapshot;
   const questionResults = searchQuestions(questions, documents, {
     query,
-    filter,
+    filter: placementFilter,
     sort,
     decisionOf: review.decisionOf,
   });
-  const documentResults = searchDocuments(documents, routines, { query, sort });
+  const documentResults = searchDocuments(documents, routines, { query, sort, filter: coverageBandFilter });
 
   const tabs: { key: SearchTab; label: string }[] = [
     { key: "documents", label: `Rutiner · ${String(documents.length)}` },
@@ -81,6 +90,9 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
               setTab(option.key);
               // The columns differ between the two tables, so the column sort starts over.
               setColumnSort(null);
+              // Reset filters when switching tabs
+              setPlacementFilter("all");
+              setCoverageBandFilter("all");
             }}
           />
         ))}
@@ -104,11 +116,18 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
           {tab === "questions" ? (
             <SelectField
               label="Filter"
-              value={filter}
-              options={FILTER_OPTIONS}
-              onChange={setFilter}
+              value={placementFilter}
+              options={PLACEMENT_FILTER_OPTIONS}
+              onChange={setPlacementFilter}
             />
-          ) : null}
+          ) : (
+            <SelectField
+              label="Filter"
+              value={coverageBandFilter}
+              options={COVERAGE_BAND_FILTER_OPTIONS}
+              onChange={setCoverageBandFilter}
+            />
+          )}
           <SelectField
             label="Sorter"
             value={sort}
