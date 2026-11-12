@@ -65,7 +65,7 @@ afterEach(() => {
 describe("every page meets WCAG 2.1 AA", () => {
   it.each([
     ["Oversikt", "Oversikt"],
-    ["Prioritert liste", "Rutiner som bør oppdateres først"],
+    ["Prioriterte rutiner", "Rutiner som bør oppdateres først"],
     ["Henvendelser til manuell gjennomgang", "Henvendelser til manuell gjennomgang"],
     ["Kjør analyse", "Kjør analyse"],
     ["Søk", "Søk"],
@@ -100,13 +100,12 @@ describe("every page meets WCAG 2.1 AA", () => {
 });
 
 describe("moving between pages", () => {
-  it("names the page in the browser tab and moves focus to its heading", async () => {
+  it("moves focus to the page heading", async () => {
     await openDashboard();
     openPage("Søk");
 
     const heading = screen.getByRole("heading", { level: 1, name: "Søk" });
     expect(document.activeElement).toBe(heading);
-    expect(document.title).toBe("Søk – Kunnskapsgap");
   });
 
   it("lets the skip link jump past the menu", async () => {

@@ -117,20 +117,18 @@
   padding-top: 16px;
 }
 
+/* Both texts get the same bottom space, so they stand on one line next to the owner field too */
 .ownerHint {
   margin: 0;
+  padding-bottom: 10px;
   font-size: 13px;
   color: var(--color-text-soft);
 }
 
 .savedNote {
-  margin-left: auto;
-  font-size: 12.5px;
-  color: var(--color-text-faint);
-}
-
-.saved {
-  color: var(--color-band-low);
+  padding-bottom: 10px;
+  font-size: 13px;
+  color: var(--color-text);
 }
 
 .question {
@@ -181,6 +179,62 @@
   align-items: center;
   padding: 12px 0;
   cursor: pointer;
+  list-style: none;
+}
+
+/* Safari draws its own triangle unless it is hidden explicitly */
+.clusterSummary::-webkit-details-marker {
+  display: none;
+}
+
+.clusterHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* The dropdown button: a bordered square with a chevron that turns when the topic is open */
+.clusterToggle {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-soft);
+  transition: border-color 120ms ease, color 120ms ease;
+}
+
+.clusterToggle::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 150ms ease, margin-top 150ms ease;
+}
+
+.clusterSummary:hover .clusterToggle {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.cluster[open] .clusterToggle::before {
+  margin-top: 3px;
+  transform: rotate(-135deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clusterToggle,
+  .clusterToggle::before {
+    transition: none;
+  }
 }
 
 .clusterTitle {

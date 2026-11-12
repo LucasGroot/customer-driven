@@ -12,10 +12,10 @@ interface NavigationEntry {
 
 export const NAVIGATION: NavigationEntry[] = [
   { view: "summary", label: "Oversikt" },
-  { view: "list", label: "Prioritert liste" },
+  { view: "list", label: "Prioriterte rutiner" },
   { view: "review", label: "Henvendelser til manuell gjennomgang" },
-  { view: "run", label: "Kjør analyse" },
   { view: "search", label: "Søk" },
+  { view: "run", label: "Kjør analyse" },
   { view: "import", label: "Importer data", adminOnly: true },
   { view: "about", label: "Om analysen" },
 ];
@@ -26,11 +26,6 @@ export const NAVIGATION: NavigationEntry[] = [
  */
 export function navigationFor(role: CurrentUser["role"]): NavigationEntry[] {
   return NAVIGATION.filter((entry) => role === "admin" || entry.adminOnly !== true);
-}
-
-/** The page's name in the browser tab. The detail page uses the routine's name instead. */
-export function pageLabel(view: ViewName): string {
-  return NAVIGATION.find((entry) => entry.view === view)?.label ?? "Rutine";
 }
 
 export function isAdminOnly(view: ViewName): boolean {

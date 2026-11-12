@@ -26,9 +26,7 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
     <Card>
       <div className={styles.header}>
         <div className={styles.headingText}>
-          <p className={styles.heading}>{group.title}</p>
-          <p className={styles.example}>«{heading.text}»</p>
-          <h2 className={styles.heading}>{heading.text}</h2>
+          <h2 className={styles.heading}>{group.title}</h2>
           <p className={styles.count}>
             {items.length} {items.length === 1 ? "henvendelse" : "henvendelser"} i gruppen
           </p>
@@ -37,7 +35,7 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
           <RoutineSelect
             value={chosenCode}
             routines={routines}
-            label={`Rutine for gruppen «${heading.text}»`}
+            label={`Rutine for gruppen «${group.title}»`}
             onChange={setChosenCode}
           />
           <div className={styles.buttons}>
@@ -47,7 +45,7 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
                 review.mapManyTo(questionIds, chosenCode);
               }}
             >
-              Knytt alle til rutine<span className="visuallyHidden"> i gruppen «{heading.text}»</span>
+              Knytt alle til rutine<span className="visuallyHidden"> i gruppen «{group.title}»</span>
             </Button>
             <Button
               variant="danger"
@@ -55,7 +53,7 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
                 review.discardMany(questionIds);
               }}
             >
-              Forkast alle<span className="visuallyHidden"> i gruppen «{heading.text}»</span>
+              Forkast alle<span className="visuallyHidden"> i gruppen «{group.title}»</span>
             </Button>
           </div>
         </div>
@@ -63,7 +61,7 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
 
       <details className={styles.details}>
         <summary className={styles.summary}>
-          Vis henvendelsene<span className="visuallyHidden"> i gruppen «{heading.text}»</span>
+          Vis henvendelsene<span className="visuallyHidden"> i gruppen «{group.title}»</span>
         </summary>
         <ReviewTable items={items} routines={routines} review={review} emptyMessage="" />
       </details>
