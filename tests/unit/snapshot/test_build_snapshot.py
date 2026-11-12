@@ -86,6 +86,40 @@ def test_every_question_points_to_its_best_routine_and_score():
     assert questions["INC1"].text == "Hvor er lønnen? Svar"
 
 
+def test_every_question_lists_its_routines_best_first_without_the_empty_ones():
+    questions = {question.id: question for question in make_snapshot().questions}
+
+    assert [(candidate.document_code, candidate.score) for candidate in questions["INC1"].candidates] == [
+        ("1000-1", 0.8),
+        ("2000-1", 0.2),
+    ]
+    assert questions["INC5"].candidates[0].document_code == questions["INC5"].document_code
+
+
+def test_a_question_lists_no_more_candidates_than_the_limit(monkeypatch):
+    monkeypatch.setattr(snapshot_builder, "CANDIDATES_PER_QUESTION", 1)
+
+    snapshot = make_snapshot()
+
+    assert all(len(question.candidates) == 1 for question in snapshot.questions)
+
+
+def test_json_names_the_candidates_in_camel_case():
+    data = snapshot_to_json_dict(make_snapshot())
+
+    assert data["questions"][0]["candidates"][0] == {"documentCode": "1000-1", "score": 0.8}
+
+
+def test_a_snapshot_made_before_candidates_were_stored_still_loads():
+    sample = json.loads(SAMPLE_SNAPSHOT_PATH.read_text(encoding="utf-8"))
+    for question in sample["questions"]:
+        del question["candidates"]
+
+    snapshot = AnalysisSnapshot.model_validate(sample)
+
+    assert all(question.candidates == [] for question in snapshot.questions)
+
+
 def test_questions_with_a_best_score_under_the_threshold_go_to_review(monkeypatch):
     monkeypatch.setattr(snapshot_builder, "MIN_RELEVANCE", 0.35)
 

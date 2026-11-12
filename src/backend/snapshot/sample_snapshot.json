@@ -17,7 +17,21 @@
       "documentCode": "KV-014",
       "coverage": 0.21,
       "needsReview": false,
-      "routineClusterId": "c0"
+      "routineClusterId": "c0",
+      "candidates": [
+        {
+          "documentCode": "KV-014",
+          "score": 0.21
+        },
+        {
+          "documentCode": "KV-005",
+          "score": 0.17
+        },
+        {
+          "documentCode": "KV-007",
+          "score": 0.13
+        }
+      ]
     },
     {
       "id": "q02",
@@ -27,7 +41,21 @@
       "documentCode": "KV-014",
       "coverage": 0.24,
       "needsReview": false,
-      "routineClusterId": "c0"
+      "routineClusterId": "c0",
+      "candidates": [
+        {
+          "documentCode": "KV-014",
+          "score": 0.24
+        },
+        {
+          "documentCode": "KV-007",
+          "score": 0.2
+        },
+        {
+          "documentCode": "KV-011",
+          "score": 0.16
+        }
+      ]
     },
     {
       "id": "q03",
@@ -37,7 +65,21 @@
       "documentCode": "KV-014",
       "coverage": 0.29,
       "needsReview": false,
-      "routineClusterId": "c0"
+      "routineClusterId": "c0",
+      "candidates": [
+        {
+          "documentCode": "KV-014",
+          "score": 0.29
+        },
+        {
+          "documentCode": "KV-011",
+          "score": 0.25
+        },
+        {
+          "documentCode": "KV-019",
+          "score": 0.21
+        }
+      ]
     },
     {
       "id": "q04",
@@ -47,7 +89,21 @@
       "documentCode": "KV-007",
       "coverage": 0.28,
       "needsReview": false,
-      "routineClusterId": "c2"
+      "routineClusterId": "c2",
+      "candidates": [
+        {
+          "documentCode": "KV-007",
+          "score": 0.28
+        },
+        {
+          "documentCode": "KV-019",
+          "score": 0.24
+        },
+        {
+          "documentCode": "KV-023",
+          "score": 0.2
+        }
+      ]
     },
     {
       "id": "q05",
@@ -57,7 +113,21 @@
       "documentCode": "KV-007",
       "coverage": 0.33,
       "needsReview": false,
-      "routineClusterId": "c2"
+      "routineClusterId": "c2",
+      "candidates": [
+        {
+          "documentCode": "KV-007",
+          "score": 0.33
+        },
+        {
+          "documentCode": "KV-023",
+          "score": 0.29
+        },
+        {
+          "documentCode": "KV-026",
+          "score": 0.25
+        }
+      ]
     },
     {
       "id": "q06",
@@ -66,7 +136,21 @@
       "category": "Ferie",
       "documentCode": "KV-023",
       "coverage": 0.32,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-023",
+          "score": 0.32
+        },
+        {
+          "documentCode": "KV-026",
+          "score": 0.28
+        },
+        {
+          "documentCode": "KV-028",
+          "score": 0.24
+        }
+      ]
     },
     {
       "id": "q07",
@@ -76,7 +160,21 @@
       "documentCode": "KV-041",
       "coverage": 0.17,
       "needsReview": true,
-      "groupId": "r0"
+      "groupId": "r0",
+      "candidates": [
+        {
+          "documentCode": "KV-041",
+          "score": 0.17
+        },
+        {
+          "documentCode": "KV-026",
+          "score": 0.13
+        },
+        {
+          "documentCode": "KV-028",
+          "score": 0.09
+        }
+      ]
     },
     {
       "id": "q08",
@@ -86,7 +184,21 @@
       "documentCode": "KV-019",
       "coverage": 0.2,
       "needsReview": true,
-      "groupId": "r0"
+      "groupId": "r0",
+      "candidates": [
+        {
+          "documentCode": "KV-019",
+          "score": 0.2
+        },
+        {
+          "documentCode": "KV-031",
+          "score": 0.16
+        },
+        {
+          "documentCode": "KV-033",
+          "score": 0.12
+        }
+      ]
     },
     {
       "id": "q09",
@@ -96,7 +208,21 @@
       "documentCode": "KV-019",
       "coverage": 0.21,
       "needsReview": true,
-      "groupId": "r0"
+      "groupId": "r0",
+      "candidates": [
+        {
+          "documentCode": "KV-019",
+          "score": 0.21
+        },
+        {
+          "documentCode": "KV-033",
+          "score": 0.17
+        },
+        {
+          "documentCode": "KV-036",
+          "score": 0.13
+        }
+      ]
     },
     {
       "id": "q10",
@@ -105,7 +231,21 @@
       "category": "Permisjon",
       "documentCode": "KV-011",
       "coverage": 0.34,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-011",
+          "score": 0.34
+        },
+        {
+          "documentCode": "KV-036",
+          "score": 0.3
+        },
+        {
+          "documentCode": "KV-041",
+          "score": 0.26
+        }
+      ]
     },
     {
       "id": "q11",
@@ -114,7 +254,21 @@
       "category": "Permisjon",
       "documentCode": "KV-011",
       "coverage": 0.38,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-011",
+          "score": 0.38
+        },
+        {
+          "documentCode": "KV-041",
+          "score": 0.34
+        },
+        {
+          "documentCode": "KV-044",
+          "score": 0.3
+        }
+      ]
     },
     {
       "id": "q12",
@@ -123,7 +277,21 @@
       "category": "Permisjon",
       "documentCode": "KV-036",
       "coverage": 0.36,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-036",
+          "score": 0.36
+        },
+        {
+          "documentCode": "KV-044",
+          "score": 0.32
+        },
+        {
+          "documentCode": "KV-047",
+          "score": 0.28
+        }
+      ]
     },
     {
       "id": "q13",
@@ -132,7 +300,21 @@
       "category": "Lønn og tillegg",
       "documentCode": "KV-005",
       "coverage": 0.44,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-005",
+          "score": 0.44
+        },
+        {
+          "documentCode": "KV-047",
+          "score": 0.4
+        },
+        {
+          "documentCode": "KV-050",
+          "score": 0.36
+        }
+      ]
     },
     {
       "id": "q14",
@@ -141,7 +323,21 @@
       "category": "Lønn og tillegg",
       "documentCode": "KV-005",
       "coverage": 0.4,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-005",
+          "score": 0.4
+        },
+        {
+          "documentCode": "KV-050",
+          "score": 0.36
+        },
+        {
+          "documentCode": "KV-052",
+          "score": 0.32
+        }
+      ]
     },
     {
       "id": "q15",
@@ -150,7 +346,21 @@
       "category": "Lønn og tillegg",
       "documentCode": "KV-002",
       "coverage": 0.43,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-002",
+          "score": 0.43
+        },
+        {
+          "documentCode": "KV-052",
+          "score": 0.39
+        },
+        {
+          "documentCode": "KV-060",
+          "score": 0.35
+        }
+      ]
     },
     {
       "id": "q16",
@@ -159,7 +369,21 @@
       "category": "Ansettelse",
       "documentCode": "KV-028",
       "coverage": 0.25,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-028",
+          "score": 0.25
+        },
+        {
+          "documentCode": "KV-060",
+          "score": 0.21
+        },
+        {
+          "documentCode": "KV-061",
+          "score": 0.17
+        }
+      ]
     },
     {
       "id": "q17",
@@ -168,7 +392,21 @@
       "category": "Ansettelse",
       "documentCode": "KV-028",
       "coverage": 0.27,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-028",
+          "score": 0.27
+        },
+        {
+          "documentCode": "KV-061",
+          "score": 0.23
+        },
+        {
+          "documentCode": "KV-064",
+          "score": 0.19
+        }
+      ]
     },
     {
       "id": "q18",
@@ -177,7 +415,21 @@
       "category": "Ansettelse",
       "documentCode": "KV-026",
       "coverage": 0.3,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-026",
+          "score": 0.3
+        },
+        {
+          "documentCode": "KV-064",
+          "score": 0.26
+        },
+        {
+          "documentCode": "KV-002",
+          "score": 0.22
+        }
+      ]
     },
     {
       "id": "q19",
@@ -186,7 +438,21 @@
       "category": "Ferie",
       "documentCode": "KV-007",
       "coverage": 0.46,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-007",
+          "score": 0.46
+        },
+        {
+          "documentCode": "KV-002",
+          "score": 0.42
+        },
+        {
+          "documentCode": "KV-005",
+          "score": 0.38
+        }
+      ]
     },
     {
       "id": "q20",
@@ -195,7 +461,21 @@
       "category": "Ferie",
       "documentCode": "KV-014",
       "coverage": 0.43,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-014",
+          "score": 0.43
+        },
+        {
+          "documentCode": "KV-005",
+          "score": 0.39
+        },
+        {
+          "documentCode": "KV-007",
+          "score": 0.35
+        }
+      ]
     },
     {
       "id": "q21",
@@ -204,7 +484,21 @@
       "category": "Ferie",
       "documentCode": "KV-052",
       "coverage": 0.47,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-052",
+          "score": 0.47
+        },
+        {
+          "documentCode": "KV-007",
+          "score": 0.43
+        },
+        {
+          "documentCode": "KV-011",
+          "score": 0.39
+        }
+      ]
     },
     {
       "id": "q22",
@@ -213,7 +507,21 @@
       "category": "Lønn og tillegg",
       "documentCode": "KV-002",
       "coverage": 0.5,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-002",
+          "score": 0.5
+        },
+        {
+          "documentCode": "KV-014",
+          "score": 0.46
+        },
+        {
+          "documentCode": "KV-019",
+          "score": 0.42
+        }
+      ]
     },
     {
       "id": "q23",
@@ -222,7 +530,21 @@
       "category": "Lønn og tillegg",
       "documentCode": "KV-047",
       "coverage": 0.55,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-047",
+          "score": 0.55
+        },
+        {
+          "documentCode": "KV-014",
+          "score": 0.51
+        },
+        {
+          "documentCode": "KV-019",
+          "score": 0.47
+        }
+      ]
     },
     {
       "id": "q24",
@@ -231,7 +553,21 @@
       "category": "Lønn og tillegg",
       "documentCode": "KV-047",
       "coverage": 0.52,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-047",
+          "score": 0.52
+        },
+        {
+          "documentCode": "KV-019",
+          "score": 0.48
+        },
+        {
+          "documentCode": "KV-023",
+          "score": 0.44
+        }
+      ]
     },
     {
       "id": "q25",
@@ -240,7 +576,21 @@
       "category": "Permisjon",
       "documentCode": "KV-060",
       "coverage": 0.66,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-060",
+          "score": 0.66
+        },
+        {
+          "documentCode": "KV-023",
+          "score": 0.62
+        },
+        {
+          "documentCode": "KV-026",
+          "score": 0.58
+        }
+      ]
     },
     {
       "id": "q26",
@@ -249,7 +599,21 @@
       "category": "Permisjon",
       "documentCode": "KV-060",
       "coverage": 0.71,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-060",
+          "score": 0.71
+        },
+        {
+          "documentCode": "KV-026",
+          "score": 0.67
+        },
+        {
+          "documentCode": "KV-028",
+          "score": 0.63
+        }
+      ]
     },
     {
       "id": "q27",
@@ -258,7 +622,21 @@
       "category": "Permisjon",
       "documentCode": "KV-060",
       "coverage": 0.74,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-060",
+          "score": 0.74
+        },
+        {
+          "documentCode": "KV-028",
+          "score": 0.7
+        },
+        {
+          "documentCode": "KV-031",
+          "score": 0.66
+        }
+      ]
     },
     {
       "id": "q28",
@@ -268,7 +646,21 @@
       "documentCode": "KV-033",
       "coverage": 0.82,
       "needsReview": false,
-      "routineClusterId": "c3"
+      "routineClusterId": "c3",
+      "candidates": [
+        {
+          "documentCode": "KV-033",
+          "score": 0.82
+        },
+        {
+          "documentCode": "KV-031",
+          "score": 0.78
+        },
+        {
+          "documentCode": "KV-036",
+          "score": 0.74
+        }
+      ]
     },
     {
       "id": "q29",
@@ -278,7 +670,21 @@
       "documentCode": "KV-033",
       "coverage": 0.77,
       "needsReview": false,
-      "routineClusterId": "c3"
+      "routineClusterId": "c3",
+      "candidates": [
+        {
+          "documentCode": "KV-033",
+          "score": 0.77
+        },
+        {
+          "documentCode": "KV-036",
+          "score": 0.73
+        },
+        {
+          "documentCode": "KV-041",
+          "score": 0.69
+        }
+      ]
     },
     {
       "id": "q30",
@@ -288,7 +694,21 @@
       "documentCode": "KV-033",
       "coverage": 0.8,
       "needsReview": false,
-      "routineClusterId": "c3"
+      "routineClusterId": "c3",
+      "candidates": [
+        {
+          "documentCode": "KV-033",
+          "score": 0.8
+        },
+        {
+          "documentCode": "KV-041",
+          "score": 0.76
+        },
+        {
+          "documentCode": "KV-044",
+          "score": 0.72
+        }
+      ]
     },
     {
       "id": "q31",
@@ -297,7 +717,21 @@
       "category": "Hjemmekontor",
       "documentCode": "KV-044",
       "coverage": 0.79,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-044",
+          "score": 0.79
+        },
+        {
+          "documentCode": "KV-041",
+          "score": 0.75
+        },
+        {
+          "documentCode": "KV-047",
+          "score": 0.71
+        }
+      ]
     },
     {
       "id": "q32",
@@ -306,7 +740,21 @@
       "category": "Hjemmekontor",
       "documentCode": "KV-044",
       "coverage": 0.73,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-044",
+          "score": 0.73
+        },
+        {
+          "documentCode": "KV-047",
+          "score": 0.69
+        },
+        {
+          "documentCode": "KV-050",
+          "score": 0.65
+        }
+      ]
     },
     {
       "id": "q33",
@@ -315,7 +763,21 @@
       "category": "Hjemmekontor",
       "documentCode": "KV-044",
       "coverage": 0.68,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-044",
+          "score": 0.68
+        },
+        {
+          "documentCode": "KV-050",
+          "score": 0.64
+        },
+        {
+          "documentCode": "KV-052",
+          "score": 0.6
+        }
+      ]
     },
     {
       "id": "q34",
@@ -325,7 +787,21 @@
       "documentCode": "KV-014",
       "coverage": 0.41,
       "needsReview": false,
-      "routineClusterId": "c1"
+      "routineClusterId": "c1",
+      "candidates": [
+        {
+          "documentCode": "KV-014",
+          "score": 0.41
+        },
+        {
+          "documentCode": "KV-052",
+          "score": 0.37
+        },
+        {
+          "documentCode": "KV-060",
+          "score": 0.33
+        }
+      ]
     },
     {
       "id": "q35",
@@ -335,7 +811,21 @@
       "documentCode": "KV-014",
       "coverage": 0.35,
       "needsReview": false,
-      "routineClusterId": "c1"
+      "routineClusterId": "c1",
+      "candidates": [
+        {
+          "documentCode": "KV-014",
+          "score": 0.35
+        },
+        {
+          "documentCode": "KV-060",
+          "score": 0.31
+        },
+        {
+          "documentCode": "KV-061",
+          "score": 0.27
+        }
+      ]
     },
     {
       "id": "q36",
@@ -345,7 +835,21 @@
       "documentCode": "KV-014",
       "coverage": 0.38,
       "needsReview": false,
-      "routineClusterId": "c1"
+      "routineClusterId": "c1",
+      "candidates": [
+        {
+          "documentCode": "KV-014",
+          "score": 0.38
+        },
+        {
+          "documentCode": "KV-061",
+          "score": 0.34
+        },
+        {
+          "documentCode": "KV-064",
+          "score": 0.3
+        }
+      ]
     },
     {
       "id": "q37",
@@ -355,7 +859,21 @@
       "documentCode": "KV-014",
       "coverage": 0.27,
       "needsReview": false,
-      "routineClusterId": "c1"
+      "routineClusterId": "c1",
+      "candidates": [
+        {
+          "documentCode": "KV-014",
+          "score": 0.27
+        },
+        {
+          "documentCode": "KV-064",
+          "score": 0.23
+        },
+        {
+          "documentCode": "KV-002",
+          "score": 0.19
+        }
+      ]
     },
     {
       "id": "q38",
@@ -364,7 +882,21 @@
       "category": "Ferie",
       "documentCode": "KV-007",
       "coverage": 0.36,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-007",
+          "score": 0.36
+        },
+        {
+          "documentCode": "KV-002",
+          "score": 0.32
+        },
+        {
+          "documentCode": "KV-005",
+          "score": 0.28
+        }
+      ]
     },
     {
       "id": "q39",
@@ -374,7 +906,21 @@
       "documentCode": "KV-007",
       "coverage": 0.31,
       "needsReview": false,
-      "routineClusterId": "c2"
+      "routineClusterId": "c2",
+      "candidates": [
+        {
+          "documentCode": "KV-007",
+          "score": 0.31
+        },
+        {
+          "documentCode": "KV-005",
+          "score": 0.27
+        },
+        {
+          "documentCode": "KV-011",
+          "score": 0.23
+        }
+      ]
     },
     {
       "id": "q40",
@@ -383,7 +929,21 @@
       "category": "Ferie",
       "documentCode": "KV-007",
       "coverage": 0.5,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-007",
+          "score": 0.5
+        },
+        {
+          "documentCode": "KV-011",
+          "score": 0.46
+        },
+        {
+          "documentCode": "KV-014",
+          "score": 0.42
+        }
+      ]
     },
     {
       "id": "q41",
@@ -392,7 +952,21 @@
       "category": "Turnus",
       "documentCode": "KV-019",
       "coverage": 0.29,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-019",
+          "score": 0.29
+        },
+        {
+          "documentCode": "KV-011",
+          "score": 0.25
+        },
+        {
+          "documentCode": "KV-014",
+          "score": 0.21
+        }
+      ]
     },
     {
       "id": "q42",
@@ -401,7 +975,21 @@
       "category": "Turnus",
       "documentCode": "KV-019",
       "coverage": 0.33,
-      "needsReview": false
+      "needsReview": false,
+      "candidates": [
+        {
+          "documentCode": "KV-019",
+          "score": 0.33
+        },
+        {
+          "documentCode": "KV-014",
+          "score": 0.29
+        },
+        {
+          "documentCode": "KV-023",
+          "score": 0.25
+        }
+      ]
     },
     {
       "id": "q43",
@@ -410,7 +998,21 @@
       "category": "Helse",
       "documentCode": "KV-050",
       "coverage": 0.12,
-      "needsReview": true
+      "needsReview": true,
+      "candidates": [
+        {
+          "documentCode": "KV-050",
+          "score": 0.12
+        },
+        {
+          "documentCode": "KV-019",
+          "score": 0.08
+        },
+        {
+          "documentCode": "KV-023",
+          "score": 0.04
+        }
+      ]
     },
     {
       "id": "q44",
@@ -419,7 +1021,21 @@
       "category": "Praktisk",
       "documentCode": "KV-033",
       "coverage": 0.09,
-      "needsReview": true
+      "needsReview": true,
+      "candidates": [
+        {
+          "documentCode": "KV-033",
+          "score": 0.09
+        },
+        {
+          "documentCode": "KV-023",
+          "score": 0.05
+        },
+        {
+          "documentCode": "KV-026",
+          "score": 0.01
+        }
+      ]
     },
     {
       "id": "q45",
@@ -428,7 +1044,21 @@
       "category": "IT",
       "documentCode": "KV-064",
       "coverage": 0.05,
-      "needsReview": true
+      "needsReview": true,
+      "candidates": [
+        {
+          "documentCode": "KV-064",
+          "score": 0.05
+        },
+        {
+          "documentCode": "KV-026",
+          "score": 0.01
+        },
+        {
+          "documentCode": "KV-028",
+          "score": 0.0
+        }
+      ]
     },
     {
       "id": "q46",
@@ -437,7 +1067,21 @@
       "category": "HMS",
       "documentCode": "KV-050",
       "coverage": 0.19,
-      "needsReview": true
+      "needsReview": true,
+      "candidates": [
+        {
+          "documentCode": "KV-050",
+          "score": 0.19
+        },
+        {
+          "documentCode": "KV-028",
+          "score": 0.15
+        },
+        {
+          "documentCode": "KV-031",
+          "score": 0.11
+        }
+      ]
     }
   ],
   "reviewGroups": [
