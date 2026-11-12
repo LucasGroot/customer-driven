@@ -80,7 +80,7 @@ export const FAQ_SECTIONS: Section[] = [
         topic: "bands",
         question: "Hva betyr Svak, Delvis og God dekning?",
         answer: [
-          `Dekning under ${String(partialFrom)} % regnes som Svak, ${String(partialFrom)}–${String(goodFrom - 1)} % som Delvis og ${String(goodFrom)} % eller høyere som God. Grensene er satt ut fra hvordan resultatene fordeler seg i dag. Har du innspill til grensene, kan du kontakte oss på admin@kvaliteket.no.`,
+          `Dekning under ${String(partialFrom)} % regnes som Svak, ${String(partialFrom)}–${String(goodFrom - 1)} % som Delvis og ${String(goodFrom)} % eller høyere som God. Grensene deler henvendelsene i tre omtrent like store grupper, så nivåene sier hvor en henvendelse ligger i forhold til de andre, ikke om rutinen svarer fullt ut. Har du innspill til grensene, kan du kontakte oss på admin@kvaliteket.no.`,
         ],
       },
     ],
