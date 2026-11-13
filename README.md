@@ -12,70 +12,105 @@ Identify which topics and questions raised through ServiceNow have the lowest se
 
 ## How it works
 
-1. [`backend/src/ai/pdf_reader.py`](backend/src/ai/pdf_reader.py) extracts words and font info from Kvaliteket routine PDFs.
-2. [`backend/src/ai/chunker.py`](backend/src/ai/chunker.py) splits each PDF into sections by bold headings.
-3. [`backend/src/ai/embedding_extract.py`](backend/src/ai/embedding_extract.py) generates embeddings for both routine chunks and ServiceNow questions using a multilingual sentence-transformer model, and caches them to `embeddings/*.pkl`.
-4. [`backend/src/ai/compute_similarity.py`](backend/src/ai/compute_similarity.py) computes cosine similarity between every question and every routine chunk, and ranks questions by their summed top-k similarity — the lowest-scoring questions are the least represented in the current routines — and renders the result as an HTML report.
-
-5. [`frontend/`](frontend/) presents the result as a dashboard: the gaps ranked by priority, why each one ranks where it does, and what HR decided to do about it.
+1. The words and fonts of the Kvaliteket routine PDFs are read, and each routine is split into chunks along its bold headings ([`ai/chunking`](backend/src/ai/README.md#chunking)).
+2. The chunks and the ServiceNow questions are embedded with a multilingual sentence-transformer model, and every question is scored against every routine ([`ai/similarity_metrics`](backend/src/ai/README.md#similarity_metrics)).
+3. Each question is placed on the routine it matches best. A question that matches no routine well enough is flagged for HR to place by hand ([`snapshot`](backend/src/snapshot/README.md)).
+4. Similar questions are grouped into themes, and a language model titles each group ([`ai/clustering`](backend/src/ai/README.md#clustering)).
+5. The result, the snapshot, is stored encrypted in a PostgreSQL database ([`db`](backend/src/db/README.md)), and a FastAPI backend serves it ([`backend/src`](backend/README.md)).
+6. The [dashboard](frontend/README.md) presents the routines ranked by priority, why each one ranks where it does, and what HR decided to do about it. HR's decisions are stored in the same database.
 
 ## Status
 
-Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional, and the dashboard fetches its data from a local API. HR's decisions (discarding or mapping a question, routine status and owner) are kept in the browser only until the database exists.
+The analysis, the API and the dashboard work together behind Microsoft sign-in. The analysis result and HR's decisions are stored in PostgreSQL, and the whole app runs with Docker Compose.
 
 ## Running the project
 
-Three parts work together: a script that analyses the data, a small API that serves the result, and the dashboard that shows it.
+Four parts work together: an analysis that scores the data, a PostgreSQL database that stores the result, an API that serves it, and the dashboard that shows it. The simplest way to run them all is [Docker](#running-with-docker).
 
-### First time
+### Running with Docker
 
-1. Install the Python dependencies in a virtual environment at the project root:
+The API, the dashboard and the PostgreSQL database run as containers, with no Python, Node.js or PostgreSQL on your machine.
+
+1. Copy `.env.example` to `.env` and fill it in: the IDs from the Microsoft Entra app registration ([how to set it up](docs/entra-app-registration.md)), the database settings, `SNAPSHOT_KEYS` and `LITELLM_*`. Add `http://localhost:8080` as a single-page application redirect URI in the app registration.
+2. Start everything:
+
+   ```bash
+   docker compose up --build
+   ```
+
+3. Open <http://localhost:8080>.
+
+The first build takes a while, because it downloads the embedding model into the image. The Entra IDs are built into the dashboard, so run `docker compose build` again if you change them.
+
+The database is created from `DBNAME`, `DBUSER` and `DBPASSWORD` in `.env`, and the API creates its tables when it starts. It is only reachable from the other containers, not from your machine. The analysis results and HR's decisions are stored in it; uploaded data and the audit log live in Docker volumes. Nothing is stored in the images. `docker compose down` keeps all of it; `docker compose down -v` deletes it. Keep `SNAPSHOT_KEYS` safe: without it the stored snapshots cannot be read.
+
+### Running without Docker
+
+You need Python 3.10 or newer (CI tests 3.12 to 3.14), Node.js 22.12 or newer, and a PostgreSQL database.
+
+1. Install the Python dependencies in a virtual environment at the project root.
+
+   macOS and Linux:
 
    ```bash
    python3 -m venv .venv
-   .venv/bin/pip install -r requirements.txt
-   .venv/bin/pip install -e .
+   source .venv/bin/activate      # every new terminal
+   pip install -r backend/requirements-dev.txt
+   pip install -e backend
    ```
 
-2. Install the frontend dependencies (Node.js 22.12 or newer):
+   Windows (PowerShell):
+
+   ```powershell
+   py -m venv .venv
+   .venv\Scripts\activate         # every new terminal
+   pip install -r backend/requirements-dev.txt
+   pip install -e backend
+   ```
+
+   If PowerShell refuses to run the activate script, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and try again. `pip install -e backend` installs the backend itself in editable mode, so `backend...` can be imported from anywhere. `requirements-dev.txt` adds what developers need (tests, Ruff, notebooks) to the runtime requirements.
+
+2. Install the dashboard's dependencies:
 
    ```bash
    cd frontend && npm install
    ```
 
-3. Copy `.env.example` to `.env` and fill in the IDs from the Microsoft Entra app registration (see [Entra app registration](#entra-app-registration-for-customer-only) below).
+3. Copy `.env.example` to `.env` and fill it in, as in step 1 of [Running with Docker](#running-with-docker). `DBHOST` is `localhost` here.
 
-4. The real data is confidential and not in git. An admin uploads it on the dashboard's "Importer data" page (see [Updating the data](#updating-the-data)), which saves it to `data/raw/`. You can also put the ServiceNow export at `data/raw/serviceNow/serviceNow_questions.xlsx` and the Kvaliteket PDFs in `data/raw/kvaliteket/` by hand. Without them the dashboard still runs, on a sample of invented data.
+4. Start a database and create its tables, see [`backend/src/db`](backend/src/db/README.md).
 
-### Every time
+5. Start the API, with the virtual environment active, from the project root:
 
-From the project root, in two terminals. First the API:
+   ```bash
+   python -m uvicorn src.api.main:create_app --factory --env-file .env --port 8000
+   ```
 
-```bash
-.venv/bin/python -m uvicorn backend.api.main:create_app --factory --env-file .env --port 8000
-```
+6. Start the dashboard in another terminal, and open <http://localhost:5173>:
 
-If your virtual environment is called `venv`, use `venv/bin/python` instead.
-
-Then the dashboard, and open <http://localhost:5173>:
-
-```bash
-cd frontend && npm run dev
-```
+   ```bash
+   cd frontend && npm run dev
+   ```
 
 The dashboard asks the API for its data, so the API has to be running.
 
-### Running with Docker
+### The data
 
-The API, the dashboard and the PostgreSQL database also run as containers, with no Python, Node.js or PostgreSQL on your machine. Fill in `.env` as in step 3 above, including the database settings and `SNAPSHOT_KEYS`, and add `http://localhost:8080` as a single-page application redirect URI in the Entra app registration. Then:
+The real data is confidential HR data from Trondheim kommune, so **it is not in this repository and has not been uploaded to GitHub**. Whoever runs the application on real data has to get the files from the customer and be allowed to handle them. There are two files to get:
 
-```bash
-docker compose up --build
-```
+- the ServiceNow export of questions, as an `.xlsx` file, and
+- the Kvaliteket routines, as PDFs.
 
-Open <http://localhost:8080>. The first build takes a while, because it downloads the embedding model into the image. The Entra IDs are built into the dashboard, so run `docker compose build` again if you change them.
+An admin uploads them on the dashboard's "Importer data" page, see [Updating the data](#updating-the-data). You can also put them in place by hand: the export at `data/raw/serviceNow/serviceNow_questions.xlsx` and the PDFs in `data/raw/kvaliteket/`. Never commit them or paste them into a chat, see [`data/`](data/README.md).
 
-The database is created from `DBNAME`, `DBUSER` and `DBPASSWORD` in `.env`, and the API creates its tables when it starts. It is only reachable from the other containers, not from your machine. The analysis results and HR's decisions are stored in it; uploaded data and the audit log live in Docker volumes. Nothing is stored in the images. `docker compose down` keeps all of it; `docker compose down -v` deletes it. Keep `SNAPSHOT_KEYS` safe: without it the stored snapshots cannot be read.
+#### Running without the real data
+
+- **Sample data.** If nothing has been uploaded, the API serves a bundled sample of invented data, and the dashboard says "Eksempeldata" in the sidebar. The dashboard works on it, so this is enough for developing the frontend. It does not run an analysis, so it cannot test the backend.
+- **Your own test files.** To run the whole analysis, make small files with invented content and upload them as an admin:
+  - The questions: an `.xlsx` file with the columns `Nummer` (a unique number per question), `Tjenestetilbud` (the service), `Kort beskrivelse` and `Beskrivelse` (the question text). A question needs text in at least one of the two description columns.
+  - The routines: PDFs named `<document code>-<title>.pdf`, for example `1760-1-Vernerunde.pdf`. Give them bold headings, because that is how a routine is split into sections. Start small, with a few routines and a few dozen questions, so a run is quick.
+
+The analysis sends the text of a few questions per cluster to the LiteLLM proxy in `.env` to get a title for each group. Use invented text for test files, so it does not matter where the proxy is.
 
 ### Updating the data
 
@@ -84,257 +119,79 @@ Users with the admin role can update the data from the dashboard:
 1. **Importer data**, a page only they see, uploads a new ServiceNow export, which replaces the previous one, and Kvaliteket routines, which are added to the ones already there. A routine that is already uploaded is skipped, matched on its document code (`1760-1` in `1760-1-Vernerunde.pdf`), so the whole Kvaliteket folder can be chosen again to add only the new routines. Nothing is saved if any file fails its checks, for example a file that is not a PDF.
 2. **Kjør analyse**, where only they have the run button, then runs the analysis on the uploaded files in the background and shows its progress. When it finishes, the dashboard loads the new result.
 
-The API refuses uploads and runs from anyone without the admin role, whatever the dashboard shows.
+The API refuses uploads and runs from anyone without the admin role, whatever the dashboard shows. The code is in [`backend/src/admin`](backend/src/admin/README.md).
 
-### Building the snapshot
-
-The analysis can also be run without the dashboard:
+### Building the snapshot without the dashboard
 
 ```bash
-.venv/bin/python scripts/build_snapshot.py
+python backend/scripts/build_snapshot.py
 ```
 
-This is not needed every time. It analyses all questions against all routines, which takes a few minutes, and writes the result to `data/processed/snapshot.json`. The API serves that file until it is replaced, so run the analysis again, from the script or from "Kjør analyse", only when:
+This analyses all questions against all routines, which takes a few minutes, and stores the result in the database. The API serves the newest snapshot, so run the analysis again, from the script or from "Kjør analyse", only when:
 
 - the ServiceNow export or the PDFs change, or
-- the scoring or the review threshold (`MIN_RELEVANCE` in `src/backend/snapshot/build_snapshot.py`) changes, since which questions need review is decided when the snapshot is built, or
-- the code that builds the snapshot changes, for example after pulling. An old file can lack fields the dashboard expects.
+- the scoring or the review threshold (`MIN_RELEVANCE` in [`backend/src/snapshot/build_snapshot.py`](backend/src/snapshot/build_snapshot.py)) changes, since which questions need review is decided when the snapshot is built, or
+- the code that builds the snapshot changes, for example after pulling. An old snapshot can lack fields the dashboard expects.
 
-The questions that need review are grouped by what they are about, so HR can decide on a whole group at once.
-
-The API reads the file on every request, so there is no need to restart it. Reload the page.
-
-Without a snapshot the API serves the bundled sample, and the dashboard says "Eksempeldata" in the sidebar. This lets anyone run the project without the confidential data.
+The questions that need review are grouped by what they are about, so HR can decide on a whole group at once. Without a snapshot the API serves the bundled sample, and the dashboard says "Eksempeldata" in the sidebar.
 
 ### Things to know
 
-- `data/processed/snapshot.json` contains ticket text. It is gitignored. Do not commit or share it.
+- A snapshot contains ticket text. It is encrypted in the database with `SNAPSHOT_KEYS`, and the key is never committed. Do not export or share it.
 - Uploaded files are saved to `data/raw/`, which is gitignored for the same reason.
 - An uploaded routine cannot be replaced or removed from the dashboard yet. Delete the old PDF from `data/raw/kvaliteket/` by hand first.
 - The API remembers how far a run has come only while it is running. Restarting it during a run loses the run; start it again.
-- Decisions made on the review page are lost when the page is reloaded.
 
 ### Tests
 
 ```bash
-.venv/bin/python -m pytest   # backend
+(cd backend && python -m pytest) # backend, with the virtual environment active
 cd frontend && npx vitest run   # frontend, once
 cd frontend && npm test         # frontend, in watch mode (press q to quit)
 ```
 
-Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data, behind Microsoft sign-in.
+The database tests need a database whose name contains `test`, see [`backend/tests/`](backend/tests/README.md).
 
 ### Linting and formatting
 
 ```bash
-.venv/bin/ruff check --fix . && .venv/bin/ruff format .   # backend: fix and format, from the project root
-cd frontend && npm run lint:fix                           # frontend: fix and format
+(cd backend && ruff check --fix . && ruff format .)   # backend: fix and format
+cd frontend && npm run lint:fix       # frontend: fix and format
 ```
 
-CI fails if either finds something to fix. In VS Code, install the recommended extensions (Ruff, ESLint and Prettier) to have files fixed and formatted on save.
+CI fails if either finds something to fix. In VS Code, install the recommended extensions (Ruff, ESLint and Prettier) to have files fixed and formatted on save. See [CONTRIBUTING.md](CONTRIBUTING.md) for everything to run before a pull request.
 
-## How to install
+## Project structure
 
-macOS and Linux:
+The main folders have a README that says what is in them and links to the folders they work with.
 
-```bash
-python3 -m venv venv          # first time only
-source venv/bin/activate      # every new terminal
-pip install -r requirements.txt
-pip install -e .
+```
+.github/workflows/    CI: lint, format, type check and tests
+backend/              the API and the analysis (Python)
+  src/                the Python package, imported as "src"
+    api/              sign-in, roles, settings, audit log
+    admin/            uploading data and running the analysis
+    snapshot/         building and serving the analysis result
+    review/           HR's decisions
+    db/               PostgreSQL connection, tables and the snapshot store
+    ai/               PDF reading, chunking, similarity, clustering, LLM, evaluation
+  tests/              backend tests
+  scripts/            run and evaluate the analysis from the command line
+  notebooks/          notebooks for exploring the methods
+data/                 the customer's data and what the analysis writes (not in git)
+  raw/  processed/
+docs/                 the AI framework and the Entra app registration
+frontend/             the dashboard (React, TypeScript, Vite)
+  src/                app, auth, api, hooks, domain, features, components, styles
+docker-compose.yml    the whole app: API, dashboard and database
 ```
 
-Windows (PowerShell):
-
-```powershell
-py -m venv venv               # first time only
-venv\Scripts\activate         # every new terminal
-pip install -r requirements.txt
-pip install -e .
-```
-
-If PowerShell refuses to run the activate script, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and try again.
-
-Creates a virtual environment so the project's packages stay separate from the rest of your machine, installs project dependencies, then installs the package itself in editable mode so local imports (`backend.ai...`) work globally without path hacks.
-
-## Running the application
-
-### Running the API/backend
-
-The API in [`src/backend/api/`](src/backend/api/) handles Microsoft sign-in and user roles. It needs a Microsoft Entra app registration.
-
-macOS and Linux:
-
-```bash
-cp .env.example .env    # first time only
-uvicorn backend.api.main:create_app --factory --env-file .env --reload
-```
-
-Windows (PowerShell):
-
-```powershell
-Copy-Item .env.example .env    # first time only
-uvicorn backend.api.main:create_app --factory --env-file .env --reload
-```
-
-Fill in the tenant and client IDs in `.env`. 
-
-Run the tests with `python -m pytest tests/unit/api`.
-
-### Running the frontend
-
-Requires Node.js 22.12 or newer. From `frontend/`
-
-```bash
-npm install     # once, and again after dependencies change
-npm run dev     # start the dashboard
-```
-
-The dashboard asks you to sign in with Microsoft and then asks the API who you are, so the API must be running too. The dev server forwards `/api` to it on port 8000. Both read the root `.env`.
-
-### Testing the frontend
-
-```bash
-npm test        # run the tests in watch mode (press q to quit)
-npx vitest run  # run the tests once, e.g. before committing
-```
+The READMEs: [`backend`](backend/README.md) · [`backend/tests`](backend/tests/README.md) · [`backend/scripts`](backend/scripts/README.md) · [`backend/notebooks`](backend/notebooks/README.md) · [`data`](data/README.md) · [`docs`](docs/README.md) · [`frontend`](frontend/README.md) · [`frontend/src`](frontend/src/README.md).
 
 ## Documentation
 
 - [AI-FRAMEWORK.md](docs/AI-FRAMEWORK.md) — how the group uses AI agents on this project.
+- [entra-app-registration.md](docs/entra-app-registration.md) — setting up Microsoft sign-in and roles, for the customer.
 - [AGENTS.md](AGENTS.md) — project context for AI coding agents.
-- [CONTRIBUTING.md](CONTRIBUTING.md) — commit message and branch naming conventions.
+- [CONTRIBUTING.md](CONTRIBUTING.md) — commits, branches and the checks before a pull request.
 - [CODE-STYLE.md](CODE-STYLE.md) — code style best practices and conventions.
-
-### Project organization
-
-```
-|--.github
-|   |-- workflow
-|   |   |-- ci.yml
-|-- assets
-|-- docs
-|-- backend
-|   |-- src
-|   |   |-- ai
-|   |   |   |-- chunking
-|   |   |   |   |-- customized_chunking.py
-|   |   |   |   |-- fixed_chunking.py
-|   |   |   |   |-- heading_section.py
-|   |   |   |-- evaluation
-|   |   |   |   |-- ground_truth_evaluation.py
-|   |   |   |-- similarity_metrics
-|   |   |   |   |-- bm25_similarity.py
-|   |   |   |   |-- cosine_similarity.py
-|   |   |   |   |-- euclidean_similarity.py
-|   |   |   |   |-- shared_logic.py
-|   |   |   |   |-- tfidf_similarity.py
-|   |   |   |-- pdf_reader.py
-|   |   |-- db
-|   |   |   |-- create_db.py
-|   |   |   |-- get_info.py
-|   |   |   |-- mockup.py
-|   |   |   |-- update_info.py
-|   |   |   |-- upload_doc.py
-|   |   |   |-- upload_ia.py
-|-- frontend
-|-- tests
-|   |-- unit
-|   |   |-- db
-|   |   |   |-- test_db.py
-|-- visualization
-|   |-- customized_chunking.ipynb
-|   |-- fixed_chunking.ipynb
-|-- .gitignore
-|-- .gitmessage
-|-- AGENTS.md
-|-- CODING-STYLE.md
-|-- CONTRIBUTING.md
-|-- LICENSE
-|-- README.MD
-|-- requirements.txt
-|-- pyproject.toml
-```
-
-
-<<<<<<< HEAD
-```bash
-sudo apt install libpq-dev python3-dev
-pip install -r requirements.txt
-pip install -e .
-```
-
-Installs project dependencies, then installs the package itself in editable mode so local imports (`src.ai...`) work globally without path hacks.
-
-
-## Database
-### install dependencies
-``` bash
-sudo apt install postgresql
-sudo apt install libpq-dev python3-dev
-```
-in your venv:
-```bash
-pip install psycopg2
-pip install python-dotenv
-```
-
-### create a database
-to access the PostgreSQL environment
-The postgres user is normally created by default with the installation of the package
-```bash
-sudo -i -u postgres
-```
-Normally, you are now in a postgresql user : `postgres@<your usual environement>:~$`
-
-create the database : `createdb mockup`
-put a password if it doesn't exists : `alter user postgres with passeword '<a password>'` Remember this password, you will need it later !
-finally, you can enter the database : `psql mockup` It is normally empty and you are in a shell `mockup=#`
-
-When you have terminated with your work here, use `\q` to exit the database and `Ctrl+D` to exit your session.
-
-### Create the table and add data to the database
-First, create/update your .env file at the root of the project by adding :
-### for the database
-```
-DBNAME="mockup"
-DBUSER="postgres"
-DBPASSWORD=<your previous password>
-DBHOST="localhost"
-```
-
-Then start your venv and execute the python file :
-```bash
-python3 backend/src/db/create_db.py
-```
-
-Normally it should not fail. If you go to your database using the previous step, you should be able to see empty tables.
-
-```bash
-python3 backend/src/db/mockup.py 
-```
-
-Now, the database has some data, you can try to visualise them by executing some requests. Only leader, settings routine and question have data.
-
-Finally
-```bash
-python -m pytest tests/unit/db/
-```
-to run the tests. It should not fail.
-=======
-## Entra app registration (for customer only)
-
-The dashboard and the API use the same app registration. For sign-in from the dashboard to work, it needs:
-
-1. **Authentication** → add the platform *Single-page application* with the redirect URI `http://localhost:5173`.
-2. **Expose an API** → set the Application ID URI to `api://<client id>` and add a scope named `access_as_user`.
-3. **Manifest** → set `requestedAccessTokenVersion` to `2`. The API only accepts v2 tokens, whose audience is the client ID.
-4. **App roles** → create two roles for *Users/Groups*: `Admin` with the value `admin`, and `Bruker` with the value `user`.
-
-Who gets which role is managed under **Enterprise applications** → the app:
-
-- **Users and groups** → assign each user a role. A user with both roles counts as admin.
-- **Properties** → set **Assignment required?** to **Yes**, so users without a role cannot sign in at all.
-
-A user's role reaches the API inside the token, so a role change takes effect the next time they sign in.
->>>>>>> dev
