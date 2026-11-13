@@ -18,9 +18,7 @@ export function SignInView({ busy, failureMessage }: SignInViewProps) {
 
         {failureMessage === undefined ? (
           <>
-            <p className={styles.lead}>
-              Logg inn med jobbkontoen din i Trondheim kommune for å se kunnskapsgapene.
-            </p>
+            <p className={styles.lead}>Logg inn med jobbkontoen din i Trondheim kommune for å se kunnskapsgapene.</p>
             <Button
               variant="primary"
               disabled={busy}

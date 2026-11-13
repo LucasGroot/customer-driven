@@ -4,12 +4,7 @@
  * around it stays in English.
  */
 
-import {
-  GOOD_COVERAGE_FROM,
-  PARTIAL_COVERAGE_FROM,
-  type CoverageBand,
-  type PriorityBand,
-} from "./priority";
+import { GOOD_COVERAGE_FROM, PARTIAL_COVERAGE_FROM, type CoverageBand, type PriorityBand } from "./priority";
 import type { RoutineStatus } from "./types";
 
 export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {
@@ -18,10 +13,10 @@ export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {
   low: "Lav prioritet",
 };
 
-const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
-  weak: "Svak",
-  partial: "Delvis",
-  good: "God",
+export const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
+  weak: "Svak dekning",
+  partial: "Delvis dekning",
+  good: "God dekning",
 };
 
 const partialFrom = Math.round(PARTIAL_COVERAGE_FROM * 100);

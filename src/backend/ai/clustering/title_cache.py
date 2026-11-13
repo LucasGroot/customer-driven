@@ -10,7 +10,6 @@ import json
 import os
 from pathlib import Path
 
-
 TITLE_CACHE_PATH = Path(__file__).resolve().parents[4] / "data" / "processed" / "cluster_title_cache.json"
 
 

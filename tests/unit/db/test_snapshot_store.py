@@ -5,9 +5,8 @@ import pytest
 from cryptography.fernet import Fernet
 
 from backend.db.connection import get_conn
+from backend.db.create_db import SCHEMA
 from backend.db.snapshot_store import load_latest_snapshot, save_snapshot
-
-SCHEMA = open("src/backend/db/snapshot.sql", encoding="utf-8").read()  # SQL from database
 
 
 @pytest.fixture(autouse=True)

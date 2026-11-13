@@ -10,21 +10,31 @@ from backend.ai.evaluation.ground_truth_evaluation import evaluate, load_ground_
 
 
 def write_ground_truth(path, rows):
-    columns = ["servicenow_id", "service", "source_type", "correct_routine_ids", "other_relevant_routine_ids", "other_source"]
+    columns = [
+        "servicenow_id",
+        "service",
+        "source_type",
+        "correct_routine_ids",
+        "other_relevant_routine_ids",
+        "other_source",
+    ]
     pd.DataFrame(rows, columns=columns).to_csv(path, index=False)
     return path
 
 
 @pytest.fixture
 def ground_truth(tmp_path):
-    path = write_ground_truth(tmp_path / "ground_truth.csv", [
-        ["INC001", "Ferie", "routine", "1000-1", None, None],
-        ["INC002", "Sykefravær", "routine", "2000-1;9999-1", "3000-1", None],
-        ["INC003", "Personal", "no_source", None, None, None],
-        ["INC004", "Personal", "other_source", None, None, "HTA kap 4"],
-        ["INC005", "Personal", "unknown", None, None, None],
-        ["INC006", "Tilsetting", "routine", "9999-1", None, None],
-    ])
+    path = write_ground_truth(
+        tmp_path / "ground_truth.csv",
+        [
+            ["INC001", "Ferie", "routine", "1000-1", None, None],
+            ["INC002", "Sykefravær", "routine", "2000-1;9999-1", "3000-1", None],
+            ["INC003", "Personal", "no_source", None, None, None],
+            ["INC004", "Personal", "other_source", None, None, "HTA kap 4"],
+            ["INC005", "Personal", "unknown", None, None, None],
+            ["INC006", "Tilsetting", "routine", "9999-1", None, None],
+        ],
+    )
     return load_ground_truth(path)
 
 

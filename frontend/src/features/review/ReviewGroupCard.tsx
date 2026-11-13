@@ -18,9 +18,7 @@ interface ReviewGroupCardProps {
 /** A group of similar questions, decided on as one, or opened to decide on one question at a time. */
 export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps) {
   const { group, heading, items } = view;
-  const [chosenCode, setChosenCode] = useState<RoutineCode>(
-    mostCommonBestMatch(items) ?? heading.documentCode,
-  );
+  const [chosenCode, setChosenCode] = useState<RoutineCode>(mostCommonBestMatch(items) ?? heading.documentCode);
   const questionIds = items.map((item) => item.question.id);
 
   return (

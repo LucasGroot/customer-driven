@@ -16,7 +16,7 @@ async function send(method: "PUT" | "POST", url: string, accessToken: string, bo
 }
 
 export async function fetchReview(accessToken: string, signal?: AbortSignal): Promise<ReviewState> {
-  const response = await fetch("/api/review", { signal, headers: headers(accessToken) });
+  const response = await fetch("/api/review", { headers: headers(accessToken), ...(signal ? { signal } : {}) });
   if (!response.ok) throw new Error(`Backend svarte ${String(response.status)} på /api/review.`);
   return (await response.json()) as ReviewState;
 }

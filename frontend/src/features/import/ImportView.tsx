@@ -55,8 +55,7 @@ export function ImportView({ accessToken, onOpenRun }: ImportViewProps) {
           setOutcome(describeImport(result));
         },
         (error: unknown) => {
-          const message =
-            error instanceof ImportError ? error.message : "Opplastingen feilet. Prøv igjen senere.";
+          const message = error instanceof ImportError ? error.message : "Opplastingen feilet. Prøv igjen senere.";
           setOutcome({ kind: "failed", message });
         },
       )
@@ -75,21 +74,16 @@ export function ImportView({ accessToken, onOpenRun }: ImportViewProps) {
       <div className={styles.cards}>
         <Card title="ServiceNow-henvendelser">
           <p className={styles.description}>
-            Excel-fil (.xlsx) eksportert fra ServiceNow. Den erstatter forrige eksport. Kolonnene
-            «Kort beskrivelse» og «Beskrivelse» leses som spørsmålet.
+            Excel-fil (.xlsx) eksportert fra ServiceNow. Den erstatter forrige eksport. Kolonnene «Kort beskrivelse» og
+            «Beskrivelse» leses som spørsmålet.
           </p>
-          <FilePicker
-            buttonLabel="Velg Excel-fil"
-            accept=".xlsx"
-            files={questionFiles}
-            onChange={setQuestionFiles}
-          />
+          <FilePicker buttonLabel="Velg Excel-fil" accept=".xlsx" files={questionFiles} onChange={setQuestionFiles} />
         </Card>
 
         <Card title="Kvaliteket-rutiner">
           <p className={styles.description}>
-            PDF-filer med rutiner fra Kvaliteket. De legges til rutinene som allerede er lastet opp.
-            Rutiner som finnes fra før, hoppes over, så du kan velge hele mappen på nytt.
+            PDF-filer med rutiner fra Kvaliteket. De legges til rutinene som allerede er lastet opp. Rutiner som finnes
+            fra før, hoppes over, så du kan velge hele mappen på nytt.
           </p>
           <FilePicker
             buttonLabel="Velg PDF-filer"
@@ -107,9 +101,7 @@ export function ImportView({ accessToken, onOpenRun }: ImportViewProps) {
         </Button>
         {/* One element the whole time: screen readers often skip a status that appears with its text already in it */}
         <span className={outcome?.kind === "failed" ? styles.error : styles.hint} role="status">
-          {isUploading
-            ? "Laster opp …"
-            : (outcome?.message ?? "Filene lagres bare på dashbordets egen server.")}
+          {isUploading ? "Laster opp …" : (outcome?.message ?? "Filene lagres bare på dashbordets egen server.")}
         </span>
         {outcome?.kind === "saved" ? (
           <Button variant="link" onClick={onOpenRun}>

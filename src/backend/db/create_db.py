@@ -25,10 +25,12 @@ begin
 end;
 $$ language plpgsql;
 
+drop trigger if exists snapshot_append_only on snapshot;
 create trigger snapshot_append_only
     before update or delete on snapshot
     for each row execute function forbid_snapshot_change();
 
+drop trigger if exists snapshot_no_truncate on snapshot;
 create trigger snapshot_no_truncate
     before truncate on snapshot
     for each statement execute function forbid_snapshot_change();

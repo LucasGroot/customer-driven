@@ -11,12 +11,7 @@ interface ButtonProps {
 
 export function Button({ variant, onClick, disabled = false, children }: ButtonProps) {
   return (
-    <button
-      type="button"
-      className={classNames(styles.base, styles[variant])}
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <button type="button" className={classNames(styles.base, styles[variant])} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );

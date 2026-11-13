@@ -42,7 +42,11 @@ export function stubApi(answer: Answer = () => undefined) {
     vi.fn((url: string, init?: RequestInit) =>
       Promise.resolve(
         answer(url, init) ??
-          (url === "/api/snapshot" ? Response.json(sampleSnapshot) : Response.json({ state: "idle", completedSteps: 0 })),
+          (url === "/api/snapshot"
+            ? Response.json(sampleSnapshot)
+            : url === "/api/review"
+              ? Response.json({ owners: {}, decisions: {} })
+              : Response.json({ state: "idle", completedSteps: 0 })),
       ),
     ),
   );
@@ -70,7 +74,9 @@ export function openPage(label: string) {
 /** The first routine in the list, which the list page must be showing. */
 export function firstRoutineButton(): HTMLElement {
   const table = screen.getByRole("table");
-  const button = within(table).getAllByRole("button").find((candidate) => candidate.closest("tbody") !== null);
+  const button = within(table)
+    .getAllByRole("button")
+    .find((candidate) => candidate.closest("tbody") !== null);
   if (button === undefined) throw new Error("The sample has no routines in the list");
   return button;
 }

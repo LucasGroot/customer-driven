@@ -46,11 +46,7 @@ export function scoreBreakdown(stats: RoutineStats, allRoutines: RoutineStats[])
   };
 }
 
-export function priorityScore(
-  stats: RoutineStats,
-  weights: PriorityWeights,
-  allRoutines: RoutineStats[],
-): number {
+export function priorityScore(stats: RoutineStats, weights: PriorityWeights, allRoutines: RoutineStats[]): number {
   const weightSum = weights.volume + weights.coverage || 1;
   const factor = scoreBreakdown(stats, allRoutines);
   const weighted = factor.volume * weights.volume + factor.coverage * weights.coverage;
@@ -83,18 +79,6 @@ export function coverageBand(coverage: number): CoverageBand {
   if (percent < Math.round(PARTIAL_COVERAGE_FROM * 100)) return "weak";
   if (percent < Math.round(GOOD_COVERAGE_FROM * 100)) return "partial";
   return "good";
-}
-
-/**
- * Routines that answer their questions better than this are left out of the list by default.
- * It starts at 100 so nothing is hidden: real scores lie close together, so any lower cut-off
- * hides most routines until the scale has been calibrated.
- */
-export const DEFAULT_HIDE_ABOVE_PERCENT = 100;
-
-/** Whether a routine already answers its questions better than the cut-off. */
-export function isWellCovered(stats: RoutineStats, hideAbovePercent: number): boolean {
-  return stats.meanCoverage * 100 > hideAbovePercent;
 }
 
 export interface ScoredRoutine {

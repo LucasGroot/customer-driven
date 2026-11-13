@@ -3,4 +3,3 @@ export interface AnalysisStatus {
   completedSteps: number;
   error: string | null;
 }
-

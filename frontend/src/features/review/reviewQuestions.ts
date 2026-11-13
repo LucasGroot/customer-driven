@@ -60,16 +60,13 @@ export function groupPendingItems(items: ReviewItem[], groups: ReviewGroup[]): P
     const members = pending.filter((item) => item.question.groupId === group.id);
     const first = members[0];
     if (first === undefined) return [];
-    const heading =
-      members.find((item) => item.question.id === group.headingQuestionId) ?? first;
+    const heading = members.find((item) => item.question.id === group.headingQuestionId) ?? first;
     return [{ group, heading: heading.question, items: members }];
   });
 
   return {
     groups: views.sort((a, b) => b.items.length - a.items.length),
-    alone: pending.filter(
-      (item) => item.question.groupId === undefined || !groupIds.has(item.question.groupId),
-    ),
+    alone: pending.filter((item) => item.question.groupId === undefined || !groupIds.has(item.question.groupId)),
   };
 }
 

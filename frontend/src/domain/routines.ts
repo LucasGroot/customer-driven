@@ -17,14 +17,9 @@ export type DecisionOf = (questionId: QuestionId) => ReviewDecision | undefined;
 
 /** Where a question ends up once HR's decisions are applied. */
 export type Placement =
-  | { kind: "routine"; routineCode: RoutineCode; byHand: boolean }
-  | { kind: "pending" }
-  | { kind: "discarded" };
+  { kind: "routine"; routineCode: RoutineCode; byHand: boolean } | { kind: "pending" } | { kind: "discarded" };
 
-export function placementOf(
-  question: AskedQuestion,
-  decision: ReviewDecision | undefined,
-): Placement {
+export function placementOf(question: AskedQuestion, decision: ReviewDecision | undefined): Placement {
   if (decision?.kind === "discarded") return { kind: "discarded" };
   if (decision?.kind === "mapped") {
     return { kind: "routine", routineCode: decision.routineCode, byHand: true };
@@ -70,10 +65,7 @@ export interface RoutineStats {
 }
 
 /** The routines that have at least one question placed on them. */
-export function routinesWithQuestions(
-  snapshot: AnalysisSnapshot,
-  decisionOf: DecisionOf,
-): RoutineStats[] {
+export function routinesWithQuestions(snapshot: AnalysisSnapshot, decisionOf: DecisionOf): RoutineStats[] {
   const placedByRoutine = new Map<RoutineCode, PlacedQuestion[]>();
   for (const question of snapshot.questions) {
     const placement = placementOf(question, decisionOf(question.id));
@@ -88,14 +80,11 @@ export function routinesWithQuestions(
     const questions = placedByRoutine.get(routine.code);
     if (questions === undefined) return [];
     const totalCoverage = questions.reduce((sum, { coverage }) => sum + coverage, 0);
-    return [
-      { routine, questions, questionCount: questions.length, meanCoverage: totalCoverage / questions.length },
-    ];
+    return [{ routine, questions, questionCount: questions.length, meanCoverage: totalCoverage / questions.length }];
   });
 }
 
 export function countPendingQuestions(snapshot: AnalysisSnapshot, decisionOf: DecisionOf): number {
-  return snapshot.questions.filter(
-    (question) => placementOf(question, decisionOf(question.id)).kind === "pending",
-  ).length;
+  return snapshot.questions.filter((question) => placementOf(question, decisionOf(question.id)).kind === "pending")
+    .length;
 }

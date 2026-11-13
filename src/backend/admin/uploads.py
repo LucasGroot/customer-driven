@@ -6,6 +6,7 @@ error message.
 """
 
 import os
+import zipfile
 from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
@@ -24,8 +25,21 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 QUESTIONS_PATH = REPOSITORY_ROOT / "data" / "raw" / "serviceNow" / "serviceNow_questions.xlsx"
 ROUTINES_FOLDER = REPOSITORY_ROOT / "data" / "raw" / "kvaliteket"
 
+MEGABYTE = 1024 * 1024
+
+# The limits keep an upload from filling the server's memory or disk. They are
+# set well above the real data: the full Kvaliteket folder is about 140 PDFs and
+# 22 MB, no routine is over 5 MB, and a ServiceNow export unpacks to under 1 MB.
 MAX_FILE_MEGABYTES = 20
-MAX_FILE_BYTES = MAX_FILE_MEGABYTES * 1024 * 1024
+MAX_FILE_BYTES = MAX_FILE_MEGABYTES * MEGABYTE
+MAX_UPLOAD_MEGABYTES = 100
+MAX_UPLOAD_BYTES = MAX_UPLOAD_MEGABYTES * MEGABYTE
+MAX_ROUTINES_PER_UPLOAD = 300
+MAX_UNPACKED_MEGABYTES = 100
+MAX_UNPACKED_BYTES = MAX_UNPACKED_MEGABYTES * MEGABYTE
+MAX_STORED_ROUTINES_MEGABYTES = 500
+MAX_STORED_ROUTINES_BYTES = MAX_STORED_ROUTINES_MEGABYTES * MEGABYTE
+
 REQUIRED_QUESTION_COLUMNS = [QUESTION_ID_COLUMN, SERVICE_COLUMN, *TEXT_COLUMNS]
 
 # The first bytes of the file itself, so a renamed file of another type is caught
@@ -60,6 +74,22 @@ def check_size(file):
         raise UploadRejectedError("tooLarge", status_code=413, file=file.name, maxMegabytes=MAX_FILE_MEGABYTES)
 
 
+def check_unpacked_size(file):
+    """
+    Rejects an .xlsx that grows past the limit when it is read.
+    """
+
+    try:
+        with zipfile.ZipFile(BytesIO(file.content)) as archive:
+            unpacked_bytes = sum(entry.file_size for entry in archive.infolist())
+    except zipfile.BadZipFile:
+        raise UploadRejectedError("unreadable", file=file.name) from None
+    if unpacked_bytes > MAX_UNPACKED_BYTES:
+        raise UploadRejectedError(
+            "unpackedTooLarge", status_code=413, file=file.name, maxMegabytes=MAX_UNPACKED_MEGABYTES
+        )
+
+
 def check_questions(file):
     """
     Rejects anything but a ServiceNow export the analysis can read: an .xlsx
@@ -69,11 +99,12 @@ def check_questions(file):
     if not file.name.lower().endswith(".xlsx") or not file.content.startswith(XLSX_SIGNATURE):
         raise UploadRejectedError("wrongType", file=file.name, expected="xlsx")
     check_size(file)
+    check_unpacked_size(file)
 
     # Parsing an uploaded file can fail in many ways; any of them means it is unusable
     try:
         columns = pd.read_excel(BytesIO(file.content), nrows=0).columns
-    except Exception:
+    except Exception:  # noqa: BLE001
         raise UploadRejectedError("unreadable", file=file.name) from None
 
     missing = [column for column in REQUIRED_QUESTION_COLUMNS if column not in columns]
@@ -140,6 +171,18 @@ def split_new_routines(files):
     new_files = [file for file in files if routine_code(file.name) not in existing]
     skipped_names = sorted(file.name for file in files if routine_code(file.name) in existing)
     return new_files, skipped_names
+
+
+def check_routine_storage(new_files):
+    """
+    Rejects new routines that would take the routines folder past its limit.
+    """
+
+    stored_bytes = 0
+    if ROUTINES_FOLDER.exists():
+        stored_bytes = sum(path.stat().st_size for path in ROUTINES_FOLDER.iterdir() if path.is_file())
+    if stored_bytes + sum(len(file.content) for file in new_files) > MAX_STORED_ROUTINES_BYTES:
+        raise UploadRejectedError("storageFull", status_code=413, maxMegabytes=MAX_STORED_ROUTINES_MEGABYTES)
 
 
 def write_file(path, content):

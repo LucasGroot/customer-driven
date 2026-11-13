@@ -206,7 +206,9 @@
   border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text-soft);
-  transition: border-color 120ms ease, color 120ms ease;
+  transition:
+    border-color 120ms ease,
+    color 120ms ease;
 }
 
 .clusterToggle::before {
@@ -217,7 +219,9 @@
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
   transform: rotate(45deg);
-  transition: transform 150ms ease, margin-top 150ms ease;
+  transition:
+    transform 150ms ease,
+    margin-top 150ms ease;
 }
 
 .clusterSummary:hover .clusterToggle {

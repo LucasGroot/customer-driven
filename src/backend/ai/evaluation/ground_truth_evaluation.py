@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 
-
 EVALUATED_SOURCE_TYPES = ["routine", "other_source", "no_source"]
 
 _ROUTINE_ID_RE = re.compile(r"\d+-\d+")
@@ -96,28 +95,33 @@ def evaluate(scores, ground_truth):
     routine_questions = answerable_routine_questions(ground_truth, scores.columns)
     no_routine_questions = ground_truth[~ground_truth["has_routine"]]
 
-    ranks = pd.Series([
-        rank_of_first_relevant_routine(scores.loc[question_id], relevant_routine_ids)
-        for question_id, relevant_routine_ids in routine_questions["relevant_routine_ids"].items()
-    ], dtype=float)
+    ranks = pd.Series(
+        [
+            rank_of_first_relevant_routine(scores.loc[question_id], relevant_routine_ids)
+            for question_id, relevant_routine_ids in routine_questions["relevant_routine_ids"].items()
+        ],
+        dtype=float,
+    )
 
     top_scores = scores.max(axis=1)
     top_scores_routine = top_scores[routine_questions.index]
     top_scores_no_routine = top_scores[no_routine_questions.index]
 
-    return pd.Series({
-        "hit_at_1": (ranks <= 1).mean(),
-        "hit_at_3": (ranks <= 3).mean(),
-        "hit_at_5": (ranks <= 5).mean(),
-        "hit_at_10": (ranks <= 10).mean(),
-        "mrr": (1 / ranks).mean(),
-        "gap_auc": gap_detection_auc(top_scores_routine, top_scores_no_routine),
-        "mean_top_score_routine": top_scores_routine.mean(),
-        "mean_top_score_no_routine": top_scores_no_routine.mean(),
-        "routine_questions": len(routine_questions),
-        "no_routine_questions": len(no_routine_questions),
-        "skipped_missing_routine": int(ground_truth["has_routine"].sum() - len(routine_questions)),
-    })
+    return pd.Series(
+        {
+            "hit_at_1": (ranks <= 1).mean(),
+            "hit_at_3": (ranks <= 3).mean(),
+            "hit_at_5": (ranks <= 5).mean(),
+            "hit_at_10": (ranks <= 10).mean(),
+            "mrr": (1 / ranks).mean(),
+            "gap_auc": gap_detection_auc(top_scores_routine, top_scores_no_routine),
+            "mean_top_score_routine": top_scores_routine.mean(),
+            "mean_top_score_no_routine": top_scores_no_routine.mean(),
+            "routine_questions": len(routine_questions),
+            "no_routine_questions": len(no_routine_questions),
+            "skipped_missing_routine": int(ground_truth["has_routine"].sum() - len(routine_questions)),
+        }
+    )
 
 
 def gap_detection_auc(top_scores_routine, top_scores_no_routine):

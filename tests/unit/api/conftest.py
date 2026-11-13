@@ -9,12 +9,19 @@ import jwt
 import pytest
 from cryptography.hazmat.primitives.asymmetric import rsa
 
+from backend.api import audit_log
 from backend.api.config import Settings
 
 TENANT = "11111111-1111-1111-1111-111111111111"
 CLIENT = "33333333-3333-3333-3333-333333333333"
 
 SIGNING_KEY = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+
+
+@pytest.fixture(autouse=True)
+def temporary_audit_log(tmp_path, monkeypatch):
+    """Every app made in a test logs to a temporary file, never to logs/."""
+    monkeypatch.setattr(audit_log, "AUDIT_LOG_PATH", tmp_path / "audit.jsonl")
 
 
 @pytest.fixture

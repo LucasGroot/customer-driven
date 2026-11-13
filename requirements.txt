@@ -4,6 +4,8 @@ sentence-transformers
 pandas
 openpyxl
 pytest
+# Pinned, since the rules Ruff checks by default change between versions
+ruff==0.17.5
 rank_bm25
 scikit-learn
 fastapi

@@ -19,7 +19,6 @@ from backend.snapshot.models import (
     RoutineDocument,
 )
 
-
 ROUTINE_FILENAME_PATTERN = re.compile(r"^(\d{4}-\d+)-(.+)$")
 MAX_QUESTION_CHARACTERS = 500
 # On the ground truth the right routine is among the top 10 for 94 % of the questions
@@ -27,8 +26,18 @@ CANDIDATES_PER_QUESTION = 10
 NO_OWNER = "Ikke tildelt"
 UNKNOWN_CATEGORY = "Ukjent"
 NORWEGIAN_MONTHS = [
-    "januar", "februar", "mars", "april", "mai", "juni",
-    "juli", "august", "september", "oktober", "november", "desember",
+    "januar",
+    "februar",
+    "mars",
+    "april",
+    "mai",
+    "juni",
+    "juli",
+    "august",
+    "september",
+    "oktober",
+    "november",
+    "desember",
 ]
 NORWEGIAN_MONTHS_SHORT = ["jan", "feb", "mar", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "des"]
 
@@ -148,8 +157,9 @@ def best_candidates(question_scores):
     ]
 
 
-def build_snapshot(questions, scores, last_run, questions_uploaded, routines_uploaded,
-                   review_groups=(), routine_clusters=None):
+def build_snapshot(
+    questions, scores, last_run, questions_uploaded, routines_uploaded, review_groups=(), routine_clusters=None
+):
     """
     Builds the snapshot for one analysis run.
     questions is indexed by question ID with the columns Tjenestetilbud and text,

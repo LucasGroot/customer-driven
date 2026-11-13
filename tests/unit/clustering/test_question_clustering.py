@@ -34,7 +34,7 @@ def test_questions_about_different_things_never_share_a_theme():
 
     labels = cluster_questions(embeddings)
 
-    themes = [set(labels[start:start + 8]) - {NOISE_LABEL} for start in (0, 8, 16)]
+    themes = [set(labels[start : start + 8]) - {NOISE_LABEL} for start in (0, 8, 16)]
     assert all(len(group) >= 1 for group in themes)
     assert themes[0].isdisjoint(themes[1]) and themes[0].isdisjoint(themes[2]) and themes[1].isdisjoint(themes[2])
 

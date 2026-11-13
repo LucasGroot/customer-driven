@@ -1,12 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  coverageBand,
-  isWellCovered,
-  priorityBand,
-  priorityScore,
-  rankRoutines,
-  scoreBreakdown,
-} from "./priority";
+import { coverageBand, priorityBand, priorityScore, rankRoutines, scoreBreakdown } from "./priority";
 import type { RoutineStats } from "./routines";
 import type { PriorityWeights } from "./types";
 
@@ -63,9 +56,7 @@ describe("priorityScore", () => {
   });
 
   it("weights each factor by its share of the total weight", () => {
-    expect(priorityScore(BUSY_BUT_POORLY_COVERED, ONLY_VOLUME, THREE_ROUTINES)).toBe(
-      Math.round((5 / 6) * 100),
-    );
+    expect(priorityScore(BUSY_BUT_POORLY_COVERED, ONLY_VOLUME, THREE_ROUTINES)).toBe(Math.round((5 / 6) * 100));
     expect(priorityScore(MIDDLE, ONLY_COVERAGE, THREE_ROUTINES)).toBe(50);
   });
 
@@ -132,12 +123,5 @@ describe("rankRoutines", () => {
   it("leaves the input list in its original order", () => {
     rankRoutines(routines, EVEN_WEIGHTS);
     expect(routines.map((stats) => stats.routine.code)).toEqual(["low", "high", "mid"]);
-  });
-});
-
-describe("coverage cut-off", () => {
-  it("counts a routine as well covered only above the cut-off", () => {
-    expect(isWellCovered(makeStats(1, 0.71), 70)).toBe(true);
-    expect(isWellCovered(makeStats(1, 0.7), 70)).toBe(false);
   });
 });

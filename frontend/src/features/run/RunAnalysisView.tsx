@@ -62,22 +62,13 @@ export function RunAnalysisView({ snapshot, run, canRun }: RunAnalysisViewProps)
             const done = run.completedSteps > index;
             const active = run.completedSteps === index && run.isRunning;
             return (
-              <li
-                key={label}
-                className={classNames(
-                  styles.step,
-                  done && styles.stepDone,
-                  active && styles.stepActive,
-                )}
-              >
+              <li key={label} className={classNames(styles.step, done && styles.stepDone, active && styles.stepActive)}>
                 <span className={styles.stepMark} aria-hidden="true">
                   {done ? "✓" : active ? "·" : ""}
                 </span>
                 <span>{label}</span>
                 {/* The mark and colour only show the state to those who can see them */}
-                <span className="visuallyHidden">
-                  {done ? " – ferdig" : active ? " – pågår" : " – venter"}
-                </span>
+                <span className="visuallyHidden">{done ? " – ferdig" : active ? " – pågår" : " – venter"}</span>
               </li>
             );
           })}

@@ -29,10 +29,9 @@ export function AboutView({ openTopic }: AboutViewProps) {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     question.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
     if (!reduceMotion) {
-      question.animate(
-        [{ background: "var(--color-blue-100)" }, { background: "transparent" }],
-        { duration: HIGHLIGHT_MS },
-      );
+      question.animate([{ background: "var(--color-blue-100)" }, { background: "transparent" }], {
+        duration: HIGHLIGHT_MS,
+      });
     }
   }, [openTopic]);
 

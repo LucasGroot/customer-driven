@@ -104,6 +104,4 @@ export interface PriorityWeights {
 export type RoutineStatus = "unprocessed" | "in-progress";
 
 /** What HR decided about a question the analysis could not place. */
-export type ReviewDecision =
-  | { kind: "discarded" }
-  | { kind: "mapped"; routineCode: RoutineCode };
+export type ReviewDecision = { kind: "discarded" } | { kind: "mapped"; routineCode: RoutineCode };

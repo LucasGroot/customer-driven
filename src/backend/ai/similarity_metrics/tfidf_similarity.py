@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from backend.ai.similarity_metrics.shared_logic import top_k_per_routine, _check_k, tokenize
+from backend.ai.similarity_metrics.shared_logic import _check_k, tokenize, top_k_per_routine
 
 
 def tf_idf_similarity(corpus, k=3):

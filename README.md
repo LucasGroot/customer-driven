@@ -65,6 +65,18 @@ cd frontend && npm run dev
 
 The dashboard asks the API for its data, so the API has to be running.
 
+### Running with Docker
+
+The API and the dashboard also run as containers, with no Python or Node.js on your machine. Fill in `.env` as in step 3 above, and add `http://localhost:8080` as a single-page application redirect URI in the Entra app registration. Then:
+
+```bash
+docker compose up --build
+```
+
+Open <http://localhost:8080>. The first build takes a while, because it downloads the embedding model into the image. The Entra IDs are built into the dashboard, so run `docker compose build` again if you change them.
+
+Uploaded data, the analysis output and the audit log live in Docker volumes, never in the images. `docker compose down` keeps them; `docker compose down -v` deletes them.
+
 ### Updating the data
 
 Users with the admin role can update the data from the dashboard:
@@ -108,7 +120,18 @@ Without a snapshot the API serves the bundled sample, and the dashboard says "Ek
 .venv/bin/python -m pytest   # backend
 cd frontend && npx vitest run   # frontend, once
 cd frontend && npm test         # frontend, in watch mode (press q to quit)
+```
+
 Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data, behind Microsoft sign-in.
+
+### Linting and formatting
+
+```bash
+.venv/bin/ruff check --fix . && .venv/bin/ruff format .   # backend: fix and format, from the project root
+cd frontend && npm run lint:fix                           # frontend: fix and format
+```
+
+CI fails if either finds something to fix. In VS Code, install the recommended extensions (Ruff, ESLint and Prettier) to have files fixed and formatted on save.
 
 ## How to install
 

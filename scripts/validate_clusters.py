@@ -22,7 +22,6 @@ from backend.ai.evaluation.cluster_validation import routine_pair_agreement, rou
 from backend.ai.evaluation.ground_truth_evaluation import load_ground_truth
 from backend.ai.similarity_metrics.shared_logic import extract_questions
 
-
 SUBSAMPLE_RUNS = 500
 SUBSAMPLE_SHARE = 0.8
 SHUFFLE_RUNS = 200
@@ -81,9 +80,14 @@ def shuffled_f1(labels, relevant_routine_ids):
     """
     random = np.random.default_rng(RANDOM_SEED)
 
-    return float(np.mean([
-        routine_pair_agreement(random.permutation(labels), relevant_routine_ids)["f1"] for _ in range(SHUFFLE_RUNS)
-    ]))
+    return float(
+        np.mean(
+            [
+                routine_pair_agreement(random.permutation(labels), relevant_routine_ids)["f1"]
+                for _ in range(SHUFFLE_RUNS)
+            ]
+        )
+    )
 
 
 def evaluate_strategy(cluster, embeddings, questions, ground_truth):
@@ -121,9 +125,13 @@ def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx", ground_
     """
     questions = extract_questions(questions_path)
     ground_truth = load_ground_truth(ground_truth_path)
-    embeddings = SentenceTransformer(CLUSTERING_MODEL_NAME).encode(questions["text"].tolist(), normalize_embeddings=True)
+    embeddings = SentenceTransformer(CLUSTERING_MODEL_NAME).encode(
+        questions["text"].tolist(), normalize_embeddings=True
+    )
 
-    rows = {name: evaluate_strategy(cluster, embeddings, questions, ground_truth) for name, cluster in strategies().items()}
+    rows = {
+        name: evaluate_strategy(cluster, embeddings, questions, ground_truth) for name, cluster in strategies().items()
+    }
 
     print(f"{len(questions)} questions, {len(ground_truth)} with a ground truth")
     print(pd.DataFrame(rows).T.round(2).to_string())

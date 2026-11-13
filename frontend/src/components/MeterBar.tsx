@@ -5,17 +5,17 @@ interface MeterBarProps {
   /** Fill level, 0-1. */
   value: number;
   color: string;
-  thick?: boolean;
+  size?: "thin" | "thick" | "large";
 }
 
 /**
  * Decorative by design: every meter in the dashboard sits next to the same
  * number in text, so announcing it twice would only add noise.
  */
-export function MeterBar({ value, color, thick = false }: MeterBarProps) {
+export function MeterBar({ value, color, size = "thin" }: MeterBarProps) {
   const percent = Math.round(Math.min(1, Math.max(0, value)) * 100);
   return (
-    <div className={thick ? classNames(styles.track, styles.thick) : styles.track} aria-hidden="true">
+    <div className={classNames(styles.track, styles[size])} aria-hidden="true">
       <div className={styles.fill} style={{ width: `${String(percent)}%`, background: color }} />
     </div>
   );

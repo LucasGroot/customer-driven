@@ -89,9 +89,7 @@ describe("routinesWithQuestions", () => {
   });
 
   it("leaves out routines that no question belongs to", () => {
-    const codes = routinesWithQuestions(makeSnapshot(questions), NO_DECISIONS).map(
-      (stats) => stats.routine.code,
-    );
+    const codes = routinesWithQuestions(makeSnapshot(questions), NO_DECISIONS).map((stats) => stats.routine.code);
     expect(codes).not.toContain("C");
   });
 
@@ -102,9 +100,7 @@ describe("routinesWithQuestions", () => {
     );
 
     const routineC = routines.find((stats) => stats.routine.code === "C");
-    expect(routineC?.questions.map(({ question, byHand }) => [question.id, byHand])).toEqual([
-      ["4", true],
-    ]);
+    expect(routineC?.questions.map(({ question, byHand }) => [question.id, byHand])).toEqual([["4", true]]);
     expect(routineC?.meanCoverage).toBeCloseTo(0.1);
   });
 
@@ -129,10 +125,7 @@ describe("routinesWithQuestions", () => {
   });
 
   it("drops discarded questions from the routine they matched", () => {
-    const routines = routinesWithQuestions(
-      makeSnapshot(questions),
-      decisionsFrom({ "1": { kind: "discarded" } }),
-    );
+    const routines = routinesWithQuestions(makeSnapshot(questions), decisionsFrom({ "1": { kind: "discarded" } }));
     expect(routines[0]?.questionCount).toBe(1);
   });
 });

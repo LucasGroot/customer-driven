@@ -4,11 +4,7 @@
  */
 
 import type { AboutTopic } from "../../domain/aboutTopics";
-import {
-  DEFAULT_WEIGHTS,
-  GOOD_COVERAGE_FROM,
-  PARTIAL_COVERAGE_FROM,
-} from "../../domain/priority";
+import { DEFAULT_WEIGHTS, GOOD_COVERAGE_FROM, PARTIAL_COVERAGE_FROM } from "../../domain/priority";
 import type { AboutIconName } from "./AboutIcon";
 
 const partialFrom = Math.round(PARTIAL_COVERAGE_FROM * 100);
@@ -79,7 +75,7 @@ export const FAQ_SECTIONS: Section[] = [
         topic: "bands",
         question: "Hva betyr Svak, Delvis og God dekning?",
         answer: [
-          `Dekning under ${String(partialFrom)} % regnes som Svak, ${String(partialFrom)}–${String(goodFrom - 1)} % som Delvis og ${String(goodFrom)} % eller høyere som God. Grensene deler henvendelsene som er knyttet til en rutine i tre omtrent like store grupper, så nivåene sier hvor en henvendelse ligger i forhold til de andre, ikke om rutinen svarer fullt ut. Har du innspill til grensene, kan du kontakte oss på admin@kvaliteket.no.`,
+          `Dekning under ${String(partialFrom)} % regnes som Svak, ${String(partialFrom)}–${String(goodFrom - 1)} % som Delvis og ${String(goodFrom)} % eller høyere som God. Grensene deler henvendelsene som er knyttet til en rutine i tre omtrent like store grupper, så nivåene sier hvor en henvendelse ligger i forhold til de andre, ikke om rutinen svarer fullt ut.`,
         ],
       },
     ],

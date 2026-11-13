@@ -1,13 +1,21 @@
+import { useEffect } from "react";
 import { Button } from "../../components/Button";
+import { classNames } from "../../components/classNames";
 import { FilterPill } from "../../components/FilterPill";
-import { NumberField } from "../../components/NumberField";
 import { PageIntro } from "../../components/PageIntro";
+import { MultiSelectField } from "../../components/MultiSelectField";
 import type { SortState } from "../../components/sort";
-import { rankRoutines } from "../../domain/priority";
+import { rankRoutines, type CoverageBand } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
 import type { PriorityWeights, RoutineCode } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
-import { ROUTINE_FILTERS, filterRoutines, hideWellCovered, type RoutineFilter } from "./routineFilters";
+import {
+  COVERAGE_FILTER_OPTIONS,
+  ROUTINE_FILTERS,
+  filterByCoverage,
+  filterRoutines,
+  type RoutineFilter,
+} from "./routineFilters";
 import { RoutineTable } from "./RoutineTable";
 import styles from "./OverviewView.module.css";
 
@@ -18,8 +26,11 @@ interface OverviewViewProps {
   review: RoutineReview;
   filter: RoutineFilter;
   onFilterChange: (filter: RoutineFilter) => void;
-  hideAbovePercent: number;
-  onHideAboveChange: (percent: number) => void;
+  /** Pulses the selected status pill, to show where a click on the summary page landed. */
+  highlightStatusFilter: boolean;
+  onHighlightShown: () => void;
+  coverageFilter: CoverageBand[];
+  onCoverageFilterChange: (bands: CoverageBand[]) => void;
   sort: SortState | null;
   onSortChange: (sortKey: string) => void;
   onResetSort: () => void;
@@ -35,8 +46,10 @@ export function OverviewView({
   review,
   filter,
   onFilterChange,
-  hideAbovePercent,
-  onHideAboveChange,
+  highlightStatusFilter,
+  onHighlightShown,
+  coverageFilter,
+  onCoverageFilterChange,
   sort,
   onSortChange,
   onResetSort,
@@ -44,10 +57,18 @@ export function OverviewView({
   onOpenReview,
   onOpenSettings,
 }: OverviewViewProps) {
-  const ranked = rankRoutines(routines, weights);
-  const shown = hideWellCovered(ranked, hideAbovePercent);
-  const hiddenCount = ranked.length - shown.length;
-  const visible = filterRoutines(shown, filter, review.statusOf);
+  useEffect(() => {
+    if (!highlightStatusFilter) return;
+    // Matches the length of the pulse animation (three 1 s rounds)
+    const timer = setTimeout(onHighlightShown, 3000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [highlightStatusFilter, onHighlightShown]);
+
+  // Filtered after ranking so a routine keeps its overall rank number
+  const inCoverageBand = filterByCoverage(rankRoutines(routines, weights), coverageFilter);
+  const visible = filterRoutines(inCoverageBand, filter, review.statusOf);
 
   return (
     <section className={styles.view}>
@@ -62,11 +83,15 @@ export function OverviewView({
       </div>
 
       <div className={styles.filters}>
-        <div className={styles.filterPills} role="group" aria-label="Filtrer rutinene">
+        <div
+          className={classNames(styles.filterPills, highlightStatusFilter && styles.highlight)}
+          role="group"
+          aria-label="Filtrer rutinene"
+        >
           {ROUTINE_FILTERS.map((option) => (
             <FilterPill
               key={option.key}
-              label={`${option.label} · ${String(filterRoutines(shown, option.key, review.statusOf).length)}`}
+              label={`${option.label} · ${String(filterRoutines(inCoverageBand, option.key, review.statusOf).length)}`}
               selected={filter === option.key}
               onSelect={() => {
                 onFilterChange(option.key);
@@ -74,34 +99,21 @@ export function OverviewView({
             />
           ))}
         </div>
-        <div className={styles.hideAbove}>
-          <NumberField
-            label="Skjul rutiner med snittdekning over"
-            value={hideAbovePercent}
-            min={0}
-            max={100}
-            step={5}
-            suffix="%"
-            onChange={onHideAboveChange}
+        <div className={styles.coverageFilter}>
+          <MultiSelectField
+            label="Filter"
+            selected={coverageFilter}
+            options={COVERAGE_FILTER_OPTIONS}
+            noneSelectedLabel="Alle"
+            onChange={onCoverageFilterChange}
           />
-          {/* Reads out what a new limit did; the note below shows the same to sighted users */}
-          <span className="visuallyHidden" role="status">
-            {hiddenCount} {hiddenCount === 1 ? "rutine" : "rutiner"} skjult
-          </span>
         </div>
       </div>
 
-      {hiddenCount > 0 ? (
-        <p className={styles.hiddenNote}>
-          {hiddenCount} {hiddenCount === 1 ? "rutine er" : "rutiner er"} skjult fordi de svarer
-          godt på henvendelsene sine, med snittdekning over {hideAbovePercent} %.
-        </p>
-      ) : null}
-
       {pendingCount > 0 ? (
         <p className={styles.hiddenNote}>
-          {pendingCount} {pendingCount === 1 ? "henvendelse passer" : "henvendelser passer"} ikke
-          til noen rutine og venter på gjennomgang.{" "}
+          {pendingCount} {pendingCount === 1 ? "henvendelse passer" : "henvendelser passer"} ikke til noen rutine og
+          venter på gjennomgang.{" "}
           <Button variant="link" onClick={onOpenReview}>
             Gå til gjennomgang
           </Button>
@@ -127,9 +139,9 @@ export function OverviewView({
       />
 
       <p className={styles.footnote}>
-        Rangeringen bygger på to ting: hvor mange henvendelser som er knyttet til rutinen, og hvor
-        dårlig rutinen treffer dem. Begge sammenlignes med de andre rutinene og teller like mye. Klikk
-        på en rutine for å se henvendelsene og regnestykket i klartekst.
+        Rangeringen bygger på to ting: hvor mange henvendelser som er knyttet til rutinen, og hvor dårlig rutinen
+        treffer dem. Begge sammenlignes med de andre rutinene og teller like mye. Klikk på en rutine for å se
+        henvendelsene og regnestykket i klartekst.
       </p>
     </section>
   );

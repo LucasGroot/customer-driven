@@ -10,15 +10,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import axe from "axe-core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App";
-import {
-  ADMIN,
-  PAGES,
-  firstRoutineButton,
-  openDashboard,
-  openPage,
-  resetPage,
-  stubApi,
-} from "./dashboardTestSupport";
+import { ADMIN, PAGES, firstRoutineButton, openDashboard, openPage, resetPage, stubApi } from "./dashboardTestSupport";
 
 // Rules axe counts as good practice rather than WCAG, so the WCAG run leaves them out
 const STRUCTURE_RULES = [
@@ -34,7 +26,8 @@ const STRUCTURE_RULES = [
 async function structureViolations(): Promise<string[]> {
   const results = await axe.run(document, { runOnly: { type: "rule", values: STRUCTURE_RULES } });
   return results.violations.map(
-    (violation) => `${violation.id}: ${violation.help} (${violation.nodes.map((node) => node.target.join(" ")).join(", ")})`,
+    (violation) =>
+      `${violation.id}: ${violation.help} (${violation.nodes.map((node) => node.target.join(" ")).join(", ")})`,
   );
 }
 
@@ -141,9 +134,7 @@ describe("what a screen reader is told", () => {
 
   it("announces an upload the backend refuses, in words that say what to do", async () => {
     stubApi((url) =>
-      url === "/api/admin/import"
-        ? Response.json({ detail: { reason: "unreadable" } }, { status: 400 })
-        : undefined,
+      url === "/api/admin/import" ? Response.json({ detail: { reason: "unreadable" } }, { status: 400 }) : undefined,
     );
     await openDashboard();
     openPage("Importer data");
