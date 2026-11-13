@@ -1,0 +1,24 @@
+services:
+  api:
+    build: .
+    env_file: .env
+    volumes:
+      - raw-data:/app/data/raw
+      - processed-data:/app/data/processed
+      - logs:/app/logs
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_ENTRA_TENANT_ID: ${VITE_ENTRA_TENANT_ID}
+        VITE_ENTRA_CLIENT_ID: ${VITE_ENTRA_CLIENT_ID}
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  raw-data:
+  processed-data:
+  logs:
