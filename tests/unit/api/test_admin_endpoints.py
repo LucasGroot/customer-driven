@@ -143,6 +143,63 @@ def test_starts_one_analysis_at_a_time_and_blocks_imports_meanwhile(client, admi
     assert upload.json()["detail"] == {"reason": "analysisRunning"}
 
 
+def test_rejects_more_routines_than_one_upload_may_hold(client, admin, monkeypatch):
+    monkeypatch.setattr(uploads, "MAX_ROUTINES_PER_UPLOAD", 2)
+
+    response = client.post(
+        "/api/admin/import",
+        headers=admin,
+        files=[routine("1760-1-Vernerunde.pdf"), routine("1800-2-Ferie.pdf"), routine("1900-1-Lønn.pdf")],
+    )
+
+    assert response.status_code == 413
+    assert response.json()["detail"] == {"reason": "tooManyFiles", "maxFiles": 2}
+    assert not uploads.ROUTINES_FOLDER.exists()
+
+
+def test_turns_away_a_large_upload_before_checking_who_sent_it(client, monkeypatch):
+    monkeypatch.setattr(uploads, "MAX_UPLOAD_BYTES", 100)
+
+    response = client.post("/api/admin/import", files=[routine("1760-1-Vernerunde.pdf"), routine("1800-2-Ferie.pdf")])
+
+    # 413 and not 401: the request was refused before its body or its token was read
+    assert response.status_code == 413
+    assert response.json()["detail"] == {"reason": "uploadTooLarge", "maxMegabytes": uploads.MAX_UPLOAD_MEGABYTES}
+
+
+def test_dashboard_can_read_why_a_large_upload_was_turned_away(client, admin, settings, monkeypatch):
+    monkeypatch.setattr(uploads, "MAX_UPLOAD_BYTES", 100)
+
+    response = client.post(
+        "/api/admin/import",
+        headers={**admin, "Origin": settings.allowed_origin},
+        files=[routine("1760-1-Vernerunde.pdf"), routine("1800-2-Ferie.pdf")],
+    )
+
+    assert response.status_code == 413
+    assert response.headers["access-control-allow-origin"] == settings.allowed_origin
+
+
+def test_turns_away_an_upload_that_does_not_state_its_size(client, admin):
+    def chunks():
+        yield b"--boundary\r\n"
+
+    response = client.post(
+        "/api/admin/import",
+        headers={**admin, "Content-Type": "multipart/form-data; boundary=boundary"},
+        content=chunks(),
+    )
+
+    assert response.status_code == 411
+    assert response.json()["detail"] == {"reason": "lengthRequired"}
+
+
+def test_leaves_other_methods_on_the_import_path_to_the_router(client, admin):
+    response = client.get("/api/admin/import", headers=admin)
+
+    assert response.status_code == 405
+
+
 def test_records_who_uploaded_which_files(client, admin):
     export = servicenow_export()
 

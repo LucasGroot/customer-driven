@@ -23,6 +23,15 @@ describe("importErrorMessage", () => {
     expect(message).toBe("Excel-filen mangler kolonnene «Nummer», «Beskrivelse».");
   });
 
+  it("gives the limit when an upload is too large or holds too many routines", () => {
+    expect(importErrorMessage(413, { reason: "uploadTooLarge", maxMegabytes: 100 })).toBe(
+      "Filene er for store til sammen. Last opp høyst 100 MB om gangen.",
+    );
+    expect(importErrorMessage(413, { reason: "tooManyFiles", maxFiles: 300 })).toBe(
+      "Du har valgt for mange rutiner. Last opp høyst 300 om gangen.",
+    );
+  });
+
   it("explains a refusal for someone who is not an administrator", () => {
     expect(importErrorMessage(403, undefined)).toBe("Du har ikke tilgang til å laste opp data.");
   });
@@ -40,6 +49,33 @@ describe("uploadData", () => {
     const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect((init.body as FormData).getAll("routines")).toEqual([routine]);
     expect((init.body as FormData).has("questions")).toBe(false);
+  });
+
+  it("stops an upload with too many routines before sending it", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const routines = Array.from({ length: 301 }, (_, index) => new File(["%PDF-"], `${String(index)}-1-Rutine.pdf`));
+
+    await expect(uploadData("token", undefined, routines)).rejects.toThrow(
+      "Du har valgt for mange rutiner. Last opp høyst 300 om gangen.",
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("stops an upload over the total size before sending it", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    // Ten files of 15 MB: each under the limit for one file, together over the total
+    const routines = Array.from({ length: 10 }, (_, index) => {
+      const file = new File([], `${String(index)}-1-Rutine.pdf`);
+      Object.defineProperty(file, "size", { value: 15 * 1024 * 1024 });
+      return file;
+    });
+
+    await expect(uploadData("token", undefined, routines)).rejects.toThrow(
+      "Filene er for store til sammen. Last opp høyst 100 MB om gangen.",
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("rejects with the administrator's message when the backend refuses", async () => {

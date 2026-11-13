@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.admin.analysis_run import AnalysisRunner
 from backend.admin.router import router as admin_router
+from backend.admin.upload_limit import UploadSizeLimit
 from backend.api.audit_log import AuditLog
 from backend.api.auth import CurrentUser
 from backend.api.config import Settings
@@ -30,6 +31,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     app = FastAPI(title="Kunnskapsgap API")
     app.dependency_overrides[get_settings] = lambda: settings
+    # Added before CORS, so CORS wraps it and the dashboard can read its refusals
+    app.add_middleware(UploadSizeLimit)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[settings.allowed_origin],
