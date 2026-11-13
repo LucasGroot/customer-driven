@@ -51,6 +51,33 @@ describe("uploadData", () => {
     expect((init.body as FormData).has("questions")).toBe(false);
   });
 
+  it("stops an upload with too many routines before sending it", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const routines = Array.from({ length: 301 }, (_, index) => new File(["%PDF-"], `${String(index)}-1-Rutine.pdf`));
+
+    await expect(uploadData("token", undefined, routines)).rejects.toThrow(
+      "Du har valgt for mange rutiner. Last opp høyst 300 om gangen.",
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("stops an upload over the total size before sending it", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    // Ten files of 15 MB: each under the limit for one file, together over the total
+    const routines = Array.from({ length: 10 }, (_, index) => {
+      const file = new File([], `${String(index)}-1-Rutine.pdf`);
+      Object.defineProperty(file, "size", { value: 15 * 1024 * 1024 });
+      return file;
+    });
+
+    await expect(uploadData("token", undefined, routines)).rejects.toThrow(
+      "Filene er for store til sammen. Last opp høyst 100 MB om gangen.",
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("rejects with the administrator's message when the backend refuses", async () => {
     const refusal = { detail: { reason: "analysisRunning" } };
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json(refusal, { status: 409 })));

@@ -184,3 +184,9 @@ def test_turns_away_an_upload_that_does_not_state_its_size(client, admin):
 
     assert response.status_code == 411
     assert response.json()["detail"] == {"reason": "lengthRequired"}
+
+
+def test_leaves_other_methods_on_the_import_path_to_the_router(client, admin):
+    response = client.get("/api/admin/import", headers=admin)
+
+    assert response.status_code == 405

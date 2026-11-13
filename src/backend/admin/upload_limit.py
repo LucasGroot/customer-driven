@@ -22,7 +22,7 @@ class UploadSizeLimit:
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] == "http" and scope["path"] == IMPORT_PATH:
+        if scope["type"] == "http" and scope["method"] == "POST" and scope["path"] == IMPORT_PATH:
             refusal = self.refusal(dict(scope["headers"]))
             if refusal is not None:
                 await refusal(scope, receive, send)
