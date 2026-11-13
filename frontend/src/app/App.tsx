@@ -4,7 +4,8 @@ import { OpenAboutContext } from "../components/AboutLink";
 import type { AboutTopic } from "../domain/aboutTopics";
 import { AboutView } from "../features/about/AboutView";
 import { ImportView } from "../features/import/ImportView";
-import type { CoverageFilter, RoutineFilter } from "../features/overview/routineFilters";
+import type { RoutineFilter } from "../features/overview/routineFilters";
+import type { CoverageBand } from "../domain/priority";
 import type { CurrentUser } from "../auth/currentUser";
 import { nextSort, type SortState } from "../components/sort";
 import { OverviewView } from "../features/overview/OverviewView";
@@ -97,7 +98,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(startLocation.routineCode);
   const [aboutTopic, setAboutTopic] = useState<AboutTopic | null>(startLocation.aboutTopic);
   const [filter, setFilter] = useState<RoutineFilter>("all");
-  const [coverageFilter, setCoverageFilter] = useState<CoverageFilter>("all");
+  const [coverageFilter, setCoverageFilter] = useState<CoverageBand[]>([]);
   // Kept here so the sort survives leaving and re-entering the list; null = priority order.
   const [routineSort, setRoutineSort] = useState<SortState | null>(null);
   // For initializing the search view with a coverage band filter from summary page

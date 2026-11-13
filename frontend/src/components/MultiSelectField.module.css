@@ -1,0 +1,113 @@
+/* Matches the inline SelectField, so the two kinds of filter look alike */
+.field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.label {
+  font-size: 13px;
+  color: var(--color-text-soft);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 160px;
+  max-width: 280px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.summary {
+  flex: 1;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.button[aria-expanded="true"] .chevron {
+  margin-top: 3px;
+  transform: rotate(-135deg);
+}
+
+.list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 200px;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.option:hover {
+  background: var(--color-accent-surface);
+}
+
+.option input {
+  accent-color: var(--color-accent);
+}
+
+.clear {
+  align-self: flex-start;
+  margin: 4px 8px 2px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-accent);
+  cursor: pointer;
+}
+
+.clear:disabled {
+  color: var(--color-text-faint);
+  cursor: default;
+}
+
+.clear:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}

@@ -1,9 +1,9 @@
 import { Button } from "../../components/Button";
 import { FilterPill } from "../../components/FilterPill";
 import { PageIntro } from "../../components/PageIntro";
-import { SelectField } from "../../components/SelectField";
+import { MultiSelectField } from "../../components/MultiSelectField";
 import type { SortState } from "../../components/sort";
-import { rankRoutines } from "../../domain/priority";
+import { rankRoutines, type CoverageBand } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
 import type { PriorityWeights, RoutineCode } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
@@ -12,7 +12,6 @@ import {
   ROUTINE_FILTERS,
   filterByCoverage,
   filterRoutines,
-  type CoverageFilter,
   type RoutineFilter,
 } from "./routineFilters";
 import { RoutineTable } from "./RoutineTable";
@@ -25,8 +24,8 @@ interface OverviewViewProps {
   review: RoutineReview;
   filter: RoutineFilter;
   onFilterChange: (filter: RoutineFilter) => void;
-  coverageFilter: CoverageFilter;
-  onCoverageFilterChange: (filter: CoverageFilter) => void;
+  coverageFilter: CoverageBand[];
+  onCoverageFilterChange: (bands: CoverageBand[]) => void;
   sort: SortState | null;
   onSortChange: (sortKey: string) => void;
   onResetSort: () => void;
@@ -81,10 +80,11 @@ export function OverviewView({
           ))}
         </div>
         <div className={styles.coverageFilter}>
-          <SelectField
+          <MultiSelectField
             label="Filter"
-            value={coverageFilter}
+            selected={coverageFilter}
             options={COVERAGE_FILTER_OPTIONS}
+            noneSelectedLabel="Alle"
             onChange={onCoverageFilterChange}
           />
         </div>

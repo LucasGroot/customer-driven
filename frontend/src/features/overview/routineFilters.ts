@@ -5,21 +5,21 @@ import { coverageBand, type CoverageBand, type ScoredRoutine } from "../../domai
 import type { RoutineCode, RoutineStatus } from "../../domain/types";
 
 export type RoutineFilter = "all" | RoutineStatus;
-export type CoverageFilter = "all" | CoverageBand;
 
 export const ROUTINE_FILTERS: { key: RoutineFilter; label: string }[] = [
   { key: "all", label: "Alle" },
   ...STATUS_OPTIONS.map((status) => ({ key: status, label: STATUS_LABEL[status] })),
 ];
 
-export const COVERAGE_FILTER_OPTIONS: { value: CoverageFilter; label: string }[] = [
-  { value: "all", label: "Alle" },
-  ...COVERAGE_BANDS.map((band) => ({ value: band, label: COVERAGE_BAND_LABEL[band] })),
-];
+export const COVERAGE_FILTER_OPTIONS: { value: CoverageBand; label: string }[] = COVERAGE_BANDS.map((band) => ({
+  value: band,
+  label: COVERAGE_BAND_LABEL[band],
+}));
 
-export function filterByCoverage(scored: ScoredRoutine[], filter: CoverageFilter): ScoredRoutine[] {
-  if (filter === "all") return scored;
-  return scored.filter((entry) => coverageBand(entry.stats.meanCoverage) === filter);
+/** No bands picked means no filtering, so an empty filter shows every routine. */
+export function filterByCoverage(scored: ScoredRoutine[], bands: CoverageBand[]): ScoredRoutine[] {
+  if (bands.length === 0) return scored;
+  return scored.filter((entry) => bands.includes(coverageBand(entry.stats.meanCoverage)));
 }
 
 export function filterRoutines(
