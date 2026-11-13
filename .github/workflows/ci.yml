@@ -64,10 +64,12 @@ jobs:
       # Installs dependancies
       - name: install dependencies
         run: |
-          cd frontend && npm install
-          npm audix fix
+          cd frontend
+          npm install
+          npm audit fix
 
       # Runs test
       - name: Run tests
         run: |
+          cd frontend
           npx vitest run
