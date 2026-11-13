@@ -19,48 +19,64 @@ function makeStats(questionCount: number, meanCoverage: number, code = "A"): Rou
   };
 }
 
-const WORST_ROUTINE = makeStats(10, 0);
-const BEST_ROUTINE = makeStats(0, 1);
+const QUIET_BUT_WELL_COVERED = makeStats(1, 0.9, "quiet");
+const MIDDLE = makeStats(5, 0.5, "middle");
+const BUSY_BUT_POORLY_COVERED = makeStats(10, 0.1, "busy");
+const THREE_ROUTINES = [QUIET_BUT_WELL_COVERED, MIDDLE, BUSY_BUT_POORLY_COVERED];
 
 const ONLY_VOLUME: PriorityWeights = { volume: 50, coverage: 0 };
 const ONLY_COVERAGE: PriorityWeights = { volume: 0, coverage: 50 };
 const EVEN_WEIGHTS: PriorityWeights = { volume: 50, coverage: 50 };
 
 describe("scoreBreakdown", () => {
-  it("scales volume up to full marks at 10 questions", () => {
-    expect(scoreBreakdown(makeStats(5, 0.5)).volume).toBeCloseTo(0.5);
-    expect(scoreBreakdown(makeStats(10, 0.5)).volume).toBe(1);
-    expect(scoreBreakdown(makeStats(30, 0.5)).volume).toBe(1);
+  it("scores each factor by where the routine stands among all routines", () => {
+    const volumes = THREE_ROUTINES.map((stats) => scoreBreakdown(stats, THREE_ROUTINES).volume);
+    expect(volumes[0]).toBeCloseTo(1 / 6);
+    expect(volumes[1]).toBeCloseTo(3 / 6);
+    expect(volumes[2]).toBeCloseTo(5 / 6);
   });
 
   it("scores coverage higher the worse the routine answers its questions", () => {
-    expect(scoreBreakdown(makeStats(1, 0.25)).coverage).toBeCloseTo(0.75);
-    expect(scoreBreakdown(makeStats(1, 1)).coverage).toBe(0);
+    const coverages = THREE_ROUTINES.map((stats) => scoreBreakdown(stats, THREE_ROUTINES).coverage);
+    expect(coverages[0]).toBeLessThan(coverages[1] ?? 0);
+    expect(coverages[1]).toBeLessThan(coverages[2] ?? 0);
+  });
+
+  it("gives routines with the same number of questions the same volume score", () => {
+    const sameCount = [makeStats(3, 0.2, "a"), makeStats(3, 0.8, "b")];
+    expect(scoreBreakdown(sameCount[0] as RoutineStats, sameCount).volume).toBe(0.5);
+    expect(scoreBreakdown(sameCount[1] as RoutineStats, sameCount).volume).toBe(0.5);
+  });
+
+  it("still tells a large routine from a very large one", () => {
+    const routines = [makeStats(11, 0.5, "large"), makeStats(45, 0.5, "huge"), makeStats(1, 0.5, "small")];
+    const [large, huge] = routines.map((stats) => scoreBreakdown(stats, routines).volume);
+    expect(huge).toBeGreaterThan(large ?? 1);
   });
 });
 
 describe("priorityScore", () => {
-  it("ranges from 0 for a routine that answers everything to 100 for the worst possible one", () => {
-    expect(priorityScore(BEST_ROUTINE, EVEN_WEIGHTS)).toBe(0);
-    expect(priorityScore(WORST_ROUTINE, EVEN_WEIGHTS)).toBe(100);
+  it("is highest for the routine that is worst on both factors", () => {
+    const busy = priorityScore(BUSY_BUT_POORLY_COVERED, EVEN_WEIGHTS, THREE_ROUTINES);
+    const quiet = priorityScore(QUIET_BUT_WELL_COVERED, EVEN_WEIGHTS, THREE_ROUTINES);
+    expect(busy).toBeGreaterThan(quiet);
   });
 
   it("weights each factor by its share of the total weight", () => {
-    const manyQuestionsGoodCoverage = makeStats(10, 1);
-    expect(priorityScore(manyQuestionsGoodCoverage, ONLY_VOLUME)).toBe(100);
-    expect(priorityScore(manyQuestionsGoodCoverage, ONLY_COVERAGE)).toBe(0);
-    expect(priorityScore(manyQuestionsGoodCoverage, EVEN_WEIGHTS)).toBe(50);
+    expect(priorityScore(BUSY_BUT_POORLY_COVERED, ONLY_VOLUME, THREE_ROUTINES)).toBe(
+      Math.round((5 / 6) * 100),
+    );
+    expect(priorityScore(MIDDLE, ONLY_COVERAGE, THREE_ROUTINES)).toBe(50);
   });
 
   it("depends only on the ratio between weights, not their sum", () => {
-    const stats = makeStats(4, 0.3);
-    expect(priorityScore(stats, { volume: 10, coverage: 30 })).toBe(
-      priorityScore(stats, { volume: 20, coverage: 60 }),
+    expect(priorityScore(MIDDLE, { volume: 10, coverage: 30 }, THREE_ROUTINES)).toBe(
+      priorityScore(MIDDLE, { volume: 20, coverage: 60 }, THREE_ROUTINES),
     );
   });
 
   it("returns 0 instead of NaN when every weight is zero", () => {
-    expect(priorityScore(WORST_ROUTINE, { volume: 0, coverage: 0 })).toBe(0);
+    expect(priorityScore(MIDDLE, { volume: 0, coverage: 0 }, THREE_ROUTINES)).toBe(0);
   });
 });
 
