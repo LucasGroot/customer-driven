@@ -19,9 +19,9 @@ export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {
 };
 
 const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
-  weak: "Svak",
-  partial: "Delvis",
-  good: "God",
+  weak: "Svak dekning",
+  partial: "Delvis dekning",
+  good: "God dekning",
 };
 
 const partialFrom = Math.round(PARTIAL_COVERAGE_FROM * 100);

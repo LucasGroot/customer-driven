@@ -23,9 +23,9 @@ export const PLACEMENT_FILTERS: { key: PlacementFilter; label: string }[] = [
 
 export const COVERAGE_BAND_FILTERS: { key: CoverageBandFilter; label: string }[] = [
   { key: "all", label: "Alle" },
-  { key: "weak", label: "Svak" },
-  { key: "partial", label: "Delvis" },
-  { key: "good", label: "God" },
+  { key: "weak", label: "Svak dekning" },
+  { key: "partial", label: "Delvis dekning" },
+  { key: "good", label: "God dekning" },
   { key: "no-questions", label: "Uten henvendelser" },
 ];
 
