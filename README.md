@@ -27,6 +27,21 @@ The analysis, the API and the dashboard work together behind Microsoft sign-in. 
 
 Four parts work together: an analysis that scores the data, a PostgreSQL database that stores the result, an API that serves it, and the dashboard that shows it. The simplest way to run them all is [Docker](#running-with-docker).
 
+### Before you start: signing in
+
+The dashboard only opens after Microsoft sign-in. There is no way to create an account or give yourself a role, neither in the dashboard nor in this repository. If you are supposed to test the application, you should receive the following: 
+
+- the tenant ID and client ID for `.env`, and
+- a username and a first-time password. Microsoft asks you to choose your own password the first time you sign in.
+
+You will need Microsoft Authenticator to authenticate yourself. 
+
+The account has a role in the app: `Bruker` sees the dashboard, and `Admin` can also upload data and run the analysis. Only the administrator of the Entra tenant can create accounts and change roles, see [entra-app-registration.md](docs/entra-app-registration.md).
+
+Without these, the app starts, but Microsoft refuses the sign-in. This also applies to the sample data, which is only shown after signing in.
+
+This is the group's test setup. When Trondheim kommune takes over the product, the app is registered in the municipality's own Entra ID, and its employees sign in with their usual work accounts.
+
 ### Running with Docker
 
 The API, the dashboard and the PostgreSQL database run as containers, with no Python, Node.js or PostgreSQL on your machine. You need Docker Desktop (or Docker with Compose), and it has to be running.
@@ -41,13 +56,13 @@ The API, the dashboard and the PostgreSQL database run as containers, with no Py
 
    | Setting                                               | What to write                                                                                                                                                                                |
    | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-   | `ENTRA_TENANT_ID`, `ENTRA_CLIENT_ID`                  | In the Entra admin center, open **App registrations**, the app, **Overview**: _Directory (tenant) ID_ and _Application (client) ID_. [How to set up the app](docs/entra-app-registration.md) |
+   | `ENTRA_TENANT_ID`, `ENTRA_CLIENT_ID`                  | From the group, see [Before you start](#before-you-start-signing-in). Whoever administers the app finds them in the Entra admin center under **App registrations**, the app, **Overview** |
    | `VITE_ENTRA_TENANT_ID`, `VITE_ENTRA_CLIENT_ID`        | The same two values again. The dashboard reads these ones                                                                                                                                    |
    | `DBNAME`, `DBUSER`                                    | Your choice. `kunnskapsgap` for both works. Docker creates the database with these names the first time it starts                                                                            |
    | `DBPASSWORD`                                          | Make up a password. Avoid `$`, `#`, quotes and spaces                                                                                                                                        |
    | `DBHOST`                                              | Leave as it is. In Docker the API finds the database by itself                                                                                                                               |
    | `SNAPSHOT_KEYS`                                       | A key that encrypts the stored results. Make one in the next step                                                                                                                            |
-   | `LITELLM_API_URL`, `LITELLM_API_KEY`, `LITELLM_MODEL` | From whoever runs the LiteLLM proxy. Only needed to run an analysis, which uses it to title the question groups                                                                              |
+   | `LITELLM_API_URL`, `LITELLM_API_KEY`, `LITELLM_MODEL` | From whoever runs the LiteLLM proxy. The analysis uses it to title the question groups. Without it the dashboard works, but running an analysis stops with an error |
    | `ALLOWED_ORIGIN`                                      | Leave as it is                                                                                                                                                                               |
 
 3. Make the `SNAPSHOT_KEYS` key and paste the line it prints after `SNAPSHOT_KEYS=` in `.env`.
@@ -64,9 +79,8 @@ The API, the dashboard and the PostgreSQL database run as containers, with no Py
    python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
    ```
 
-4. In the Entra app registration, open **Authentication** and add `http://localhost:8080` as a _single-page application_ redirect URI. Without it, Microsoft refuses the sign-in.
 
-5. Start everything, and open <http://localhost:8080> when the terminal says the API is running:
+4. Start everything, and open <http://localhost:8080> when the terminal says the API is running:
 
    ```bash
    docker compose up --build
@@ -151,7 +165,7 @@ An admin uploads them on the dashboard's "Importer data" page, see [Updating the
 #### Running without the real data
 
 - **Sample data.** If nothing has been uploaded, the API serves a bundled sample of invented data, and the dashboard says "Eksempeldata" in the sidebar. The dashboard works on it, so this is enough for developing the frontend. It does not run an analysis, so it cannot test the backend.
-- **Your own test files.** To run the whole analysis, make small files with invented content and upload them as an admin:
+- **Your own test files.** To run the whole analysis, make small files with invented content and upload them, signed in with an account that has the `Admin` role:
   - The questions: an `.xlsx` file with the columns `Nummer` (a unique number per question), `Tjenestetilbud` (the service), `Kort beskrivelse` and `Beskrivelse` (the question text). A question needs text in at least one of the two description columns.
   - The routines: PDFs named `<document code>-<title>.pdf`, for example `1760-1-Vernerunde.pdf`. Give them bold headings, because that is how a routine is split into sections. Start small, with a few routines and a few dozen questions, so a run is quick.
 
@@ -165,6 +179,8 @@ Users with the admin role can update the data from the dashboard:
 2. **Kjør analyse**, where only they have the run button, then runs the analysis on the uploaded files in the background and shows its progress. When it finishes, the dashboard loads the new result.
 
 The API refuses uploads and runs from anyone without the admin role, whatever the dashboard shows. The code is in [`backend/src/admin`](backend/src/admin/README.md).
+
+The admin role is given in Entra by whoever administers the app, not in the dashboard, see [entra-app-registration.md](docs/entra-app-registration.md).
 
 ### Building the snapshot without the dashboard
 
