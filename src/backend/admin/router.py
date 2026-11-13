@@ -61,7 +61,7 @@ def import_data(
     if questions is None and not routines:
         raise reject(status.HTTP_400_BAD_REQUEST, {"reason": "noFiles"})
     if routines is not None and len(routines) > uploads.MAX_ROUTINES_PER_UPLOAD:
-        raise HTTPException(
+        raise reject(
             status.HTTP_413_CONTENT_TOO_LARGE,
             {"reason": "tooManyFiles", "maxFiles": uploads.MAX_ROUTINES_PER_UPLOAD},
         )

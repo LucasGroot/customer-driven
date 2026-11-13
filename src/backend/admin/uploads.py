@@ -76,10 +76,7 @@ def check_size(file):
 
 def check_unpacked_size(file):
     """
-    Rejects an .xlsx that grows past the limit when it is read. The file is a
-    zip archive, so a few megabytes can unpack to gigabytes and fill the memory.
-    The sizes come from the archive's own list; zipfile never unpacks more than
-    it states, so a file that lies about them fails when read instead.
+    Rejects an .xlsx that grows past the limit when it is read.
     """
 
     try:
@@ -179,8 +176,6 @@ def split_new_routines(files):
 def check_routine_storage(new_files):
     """
     Rejects new routines that would take the routines folder past its limit.
-    Each upload is limited on its own, but routines are added, never replaced,
-    so without this, repeated uploads could still fill the disk.
     """
 
     stored_bytes = 0
