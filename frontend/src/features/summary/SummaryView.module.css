@@ -24,6 +24,7 @@
 }
 
 .bandRow {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(200px, 1fr) minmax(80px, 1.3fr) 36px;
   align-items: center;
@@ -42,9 +43,21 @@
   background-color: var(--color-surface-muted);
 }
 
-.bandRow:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 0;
+/* The button's ::after covers the whole row, so a click anywhere on it counts.
+   The info bubble comes later in the row and so stays on top and clickable. */
+.bandButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bandButton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
 }
 
 /* The three columns need 274px, more than a card has on a 320px screen, so the

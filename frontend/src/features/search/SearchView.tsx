@@ -28,8 +28,8 @@ interface SearchViewProps {
   routines: RoutineStats[];
   review: RoutineReview;
   onOpenRoutine: (routineCode: RoutineCode) => void;
-  initialCoverageBandFilter?: CoverageBandFilter;
-  initialTab?: SearchTab;
+  initialCoverageBandFilter?: CoverageBandFilter | undefined;
+  initialTab?: SearchTab | undefined;
 }
 
 // PLACEMENT_FILTERS uses { key, label }, but SelectField expects { value, label }.

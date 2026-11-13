@@ -102,7 +102,7 @@ describe("searchDocuments", () => {
   const routines = [makeStats("KV-001", [0.2, 0.3]), makeStats("KV-002", [0.7])];
 
   it("shows how many questions sit on each routine and their mean coverage", () => {
-    const results = searchDocuments(DOCUMENTS, routines, { query: "", sort: "coverage-asc" });
+    const results = searchDocuments(DOCUMENTS, routines, { query: "", sort: "coverage-asc", filter: "all" });
     expect(results.map((result) => [result.document.code, result.questionCount])).toEqual([
       ["KV-001", 2],
       ["KV-002", 1],
@@ -112,7 +112,7 @@ describe("searchDocuments", () => {
   });
 
   it("puts documents without questions last in both coverage orders", () => {
-    const results = searchDocuments(DOCUMENTS, routines, { query: "", sort: "coverage-desc" });
+    const results = searchDocuments(DOCUMENTS, routines, { query: "", sort: "coverage-desc", filter: "all" });
     expect(results.map((result) => result.document.code)).toEqual(["KV-002", "KV-001", "KV-003"]);
   });
 });
