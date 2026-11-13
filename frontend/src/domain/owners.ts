@@ -5,6 +5,8 @@ import { UNASSIGNED_OWNER } from "./labels";
  * the snapshot lists. "Ikke tildelt" is no owner, so it is never offered.
  */
 export function ownerCandidates(snapshotOwners: string[], currentUserName: string): string[] {
+  const defaultOwners = ["Kari Nordmann", "Ola Nordmann"];
   const others = snapshotOwners.filter((owner) => owner !== UNASSIGNED_OWNER && owner !== currentUserName);
-  return [currentUserName, ...others];
+  const allOthers = [...new Set([...others, ...defaultOwners])];
+  return [currentUserName, ...allOthers];
 }
