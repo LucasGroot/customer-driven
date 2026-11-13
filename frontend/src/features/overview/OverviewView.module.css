@@ -7,7 +7,7 @@
 .header {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
 }
@@ -23,6 +23,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.coverageFilter {
+  margin-left: auto;
 }
 
 .hiddenNote {

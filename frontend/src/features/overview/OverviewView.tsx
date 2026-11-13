@@ -1,12 +1,20 @@
 import { Button } from "../../components/Button";
 import { FilterPill } from "../../components/FilterPill";
 import { PageIntro } from "../../components/PageIntro";
+import { SelectField } from "../../components/SelectField";
 import type { SortState } from "../../components/sort";
 import { rankRoutines } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
 import type { PriorityWeights, RoutineCode } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
-import { ROUTINE_FILTERS, filterRoutines, type RoutineFilter } from "./routineFilters";
+import {
+  COVERAGE_FILTER_OPTIONS,
+  ROUTINE_FILTERS,
+  filterByCoverage,
+  filterRoutines,
+  type CoverageFilter,
+  type RoutineFilter,
+} from "./routineFilters";
 import { RoutineTable } from "./RoutineTable";
 import styles from "./OverviewView.module.css";
 
@@ -17,6 +25,8 @@ interface OverviewViewProps {
   review: RoutineReview;
   filter: RoutineFilter;
   onFilterChange: (filter: RoutineFilter) => void;
+  coverageFilter: CoverageFilter;
+  onCoverageFilterChange: (filter: CoverageFilter) => void;
   sort: SortState | null;
   onSortChange: (sortKey: string) => void;
   onResetSort: () => void;
@@ -32,6 +42,8 @@ export function OverviewView({
   review,
   filter,
   onFilterChange,
+  coverageFilter,
+  onCoverageFilterChange,
   sort,
   onSortChange,
   onResetSort,
@@ -39,8 +51,9 @@ export function OverviewView({
   onOpenReview,
   onOpenSettings,
 }: OverviewViewProps) {
-  const ranked = rankRoutines(routines, weights);
-  const visible = filterRoutines(ranked, filter, review.statusOf);
+  // Filtered after ranking so a routine keeps its overall rank number
+  const inCoverageBand = filterByCoverage(rankRoutines(routines, weights), coverageFilter);
+  const visible = filterRoutines(inCoverageBand, filter, review.statusOf);
 
   return (
     <section className={styles.view}>
@@ -59,13 +72,21 @@ export function OverviewView({
           {ROUTINE_FILTERS.map((option) => (
             <FilterPill
               key={option.key}
-              label={`${option.label} · ${String(filterRoutines(ranked, option.key, review.statusOf).length)}`}
+              label={`${option.label} · ${String(filterRoutines(inCoverageBand, option.key, review.statusOf).length)}`}
               selected={filter === option.key}
               onSelect={() => {
                 onFilterChange(option.key);
               }}
             />
           ))}
+        </div>
+        <div className={styles.coverageFilter}>
+          <SelectField
+            label="Filter"
+            value={coverageFilter}
+            options={COVERAGE_FILTER_OPTIONS}
+            onChange={onCoverageFilterChange}
+          />
         </div>
       </div>
 

@@ -18,7 +18,7 @@ export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {
   low: "Lav prioritet",
 };
 
-const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
+export const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
   weak: "Svak dekning",
   partial: "Delvis dekning",
   good: "God dekning",
