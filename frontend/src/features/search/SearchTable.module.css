@@ -71,3 +71,26 @@
   font-family: var(--font-mono);
   font-size: 13px;
 }
+
+.clickableRow {
+  cursor: pointer;
+}
+
+.clickableRow:hover {
+  background: color-mix(in srgb, currentColor 4%, transparent);
+}
+
+.nameButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nameButton:hover,
+.nameButton:focus-visible {
+  text-decoration: underline;
+}

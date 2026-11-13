@@ -1,5 +1,7 @@
 import js from "@eslint/js";
+import prettier from "eslint-config-prettier";
 import globals from "globals";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
@@ -7,7 +9,8 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
   { ignores: ["dist"] },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.strictTypeChecked],
+    // jsx-a11y catches accessibility mistakes in the markup, such as an input without a label
+    extends: [js.configs.recommended, ...tseslint.configs.strictTypeChecked, jsxA11y.flatConfigs.recommended],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2022,
@@ -38,4 +41,6 @@ export default tseslint.config(
       ],
     },
   },
+  // Last, so it turns off every rule above that would fight Prettier over formatting
+  prettier,
 );

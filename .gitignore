@@ -2,11 +2,20 @@
 *.xlsx
 *.zip
 *.pkl
-visualizations/*.html
+backend/notebooks/*.html
 __pycache__
 *.egg-info/
 *.csv
 data/processed/*.json
+data/raw/kvaliteket/
+
+# uploaded data and analysis output, including half-written temporary files
+data/raw/**
+!data/raw/**/
+!data/raw/README.md
+data/processed/*
+!data/processed/README.md
+*.tmp
 
 # secrets such as API keys; only the example file with empty values is committed
 .env
@@ -22,3 +31,6 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Audit log of uploads and analysis runs; holds user names (personal data)
+logs/

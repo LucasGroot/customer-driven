@@ -16,13 +16,29 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build_back:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.12", "3.13", "3.14"]
         # exclude si besoin
+
+    # The database tests need a PostgreSQL. Its name has to contain "test", or they refuse to run
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: kunnskapsgap_test
+          POSTGRES_USER: kunnskapsgap
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kunnskapsgap -d kunnskapsgap_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,18 +50,66 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
+          cache-dependency-path: backend/requirements*.txt
 
       # Installs dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt
+          pip install -r backend/requirements-dev.txt
 
       # Install repo as module
       - name: Install repo as module
         run: |
-          pip install -e .
+          pip install -e backend
+
+      # Fails on lint errors, and on code not formatted with Ruff (ruff check --fix . && ruff format . fixes both)
+      - name: Lint
+        working-directory: backend
+        run: ruff check .
+
+      - name: Check formatting
+        working-directory: backend
+        run: ruff format --check .
 
       # Runs tests
       - name: Run tests
+        working-directory: backend
+        env:
+          DBNAME: kunnskapsgap_test
+          DBUSER: kunnskapsgap
+          DBPASSWORD: test
+          DBHOST: localhost
         run: python -m pytest
+  
+  build_front:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Sets up Node
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+        
+      # Installs dependancies
+      - name: install dependencies
+        run: cd frontend && npm ci
+
+      # Checks types
+      - name: Type check
+        run: cd frontend && npx tsc -b
+
+      # Fails on lint errors, and on code not formatted with Prettier (npm run lint:fix fixes both)
+      - name: Lint
+        run: cd frontend && npm run lint
+
+      - name: Check formatting
+        run: cd frontend && npm run format:check
+
+      # Runs tests
+      - name: Run tests
+        run: cd frontend && npx vitest run

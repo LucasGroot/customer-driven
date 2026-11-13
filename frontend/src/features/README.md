@@ -1,0 +1,18 @@
+[Project README](../../../README.md) › [Frontend](../../README.md) › [src](../README.md) › features
+
+# features
+
+One folder per page, each with its view, its own parts and its tests. The pages are listed in [`app/views.ts`](../app/views.ts).
+
+| Folder      | Page                                 | What it shows                                                                                                                                | Main files                                                                                            |
+| ----------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `summary/`  | Oversikt                             | How many questions and routines were compared, the three coverage levels with their counts, and shortcuts into the other pages               | `SummaryView.tsx`                                                                                     |
+| `overview/` | Prioriterte rutiner                  | The routines ranked by priority, with filters on coverage level and status                                                                   | `OverviewView.tsx`, `RoutineTable.tsx`, `routineFilters.ts`                                           |
+| `detail/`   | A routine's own page                 | The questions placed on it, the themes among them, who owns it, and how its priority is made up                                              | `RoutineDetailView.tsx`, `priorityFactors.ts` (the priority in plain words), `routineClusters.ts`     |
+| `review/`   | Henvendelser til manuell gjennomgang | The questions that match no routine well enough, grouped by what they are about, so HR can discard or map a whole group at once, and undo it | `ReviewView.tsx`, `ReviewGroupCard.tsx`, `ReviewTable.tsx`, `RoutineSelect.tsx`, `reviewQuestions.ts` |
+| `search/`   | Søk                                  | Search in routines and in questions, with where each question was placed                                                                     | `SearchView.tsx`, `DocumentTable.tsx`, `QuestionTable.tsx`, `PlacementBadge.tsx`, `searchResults.ts`  |
+| `run/`      | Kjør analyse                         | Starts a new analysis and ticks off its steps as the backend finishes them. Admin only                                                       | `RunAnalysisView.tsx`                                                                                 |
+| `import/`   | Importer data                        | Uploads a ServiceNow export and Kvaliteket routines before a new analysis. Admin only                                                        | `ImportView.tsx`, `FilePicker.tsx`                                                                    |
+| `about/`    | Om analysen                          | How the analysis works, as questions and answers in plain language. The (i) info bubbles on other pages link to the right answer             | `AboutView.tsx`, `aboutContent.ts`                                                                    |
+
+The pages use [`components/`](../README.md#components) for their parts, [`domain/`](../domain/README.md) for the rules and [`hooks/`](../README.md#hooks) for the data. The admin pages call the backend through [`api/`](../README.md#api), see [`backend/src/admin`](../../../backend/src/admin/README.md). The review page's decisions are stored by [`backend/src/review`](../../../backend/src/review/README.md).

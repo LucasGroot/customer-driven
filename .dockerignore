@@ -1,0 +1,23 @@
+# Real HR data and secrets must never end up in an image layer
+.env
+.env.*
+!.env.example
+data
+logs
+*.pkl
+*.pdf
+*.xlsx
+*.zip
+*.csv
+
+.git
+.venv
+venv
+node_modules
+frontend
+backend/tests
+backend/scripts
+docs
+backend/notebooks
+**/__pycache__
+.pytest_cache

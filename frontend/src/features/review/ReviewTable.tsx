@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "../../components/Button";
 import { CoverageMeter } from "../../components/CoverageMeter";
 import { DataTable, type DataTableColumn } from "../../components/DataTable";
+import { suggestedRoutineCodes } from "../../domain/routines";
 import type { RoutineCode, RoutineDocument } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import type { ReviewItem } from "./reviewQuestions";
@@ -25,8 +26,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
   const { question, placement } = item;
   // Starts on the best match, since the analysis was usually close when HR keeps it
   const [chosenCode, setChosenCode] = useState<RoutineCode>(question.documentCode);
-  const nameOf = (code: RoutineCode) =>
-    routines.find((routine) => routine.code === code)?.name ?? "ukjent rutine";
+  const nameOf = (code: RoutineCode) => routines.find((routine) => routine.code === code)?.name ?? "ukjent rutine";
 
   return (
     <tr>
@@ -45,7 +45,13 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
       <td>
         {placement.kind === "pending" ? (
           <div className={styles.actions}>
-            <RoutineSelect value={chosenCode} routines={routines} onChange={setChosenCode} />
+            <RoutineSelect
+              value={chosenCode}
+              routines={routines}
+              suggested={suggestedRoutineCodes(question)}
+              label={`Rutine for henvendelse ${question.reference}`}
+              onChange={setChosenCode}
+            />
             <div className={styles.buttons}>
               <Button
                 variant="secondary"
@@ -53,7 +59,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
                   review.mapTo(question.id, chosenCode);
                 }}
               >
-                Knytt til rutine
+                Knytt til rutine<span className="visuallyHidden"> henvendelse {question.reference}</span>
               </Button>
               <Button
                 variant="danger"
@@ -61,16 +67,14 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
                   review.discard(question.id);
                 }}
               >
-                Forkast
+                Forkast<span className="visuallyHidden"> henvendelse {question.reference}</span>
               </Button>
             </div>
           </div>
         ) : (
           <div className={styles.actions}>
             <span className={styles.decision}>
-              {placement.kind === "discarded"
-                ? "Forkastet"
-                : `Knyttet til ${nameOf(placement.routineCode)}`}
+              {placement.kind === "discarded" ? "Forkastet" : `Knyttet til ${nameOf(placement.routineCode)}`}
             </span>
             <div className={styles.buttons}>
               <Button
@@ -80,6 +84,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
                 }}
               >
                 {placement.kind === "discarded" ? "Gjenopprett" : "Angre"}
+                <span className="visuallyHidden"> henvendelse {question.reference}</span>
               </Button>
             </div>
           </div>

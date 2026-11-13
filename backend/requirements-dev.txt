@@ -1,0 +1,10 @@
+-r requirements.txt
+pytest
+# TestClient needs it
+httpx
+# Pinned, since the rules Ruff checks by default change between versions
+ruff==0.17.5
+nbstripout
+# Only the notebooks and scripts use these two
+matplotlib
+umap-learn

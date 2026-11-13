@@ -16,8 +16,12 @@ interface PriorityFactor {
   note: string;
 }
 
-export function priorityFactors(stats: RoutineStats, weights: PriorityWeights): PriorityFactor[] {
-  const factor = scoreBreakdown(stats);
+export function priorityFactors(
+  stats: RoutineStats,
+  weights: PriorityWeights,
+  allRoutines: RoutineStats[],
+): PriorityFactor[] {
+  const factor = scoreBreakdown(stats, allRoutines);
   return [
     {
       label: "Hvor mange spør",
@@ -29,7 +33,7 @@ export function priorityFactors(stats: RoutineStats, weights: PriorityWeights): 
       label: "Treff mot rutine",
       weightLabel: `${String(weights.coverage)} %`,
       value: factor.coverage,
-      note: `Snittscore ${formatPercent(stats.meanCoverage)} på henvendelsene som er knyttet til rutinen`,
+      note: `Snittdekning ${formatPercent(stats.meanCoverage)} på henvendelsene som er knyttet til rutinen`,
     },
   ];
 }

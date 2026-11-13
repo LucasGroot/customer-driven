@@ -37,11 +37,11 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
   return (
     <section className={styles.view}>
       <PageIntro
-        title="Til gjennomgang"
+        title="Henvendelser til manuell gjennomgang"
         lead="Henvendelser der ingen rutine passer godt nok. De som ligner hverandre er samlet i grupper: en stor gruppe betyr at flere lurer på det samme uten at en rutine svarer godt nok. Behandle en hel gruppe om gangen, eller åpne den og vurder henvendelsene hver for seg. Valgene teller med når rutinene prioriteres."
       />
 
-      <div className={styles.pills}>
+      <div className={styles.pills} role="group" aria-label="Vis henvendelser">
         {REVIEW_FILTERS.map((option) => (
           <FilterPill
             key={option.key}
@@ -55,7 +55,7 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
       </div>
 
       <p className={styles.note} aria-live="polite">
-        {review.savedNote ?? "Valg lagres automatisk i denne økten."}
+        {review.questionNote ?? "Valg lagres automatisk i denne økten."}
       </p>
 
       {filter === "pending" ? (
@@ -68,16 +68,14 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
             <details className={styles.alone}>
               <summary className={styles.aloneSummary}>Enkeltstående henvendelser · {alone.length}</summary>
               <p className={styles.note}>
-                Henvendelser som ikke ligner noen av de andre. De haster mindre enn gruppene, der
-                flere spør om det samme.
+                Henvendelser som ikke ligner noen av de andre. De haster mindre enn gruppene, der flere spør om det
+                samme.
               </p>
               <ReviewTable items={alone} routines={routinesByName} review={review} emptyMessage="" />
             </details>
           ) : null}
 
-          {groups.length === 0 && alone.length === 0 ? (
-            <p className={styles.note}>{EMPTY_MESSAGE.pending}</p>
-          ) : null}
+          {groups.length === 0 && alone.length === 0 ? <p className={styles.note}>{EMPTY_MESSAGE.pending}</p> : null}
         </>
       ) : (
         <>
@@ -96,12 +94,7 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
               </Button>
             </div>
           ) : null}
-          <ReviewTable
-            items={visible}
-            routines={routinesByName}
-            review={review}
-            emptyMessage={EMPTY_MESSAGE[filter]}
-          />
+          <ReviewTable items={visible} routines={routinesByName} review={review} emptyMessage={EMPTY_MESSAGE[filter]} />
         </>
       )}
     </section>

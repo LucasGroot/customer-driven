@@ -7,7 +7,7 @@
 .header {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
 }
@@ -19,7 +19,31 @@
   align-items: center;
 }
 
-.hideAbove {
+.filterPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/*
+ * Same colour and rhythm as the filter pulse on the search page, but as a ring:
+ * the selected pill is dark, so a light background would hide its white text.
+ */
+.highlight :global([aria-pressed="true"]) {
+  animation: attentionRing 1s ease-in-out 3;
+}
+
+@keyframes attentionRing {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 0 5px #afd0f7;
+  }
+}
+
+.coverageFilter {
   margin-left: auto;
 }
 

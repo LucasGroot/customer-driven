@@ -27,3 +27,25 @@
   font-size: 12.5px;
   color: var(--color-text-soft);
 }
+
+.selects {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.highlight :global(input),
+.highlight :global(select) {
+  animation: attentionPulse 1s ease-in-out 3;
+}
+
+@keyframes attentionPulse {
+  0%,
+  100% {
+    background-color: white;
+  }
+  50% {
+    background-color: #afd0f7;
+  }
+}

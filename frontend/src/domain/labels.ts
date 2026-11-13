@@ -4,24 +4,13 @@
  * around it stays in English.
  */
 
-import {
-  GOOD_COVERAGE_FROM,
-  PARTIAL_COVERAGE_FROM,
-  type CoverageBand,
-  type PriorityBand,
-} from "./priority";
+import { GOOD_COVERAGE_FROM, PARTIAL_COVERAGE_FROM, type CoverageBand } from "./priority";
 import type { RoutineStatus } from "./types";
 
-export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {
-  high: "Høy prioritet",
-  medium: "Middels prioritet",
-  low: "Lav prioritet",
-};
-
-const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
-  weak: "Svak",
-  partial: "Delvis",
-  good: "God",
+export const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
+  weak: "Svak dekning",
+  partial: "Delvis dekning",
+  good: "God dekning",
 };
 
 const partialFrom = Math.round(PARTIAL_COVERAGE_FROM * 100);
@@ -34,17 +23,22 @@ export const COVERAGE_BAND_RANGE_LABEL: Record<CoverageBand, string> = {
   good: `${COVERAGE_BAND_LABEL.good} (${String(goodFrom)} % og over)`,
 };
 
+export const COVERAGE_BAND_DESCRIPTION: Record<CoverageBand, string> = {
+  weak: `Snittdekning under ${String(partialFrom)} %. Henvendelsene samsvarer i liten grad med rutinen. Den kan mangle informasjon eller være uklar.`,
+  partial: `Snittdekning på ${String(partialFrom)}–${String(goodFrom - 1)} %. Henvendelsene samsvarer delvis med rutinen. Noe informasjon kan mangle eller bør utdypes.`,
+  good: `Snittdekning på ${String(goodFrom)} % eller mer. Henvendelsene samsvarer godt med rutinen, men det betyr ikke nødvendigvis at alle spørsmål er besvart.`,
+};
+
 export const COVERAGE_BANDS: CoverageBand[] = ["weak", "partial", "good"];
 
 export const STATUS_LABEL: Record<RoutineStatus, string> = {
-  new: "Ny",
-  updating: "Under oppdatering",
-  done: "Behandlet",
+  unprocessed: "Ubehandlet",
+  "in-progress": "Under behandling",
 };
 
 export const UNASSIGNED_OWNER = "Ikke tildelt";
 
-export const STATUS_OPTIONS: RoutineStatus[] = ["new", "updating", "done"];
+export const STATUS_OPTIONS: RoutineStatus[] = ["unprocessed", "in-progress"];
 
 export function formatPercent(fraction: number): string {
   return `${String(Math.round(fraction * 100))} %`;

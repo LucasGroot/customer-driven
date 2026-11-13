@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${DBNAME}
+      POSTGRES_USER: ${DBUSER}
+      POSTGRES_PASSWORD: ${DBPASSWORD}
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DBUSER} -d ${DBNAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    environment:
+      # Reaches the database by its service name, whatever DBHOST says in .env
+      DBHOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - raw-data:/app/data/raw
+      - processed-data:/app/data/processed
+      - logs:/app/logs
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_ENTRA_TENANT_ID: ${VITE_ENTRA_TENANT_ID}
+        VITE_ENTRA_CLIENT_ID: ${VITE_ENTRA_CLIENT_ID}
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  database:
+  raw-data:
+  processed-data:
+  logs:

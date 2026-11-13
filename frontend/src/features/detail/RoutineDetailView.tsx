@@ -4,19 +4,96 @@ import { CoverageMeter } from "../../components/CoverageMeter";
 import { FilterPill } from "../../components/FilterPill";
 import { MeterBar } from "../../components/MeterBar";
 import { SelectField } from "../../components/SelectField";
-import { PRIORITY_BAND_COLOR } from "../../components/bandColors";
-import { PRIORITY_BAND_LABEL, STATUS_LABEL, STATUS_OPTIONS } from "../../domain/labels";
-import { priorityBand, priorityScore } from "../../domain/priority";
-import type { RoutineStats } from "../../domain/routines";
-import type { PriorityWeights } from "../../domain/types";
+import { STATUS_LABEL, STATUS_OPTIONS } from "../../domain/labels";
+import { rankRoutines } from "../../domain/priority";
+import { suggestedRoutineCodes, type RoutineStats } from "../../domain/routines";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { priorityFactors } from "./priorityFactors";
 import styles from "./RoutineDetailView.module.css";
-import { classNames } from "../../components/classNames";
+import { useState } from "react";
+import { RoutineSelect } from "../review/RoutineSelect";
+import type { PriorityWeights, RoutineCluster, RoutineCode, RoutineDocument, RoutineStatus } from "../../domain/types";
+import { groupRoutineQuestions } from "./routineClusters";
+
+type QuestionItem = RoutineStats["questions"][number];
+
+interface QuestionRowProps {
+  item: QuestionItem;
+  /** Every routine except the current one. */
+  otherRoutines: RoutineDocument[];
+  review: RoutineReview;
+}
+
+function formatQuestionCount(count: number): string {
+  return `${String(count)} ${count === 1 ? "henvendelse" : "henvendelser"}`;
+}
+
+function QuestionRow({ item: { question, byHand, coverage }, otherRoutines, review }: QuestionRowProps) {
+  // Empty until HR picks a routine, so nothing moves by accident.
+  const [targetCode, setTargetCode] = useState<RoutineCode>("");
+
+  return (
+    <div className={styles.question}>
+      <div className={styles.questionText}>
+        <p className={styles.quoteText}>{question.text}</p>
+        <div className={styles.quoteMeta}>
+          {question.reference}
+          {byHand ? " · knyttet til rutinen manuelt" : ""}
+        </div>
+      </div>
+      <CoverageMeter coverage={coverage} />
+      <div className={styles.moveActions}>
+        <RoutineSelect
+          value={targetCode}
+          routines={otherRoutines}
+          suggested={suggestedRoutineCodes(question)}
+          placeholder="Flytt til rutine …"
+          label={`Flytt henvendelse ${question.reference} til rutine`}
+          onChange={setTargetCode}
+        />
+        <div className={styles.moveButtons}>
+          {targetCode !== "" ? (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                review.mapTo(question.id, targetCode);
+              }}
+            >
+              Flytt<span className="visuallyHidden"> henvendelse {question.reference}</span>
+            </Button>
+          ) : null}
+          <Button
+            variant="danger"
+            onClick={() => {
+              review.discard(question.id);
+            }}
+          >
+            Forkast<span className="visuallyHidden"> henvendelse {question.reference}</span>
+          </Button>
+          {byHand ? (
+            <Button
+              variant="link"
+              onClick={() => {
+                review.undoDecision(question.id);
+              }}
+            >
+              Angre<span className="visuallyHidden"> for henvendelse {question.reference}</span>
+            </Button>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface RoutineDetailViewProps {
   stats: RoutineStats;
-  documentOwners: string[];
+  /** Every routine that has questions. The rank is this routine's place among them. */
+  routines: RoutineStats[];
+  routineClusters: RoutineCluster[];
+  allRoutines: RoutineDocument[];
+  /** The people the routine can be given to when it is set to Under behandling. */
+  ownerCandidates: string[];
   weights: PriorityWeights;
   review: RoutineReview;
   backLabel: string;
@@ -25,44 +102,69 @@ interface RoutineDetailViewProps {
 
 export function RoutineDetailView({
   stats,
-  documentOwners,
+  routines,
+  routineClusters,
+  allRoutines,
+  ownerCandidates,
   weights,
   review,
   backLabel,
   onBack,
 }: RoutineDetailViewProps) {
   const { routine } = stats;
-  const score = priorityScore(stats, weights);
-  const band = priorityBand(score);
-  const factors = priorityFactors(stats, weights);
+  const ranking = rankRoutines(routines, weights);
+  const rank = ranking.find((entry) => entry.stats.routine.code === routine.code)?.rank;
+  const factors = priorityFactors(stats, weights, routines);
   const currentStatus = review.statusOf(routine.code);
-  const questionsLowestScoreFirst = [...stats.questions].sort(
-    (a, b) => a.question.coverage - b.question.coverage,
-  );
+  const lowestScoreFirst = (a: QuestionItem, b: QuestionItem) => a.coverage - b.coverage;
+  const { clusters, other } = groupRoutineQuestions(stats.questions, routineClusters, routine.code);
+  const owner = review.ownerOf(routine.code);
+  const isInProgress = currentStatus === "in-progress";
+  // Under behandling needs an owner, so choosing it first only opens the owner field
+  const [isChoosingOwner, setIsChoosingOwner] = useState(false);
+  const shownStatus: RoutineStatus = isInProgress || isChoosingOwner ? "in-progress" : "unprocessed";
+  const ownerOptions = [
+    ...(owner === undefined ? [{ value: "", label: "Velg rutineeier" }] : []),
+    ...ownerCandidates.map((candidate) => ({ value: candidate, label: candidate })),
+  ];
+
+  const selectStatus = (status: RoutineStatus) => {
+    if (status === "unprocessed") {
+      setIsChoosingOwner(false);
+      if (isInProgress) review.markUnprocessed(routine.code);
+      return;
+    }
+    if (!isInProgress) setIsChoosingOwner(true);
+  };
+  const otherRoutines = allRoutines.filter((candidate) => candidate.code !== routine.code);
 
   return (
     <section className={styles.view}>
       <Button variant="link" onClick={onBack}>
-        ← {backLabel}
+        <span aria-hidden="true">← </span>
+        {backLabel}
       </Button>
 
       <div className={styles.header}>
         <div className={styles.headerText}>
-          <h1 className={styles.title}>{routine.name}</h1>
+          <h1 className={styles.title} tabIndex={-1}>
+            {routine.name}
+          </h1>
           <p className={styles.summary}>{routine.uploadedLabel}</p>
         </div>
-        <div className={styles.scorePanel}>
-          <div className={styles.scoreBlock}>
-            <div className={styles.scoreLabel}>Prioritet</div>
-            <div className={styles.scoreValue}>{score}</div>
-            <div className={styles.scoreNote} style={{ color: PRIORITY_BAND_COLOR[band] }}>
-              {PRIORITY_BAND_LABEL[band]}
+
+        <div className={styles.headerSide}>
+          <div className={styles.scorePanel}>
+            <div className={styles.scoreBlock}>
+              <div className={styles.scoreLabel}>Prioritet</div>
+              <div className={styles.scoreValue}>{rank}</div>
+              <div className={styles.scoreNote}>av {ranking.length} rutiner</div>
             </div>
-          </div>
-          <div className={styles.scoreBlock}>
-            <div className={styles.scoreLabel}>Henvendelser</div>
-            <div className={styles.scoreValue}>{stats.questionCount}</div>
-            <div className={styles.scoreNote}>knyttet til rutinen</div>
+            <div className={styles.scoreBlock}>
+              <div className={styles.scoreLabel}>Henvendelser</div>
+              <div className={styles.scoreValue}>{stats.questionCount}</div>
+              <div className={styles.scoreNote}>knyttet til rutinen</div>
+            </div>
           </div>
         </div>
       </div>
@@ -75,74 +177,81 @@ export function RoutineDetailView({
                 <span className={styles.factorLabel}>{factor.label}</span>
                 <span className={styles.factorWeight}>{factor.weightLabel}</span>
               </div>
-              <MeterBar value={factor.value} color="var(--color-accent)" thick />
+              <MeterBar value={factor.value} color="var(--color-accent)" size="thick" />
               <div className={styles.factorNote}>{factor.note}</div>
             </div>
           ))}
         </div>
       </Card>
 
-      <Card title="Henvendelser knyttet til rutinen">
-        {questionsLowestScoreFirst.map(({ question, byHand }) => (
-          <div key={question.id} className={styles.question}>
-            <div className={styles.questionText}>
-              <p className={styles.quoteText}>{question.text}</p>
-              <div className={styles.quoteMeta}>
-                {question.reference}
-                {byHand ? " · knyttet til rutinen manuelt" : ""}
-              </div>
-            </div>
-            <CoverageMeter coverage={question.coverage} />
-            {byHand ? (
-              <Button
-                variant="link"
-                onClick={() => {
-                  review.undoDecision(question.id);
-                }}
-              >
-                Angre
-              </Button>
-            ) : (
-              <span />
-            )}
-          </div>
-        ))}
-      </Card>
-
       <Card title="Status">
-        <div className={styles.statusOptions}>
+        <div className={styles.statusOptions} role="group" aria-label="Status for rutinen">
           {STATUS_OPTIONS.map((status) => (
             <FilterPill
               key={status}
               label={STATUS_LABEL[status]}
-              selected={currentStatus === status}
+              selected={shownStatus === status}
               onSelect={() => {
-                review.setStatus(routine.code, status);
+                selectStatus(status);
               }}
             />
           ))}
         </div>
 
         <div className={styles.assignment}>
-          <SelectField
-            label="Rutineeier"
-            layout="stacked"
-            value={review.ownerOf(routine.code)}
-            options={documentOwners.map((candidate) => ({
-              value: candidate,
-              label: candidate,
-            }))}
-            onChange={(candidate) => {
-              review.assignOwner(routine.code, candidate);
-            }}
-          />
-          <div
-            className={classNames(styles.savedNote, review.savedNote !== null && styles.saved)}
-            aria-live="polite"
-          >
+          {shownStatus === "in-progress" ? (
+            <SelectField
+              label="Rutineeier"
+              layout="stacked"
+              value={owner ?? ""}
+              options={ownerOptions}
+              onChange={(candidate) => {
+                if (candidate === "") return;
+                setIsChoosingOwner(false);
+                review.startProcessing(routine.code, candidate);
+              }}
+            />
+          ) : (
+            <p className={styles.ownerHint}>En rutine som er ubehandlet har ingen eier.</p>
+          )}
+          {/* Always rendered, so screen readers announce the hint when it appears */}
+          <div role="status">
+            {isChoosingOwner ? (
+              <p className={styles.ownerHint}>Velg en rutineeier for å sette status til Under behandling.</p>
+            ) : null}
+          </div>
+          <div className={styles.savedNote} aria-live="polite">
             {review.savedNote ?? "Endringer lagres automatisk"}
           </div>
         </div>
+      </Card>
+
+      <Card title="Henvendelser knyttet til rutinen">
+        {clusters.map(({ cluster, questions, meanCoverage }) => (
+          <details key={cluster.id} className={styles.cluster}>
+            <summary className={styles.clusterSummary}>
+              <span className={styles.clusterHead}>
+                <span className={styles.clusterToggle} aria-hidden="true" />
+                <span className={styles.clusterTitle}>{cluster.title}</span>
+              </span>
+              <span className={styles.clusterCount}>{formatQuestionCount(questions.length)}</span>
+              <CoverageMeter coverage={meanCoverage} />
+            </summary>
+            <div className={styles.clusterQuestions}>
+              {[...questions].sort(lowestScoreFirst).map((item) => (
+                <QuestionRow key={item.question.id} item={item} otherRoutines={otherRoutines} review={review} />
+              ))}
+            </div>
+          </details>
+        ))}
+
+        {clusters.length > 0 && other.length > 0 ? (
+          <p className={styles.otherHeading}>Øvrige henvendelser · {other.length}</p>
+        ) : null}
+
+        {[...other].sort(lowestScoreFirst).map((item) => (
+          <QuestionRow key={item.question.id} item={item} otherRoutines={otherRoutines} review={review} />
+        ))}
       </Card>
     </section>
   );

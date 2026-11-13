@@ -60,7 +60,7 @@
   gap: 11px;
   align-items: center;
   font-size: 13px;
-  color: var(--color-text-disabled);
+  color: var(--color-text-soft);
 }
 
 .stepActive {

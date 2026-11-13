@@ -1,21 +1,29 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
+import { OpenAboutContext } from "../components/AboutLink";
+import type { AboutTopic } from "../domain/aboutTopics";
+import { AboutView } from "../features/about/AboutView";
+import { ImportView } from "../features/import/ImportView";
 import type { RoutineFilter } from "../features/overview/routineFilters";
+import type { CoverageBand } from "../domain/priority";
 import type { CurrentUser } from "../auth/currentUser";
+import { nextSort, type SortState } from "../components/sort";
 import { OverviewView } from "../features/overview/OverviewView";
 import { ReviewView } from "../features/review/ReviewView";
 import { RunAnalysisView } from "../features/run/RunAnalysisView";
 import { SearchView } from "../features/search/SearchView";
 import { SummaryView } from "../features/summary/SummaryView";
+import type { CoverageBandFilter } from "../features/search/searchResults";
 import { useAnalysisRun } from "../hooks/useAnalysisRun";
 import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
+import { usePageFocus } from "../hooks/usePageFocus";
 import { useRoutineReview } from "../hooks/useRoutineReview";
 import { useSnapshot } from "../hooks/useSnapshot";
-import { DEFAULT_HIDE_ABOVE_PERCENT, isWellCovered } from "../domain/priority";
+import { ownerCandidates } from "../domain/owners";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
 import { Sidebar } from "./Sidebar";
-import type { ViewName } from "./views";
+import { NAVIGATION, isAdminOnly, type ViewName } from "./views";
 import styles from "./App.module.css";
 
 interface AppProps {
@@ -25,10 +33,16 @@ interface AppProps {
 }
 
 export function App({ user, accessToken, onSignOut }: AppProps) {
-  const state = useSnapshot(accessToken);
+  // Raised when an analysis run finishes, so the new snapshot is fetched
+  const [snapshotVersion, setSnapshotVersion] = useState(0);
+  const state = useSnapshot(accessToken, snapshotVersion);
 
   if (state.status === "loading") {
-    return <p className={styles.status}>Henter analysen …</p>;
+    return (
+      <p className={styles.status} role="status">
+        Henter analysen …
+      </p>
+    );
   }
   if (state.status === "error") {
     return (
@@ -37,53 +51,94 @@ export function App({ user, accessToken, onSignOut }: AppProps) {
       </p>
     );
   }
-  return <Dashboard snapshot={state.snapshot} user={user} onSignOut={onSignOut} />;
+  return (
+    <Dashboard
+      snapshot={state.snapshot}
+      user={user}
+      accessToken={accessToken}
+      onSignOut={onSignOut}
+      onSnapshotReplaced={() => {
+        setSnapshotVersion((version) => version + 1);
+      }}
+    />
+  );
 }
 
 interface Location {
   view: ViewName;
   returnView: ViewName;
   routineCode: RoutineCode | null;
+  aboutTopic: AboutTopic | null;
+}
+
+// The browser keeps the history entry's state through a refresh, so reading it
+// back puts the user on the page they were on.
+function locationBeforeRefresh(): Location {
+  const saved = window.history.state as Location | null;
+  const knownViews: ViewName[] = ["detail", ...NAVIGATION.map((entry) => entry.view)];
+  if (saved === null || !knownViews.includes(saved.view)) {
+    return { view: "summary", returnView: "summary", routineCode: null, aboutTopic: null };
+  }
+  return saved;
 }
 
 interface DashboardProps {
   snapshot: AnalysisSnapshot;
   user: CurrentUser;
+  accessToken: string;
   onSignOut: () => void;
+  onSnapshotReplaced: () => void;
 }
 
-function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
-  const [view, setView] = useState<ViewName>("list");
+function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced }: DashboardProps) {
+  const [startLocation] = useState(locationBeforeRefresh);
+  const [view, setView] = useState<ViewName>(startLocation.view);
   // The detail page can be opened from the list or from search; back returns there.
-  const [returnView, setReturnView] = useState<ViewName>("list");
-  const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(null);
+  const [returnView, setReturnView] = useState<ViewName>(startLocation.returnView);
+  const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(startLocation.routineCode);
+  const [aboutTopic, setAboutTopic] = useState<AboutTopic | null>(startLocation.aboutTopic);
   const [filter, setFilter] = useState<RoutineFilter>("all");
-  const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
+  const [coverageFilter, setCoverageFilter] = useState<CoverageBand[]>([]);
+  const [highlightStatusFilter, setHighlightStatusFilter] = useState(false);
+  // Stable, so the list's highlight timer is not restarted by every render
+  const clearStatusHighlight = useCallback(() => {
+    setHighlightStatusFilter(false);
+  }, []);
+  // Kept here so the sort survives leaving and re-entering the list; null = priority order.
+  const [routineSort, setRoutineSort] = useState<SortState | null>(null);
+  // For initializing the search view with a coverage band filter from summary page
+  const [searchCoverageBandFilter, setSearchCoverageBandFilter] = useState<CoverageBandFilter | null>(null);
+  // For initializing the search view with a specific tab
+  const [searchInitialTab, setSearchInitialTab] = useState<"documents" | "questions" | null>(null);
   const settings = useAnalysisSettings();
-  const review = useRoutineReview();
-  const run = useAnalysisRun();
+  const review = useRoutineReview(accessToken);
+  const isAdmin = user.role === "admin";
+  const run = useAnalysisRun(accessToken, isAdmin, onSnapshotReplaced);
+  const mainRef = useRef<HTMLElement>(null);
 
   const applyLocation = (location: Location) => {
     setView(location.view);
     setReturnView(location.returnView);
     setSelectedRoutineCode(location.routineCode);
+    setAboutTopic(location.aboutTopic);
   };
 
   const go = (next: Partial<Location>) => {
     const target: Location = {
-        view,
-        returnView,
-        routineCode: selectedRoutineCode,
-        ...next,
-      };
-      window.history.pushState(target, "");
-      applyLocation(target);
+      view,
+      returnView,
+      routineCode: selectedRoutineCode,
+      aboutTopic: null,
+      ...next,
     };
+    window.history.pushState(target, "");
+    applyLocation(target);
+  };
 
   useEffect(() => {
     // L'entrée actuelle (la vue de départ) devient la première "page" de l'app
-    window.history.replaceState({ view: "list", returnView: "list", routineCode: null }, "");
-  
+    window.history.replaceState(startLocation, "");
+
     const onPopState = (event: PopStateEvent) => {
       const location = event.state as Location | null;
       if (location?.view !== undefined) applyLocation(location);
@@ -92,86 +147,163 @@ function Dashboard({ snapshot, user, onSignOut }: DashboardProps) {
     return () => {
       window.removeEventListener("popstate", onPopState);
     };
-  }, []);
+    // startLocation never changes, so this still runs once
+  }, [startLocation]);
 
   const routines = routinesWithQuestions(snapshot, review.decisionOf);
+  const routinesByName = [...snapshot.documents].sort((a, b) => a.name.localeCompare(b.name, "nb-NO"));
   const pendingCount = countPendingQuestions(snapshot, review.decisionOf);
   const selectedRoutine = routines.find((stats) => stats.routine.code === selectedRoutineCode);
   // A routine loses its place in the list when its last question is moved away
-  const shownView = view === "detail" && selectedRoutine === undefined ? returnView : view;
+  const reachableView = view === "detail" && selectedRoutine === undefined ? returnView : view;
+  const shownView = isAdminOnly(reachableView) && !isAdmin ? "list" : reachableView;
 
   const openRoutine = (routineCode: RoutineCode) => {
     go({ view: "detail", returnView: view, routineCode });
   };
 
+  const openAbout = (topic: AboutTopic) => {
+    go({ view: "about", aboutTopic: topic });
+  };
+
+  usePageFocus(mainRef, `${shownView}:${selectedRoutineCode ?? ""}`, aboutTopic !== null);
 
   return (
-    <div className={styles.layout}>
-      <Sidebar
-        currentView={shownView === "detail" ? returnView : shownView}
-        routineCount={routines.filter((stats) => !isWellCovered(stats, hideAbovePercent)).length}
-        reviewCount={pendingCount}
-        lastRunLabel={run.hasFinished ? "I dag, nettopp" : snapshot.lastRunLabel}
-        isExample={snapshot.isExample}
-        questionCount={snapshot.questions.length}
-        documentCount={snapshot.documents.length}
-        ticketCount={snapshot.totalTickets}
-        user={user}
-        onNavigate={(next) => { go({ view: next }); }}
-        onSignOut={onSignOut}
-      />
+    <OpenAboutContext.Provider value={openAbout}>
+      <a
+        className="skipLink"
+        href="#hovedinnhold"
+        onClick={(event) => {
+          // Moving focus by hand keeps the jump out of the back button's history
+          event.preventDefault();
+          mainRef.current?.focus();
+        }}
+      >
+        Hopp til hovedinnholdet
+      </a>
+      <div className={styles.layout}>
+        <Sidebar
+          currentView={shownView === "detail" ? returnView : shownView}
+          routineCount={routines.length}
+          reviewCount={pendingCount}
+          lastRunLabel={run.hasFinished ? "I dag, nettopp" : snapshot.lastRunLabel}
+          isExample={snapshot.isExample}
+          questionCount={snapshot.questions.length}
+          documentCount={snapshot.documents.length}
+          user={user}
+          onNavigate={(next) => {
+            setSearchCoverageBandFilter(null);
+            setSearchInitialTab(null);
+            setHighlightStatusFilter(false);
+            go({ view: next });
+          }}
+          onSignOut={onSignOut}
+        />
 
-      <main className={styles.main}>
-        {shownView === "list" ? (
-          <OverviewView
-            routines={routines}
-            pendingCount={pendingCount}
-            weights={settings.weights}
-            review={review}
-            filter={filter}
-            onFilterChange={setFilter}
-            hideAbovePercent={hideAbovePercent}
-            onHideAboveChange={setHideAbovePercent}
-            onOpenRoutine={openRoutine}
-            onOpenReview={() => { go({ view: "review" }); }}
-            onOpenSettings={() => { go({ view: "run" }); }}
-          />
-        ) : null}
+        <main ref={mainRef} id="hovedinnhold" tabIndex={-1} className={styles.main}>
+          {shownView === "list" ? (
+            <OverviewView
+              routines={routines}
+              pendingCount={pendingCount}
+              weights={settings.weights}
+              review={review}
+              filter={filter}
+              onFilterChange={setFilter}
+              highlightStatusFilter={highlightStatusFilter}
+              onHighlightShown={clearStatusHighlight}
+              coverageFilter={coverageFilter}
+              onCoverageFilterChange={setCoverageFilter}
+              sort={routineSort}
+              onSortChange={(sortKey) => {
+                setRoutineSort((current) => nextSort(current, sortKey));
+              }}
+              onResetSort={() => {
+                setRoutineSort(null);
+              }}
+              onOpenRoutine={openRoutine}
+              onOpenReview={() => {
+                go({ view: "review" });
+              }}
+              onOpenSettings={() => {
+                go({ view: "run" });
+              }}
+            />
+          ) : null}
 
-        {shownView === "detail" && selectedRoutine !== undefined ? (
-          <RoutineDetailView
-            stats={selectedRoutine}
-            documentOwners={snapshot.documentOwners}
-            weights={settings.weights}
-            review={review}
-            backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
-            onBack={() => { window.history.back(); }}
-          />
-        ) : null}
+          {shownView === "detail" && selectedRoutine !== undefined ? (
+            <RoutineDetailView
+              key={selectedRoutine.routine.code}
+              stats={selectedRoutine}
+              routines={routines}
+              allRoutines={routinesByName}
+              routineClusters={snapshot.routineClusters}
+              ownerCandidates={ownerCandidates(snapshot.documentOwners, user.name)}
+              weights={settings.weights}
+              review={review}
+              backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
+              onBack={() => {
+                window.history.back();
+              }}
+            />
+          ) : null}
 
-        {shownView === "review" ? <ReviewView snapshot={snapshot} review={review} /> : null}
+          {shownView === "review" ? <ReviewView snapshot={snapshot} review={review} /> : null}
 
-        {shownView === "summary" ? (
-          <SummaryView
-            snapshot={snapshot}
-            routines={routines}
-            pendingCount={pendingCount}
-            review={review}
-            hideAbovePercent={hideAbovePercent}
-          />
-        ) : null}
+          {shownView === "summary" ? (
+            <SummaryView
+              snapshot={snapshot}
+              routines={routines}
+              pendingCount={pendingCount}
+              review={review}
+              onOpenReview={() => {
+                go({ view: "review" });
+              }}
+              onFilterByBand={(band) => {
+                setSearchCoverageBandFilter(band);
+                go({ view: "search" });
+              }}
+              onOpenRoutineList={() => {
+                go({ view: "list" });
+              }}
+              onOpenRoutineListByStatus={(status) => {
+                setFilter(status);
+                setCoverageFilter([]);
+                setHighlightStatusFilter(true);
+                go({ view: "list" });
+              }}
+              onOpenQuestionSearch={() => {
+                setSearchCoverageBandFilter(null);
+                setSearchInitialTab("questions");
+                go({ view: "search" });
+              }}
+            />
+          ) : null}
 
-        {shownView === "search" ? (
-          <SearchView
-            snapshot={snapshot}
-            routines={routines}
-            review={review}
-            onOpenRoutine={openRoutine}
-          />
-        ) : null}
+          {shownView === "search" ? (
+            <SearchView
+              snapshot={snapshot}
+              routines={routines}
+              review={review}
+              onOpenRoutine={openRoutine}
+              initialCoverageBandFilter={searchCoverageBandFilter || undefined}
+              initialTab={searchInitialTab || undefined}
+            />
+          ) : null}
 
-        {shownView === "run" ? <RunAnalysisView snapshot={snapshot} run={run} /> : null}
-      </main>
-    </div>
+          {shownView === "run" ? <RunAnalysisView snapshot={snapshot} run={run} canRun={isAdmin} /> : null}
+
+          {shownView === "import" ? (
+            <ImportView
+              accessToken={accessToken}
+              onOpenRun={() => {
+                setView("run");
+              }}
+            />
+          ) : null}
+
+          {shownView === "about" ? <AboutView openTopic={aboutTopic} /> : null}
+        </main>
+      </div>
+    </OpenAboutContext.Provider>
   );
 }

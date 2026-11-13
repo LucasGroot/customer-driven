@@ -1,0 +1,16 @@
+pdfplumber
+sentence-transformers
+pandas
+openpyxl
+rank_bm25
+scikit-learn
+fastapi
+python-multipart
+uvicorn
+pydantic
+pyjwt[crypto]
+certifi
+python-dotenv
+litellm
+psycopg2-binary
+cryptography
