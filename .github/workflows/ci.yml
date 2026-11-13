@@ -65,7 +65,7 @@ jobs:
         
       # Installs dependancies
       - name: install dependencies
-        run: npm ci
+        run: cd frontend && npm ci
 
       # Checks types
       - name: Type check
