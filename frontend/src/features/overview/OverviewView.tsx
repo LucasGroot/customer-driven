@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Button } from "../../components/Button";
+import { classNames } from "../../components/classNames";
 import { FilterPill } from "../../components/FilterPill";
 import { PageIntro } from "../../components/PageIntro";
 import { MultiSelectField } from "../../components/MultiSelectField";
@@ -24,6 +26,9 @@ interface OverviewViewProps {
   review: RoutineReview;
   filter: RoutineFilter;
   onFilterChange: (filter: RoutineFilter) => void;
+  /** Pulses the selected status pill, to show where a click on the summary page landed. */
+  highlightStatusFilter: boolean;
+  onHighlightShown: () => void;
   coverageFilter: CoverageBand[];
   onCoverageFilterChange: (bands: CoverageBand[]) => void;
   sort: SortState | null;
@@ -41,6 +46,8 @@ export function OverviewView({
   review,
   filter,
   onFilterChange,
+  highlightStatusFilter,
+  onHighlightShown,
   coverageFilter,
   onCoverageFilterChange,
   sort,
@@ -50,6 +57,15 @@ export function OverviewView({
   onOpenReview,
   onOpenSettings,
 }: OverviewViewProps) {
+  useEffect(() => {
+    if (!highlightStatusFilter) return;
+    // Matches the length of the pulse animation (three 1 s rounds)
+    const timer = setTimeout(onHighlightShown, 3000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [highlightStatusFilter, onHighlightShown]);
+
   // Filtered after ranking so a routine keeps its overall rank number
   const inCoverageBand = filterByCoverage(rankRoutines(routines, weights), coverageFilter);
   const visible = filterRoutines(inCoverageBand, filter, review.statusOf);
@@ -67,7 +83,11 @@ export function OverviewView({
       </div>
 
       <div className={styles.filters}>
-        <div className={styles.filterPills} role="group" aria-label="Filtrer rutinene">
+        <div
+          className={classNames(styles.filterPills, highlightStatusFilter && styles.highlight)}
+          role="group"
+          aria-label="Filtrer rutinene"
+        >
           {ROUTINE_FILTERS.map((option) => (
             <FilterPill
               key={option.key}

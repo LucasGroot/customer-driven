@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { RoutineDetailView } from "../features/detail/RoutineDetailView";
 import { OpenAboutContext } from "../components/AboutLink";
 import type { AboutTopic } from "../domain/aboutTopics";
@@ -99,6 +99,11 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   const [aboutTopic, setAboutTopic] = useState<AboutTopic | null>(startLocation.aboutTopic);
   const [filter, setFilter] = useState<RoutineFilter>("all");
   const [coverageFilter, setCoverageFilter] = useState<CoverageBand[]>([]);
+  const [highlightStatusFilter, setHighlightStatusFilter] = useState(false);
+  // Stable, so the list's highlight timer is not restarted by every render
+  const clearStatusHighlight = useCallback(() => {
+    setHighlightStatusFilter(false);
+  }, []);
   // Kept here so the sort survives leaving and re-entering the list; null = priority order.
   const [routineSort, setRoutineSort] = useState<SortState | null>(null);
   // For initializing the search view with a coverage band filter from summary page
@@ -188,6 +193,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
           onNavigate={(next) => {
             setSearchCoverageBandFilter(null);
             setSearchInitialTab(null);
+            setHighlightStatusFilter(false);
             go({ view: next });
           }}
           onSignOut={onSignOut}
@@ -202,6 +208,8 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               review={review}
               filter={filter}
               onFilterChange={setFilter}
+              highlightStatusFilter={highlightStatusFilter}
+              onHighlightShown={clearStatusHighlight}
               coverageFilter={coverageFilter}
               onCoverageFilterChange={setCoverageFilter}
               sort={routineSort}
@@ -249,6 +257,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               onOpenRoutineListByStatus={(status) => {
                 setFilter(status);
                 setCoverageFilter([]);
+                setHighlightStatusFilter(true);
                 go({ view: "list" });
               }}
               onOpenQuestionSearch={() => {
