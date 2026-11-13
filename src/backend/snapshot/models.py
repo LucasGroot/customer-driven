@@ -17,6 +17,11 @@ class RoutineDocument(CamelCaseModel):
     uploaded_label: str
 
 
+class RoutineCandidate(CamelCaseModel):
+    document_code: str
+    score: float
+
+
 class AskedQuestion(CamelCaseModel):
     id: str
     text: str
@@ -27,6 +32,8 @@ class AskedQuestion(CamelCaseModel):
     needs_review: bool
     group_id: str | None = None
     routine_cluster_id: str | None = None
+    # Best match first. Empty in a snapshot made before candidates were stored.
+    candidates: list[RoutineCandidate] = []
 
 
 class ReviewGroup(CamelCaseModel):

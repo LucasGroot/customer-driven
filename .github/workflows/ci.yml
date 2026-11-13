@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build_back:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     strategy:
@@ -49,3 +49,28 @@ jobs:
       # Runs tests
       - name: Run tests
         run: python -m pytest
+  
+  build_front:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Sets up Node
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+        
+      # Installs dependancies
+      - name: install dependencies
+        run: cd frontend && npm ci
+
+      # Checks types
+      - name: Type check
+        run: cd frontend && npx tsc --noEmit
+
+      # Runs tests
+      - name: Run tests
+        run: cd frontend && npx vitest run
