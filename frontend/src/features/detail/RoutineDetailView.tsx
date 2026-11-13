@@ -143,9 +143,6 @@ export function RoutineDetailView({
     }
     if (!isInProgress) setIsChoosingOwner(true);
   };
-  const questionsLowestScoreFirst = [...stats.questions].sort(
-    (a, b) => a.question.coverage - b.question.coverage,
-  );
   const otherRoutines = allRoutines.filter((candidate) => candidate.code !== routine.code);
 
   return (
