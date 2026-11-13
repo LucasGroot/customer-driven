@@ -116,7 +116,14 @@ You need Python 3.10 or newer (CI tests 3.12 to 3.14), Node.js 22.12 or newer, a
 
 3. Copy `.env.example` to `.env` and fill it in, as in steps 1 to 4 of [Running with Docker](#running-with-docker). `DBHOST` is `localhost` here, and the database name, user and password are the ones of the database you start in the next step.
 
-4. Start a database and create its tables, see [`backend/src/db`](backend/src/db/README.md).
+4. Start a PostgreSQL database and create its tables. Use the same values as in `.env` for `<DBNAME>`, `<DBUSER>` and `<DBPASSWORD>`, and write the first command on one line:
+
+   ```bash
+   docker run --name kunnskapsgap-db -e POSTGRES_DB=<DBNAME> -e POSTGRES_USER=<DBUSER> -e POSTGRES_PASSWORD=<DBPASSWORD> -p 127.0.0.1:5432:5432 -d postgres:16
+   python -m src.db.create_db
+   ```
+
+   You do not need to `export` anything: the API and `create_db` read the settings from `.env`. Next time, start the same database with `docker start kunnskapsgap-db`. More about the database in [`backend/src/db`](backend/src/db/README.md).
 
 5. Start the API, with the virtual environment active, from the project root:
 

@@ -29,15 +29,14 @@ Keep the key safe: without it the stored snapshots cannot be read.
 
 With Docker Compose the database starts together with the app, and the API creates the tables when it starts, see [Running with Docker](../../../README.md#running-with-docker).
 
-To run the API outside Docker you need a database it can reach, for example:
+To run the API outside Docker you need a database it can reach. The name, user and password you give the database must be the same as `DBNAME`, `DBUSER` and `DBPASSWORD` in `.env`, and `DBHOST` is `localhost`. With the example values from `.env.example` (and your own password), write the first command on one line:
 
 ```bash
-docker run --name kunnskapsgap-db -e POSTGRES_DB=kunnskapsgap -e POSTGRES_PASSWORD=<password> \
-  -p 127.0.0.1:5432:5432 -d postgres:16
+docker run --name kunnskapsgap-db -e POSTGRES_DB=kunnskapsgap -e POSTGRES_USER=kunnskapsgap -e POSTGRES_PASSWORD=<password> -p 127.0.0.1:5432:5432 -d postgres:16
 python -m src.db.create_db
 ```
 
-with `DBHOST=localhost` and the same name and password in `.env`.
+`create_db` and the API read the settings from `.env`, so nothing has to be exported in the terminal. If you leave out `POSTGRES_USER`, the database user is `postgres`, and then `DBUSER` has to be `postgres`.
 
 ## Tests
 
