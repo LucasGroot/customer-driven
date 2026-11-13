@@ -29,20 +29,58 @@ Four parts work together: an analysis that scores the data, a PostgreSQL databas
 
 ### Running with Docker
 
-The API, the dashboard and the PostgreSQL database run as containers, with no Python, Node.js or PostgreSQL on your machine.
+The API, the dashboard and the PostgreSQL database run as containers, with no Python, Node.js or PostgreSQL on your machine. You need Docker Desktop (or Docker with Compose), and it has to be running.
 
-1. Copy `.env.example` to `.env` and fill it in: the IDs from the Microsoft Entra app registration ([how to set it up](docs/entra-app-registration.md)), the database settings, `SNAPSHOT_KEYS` and `LITELLM_*`. Add `http://localhost:8080` as a single-page application redirect URI in the app registration.
-2. Start everything:
+1. Copy the example settings. Run this in the project root:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Open `.env` and fill it in:
+
+   | Setting                                               | What to write                                                                                                                                                                                |
+   | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | `ENTRA_TENANT_ID`, `ENTRA_CLIENT_ID`                  | In the Entra admin center, open **App registrations**, the app, **Overview**: _Directory (tenant) ID_ and _Application (client) ID_. [How to set up the app](docs/entra-app-registration.md) |
+   | `VITE_ENTRA_TENANT_ID`, `VITE_ENTRA_CLIENT_ID`        | The same two values again. The dashboard reads these ones                                                                                                                                    |
+   | `DBNAME`, `DBUSER`                                    | Your choice. `kunnskapsgap` for both works. Docker creates the database with these names the first time it starts                                                                            |
+   | `DBPASSWORD`                                          | Make up a password. Avoid `$`, `#`, quotes and spaces                                                                                                                                        |
+   | `DBHOST`                                              | Leave as it is. In Docker the API finds the database by itself                                                                                                                               |
+   | `SNAPSHOT_KEYS`                                       | A key that encrypts the stored results. Make one in the next step                                                                                                                            |
+   | `LITELLM_API_URL`, `LITELLM_API_KEY`, `LITELLM_MODEL` | From whoever runs the LiteLLM proxy. Only needed to run an analysis, which uses it to title the question groups                                                                              |
+   | `ALLOWED_ORIGIN`                                      | Leave as it is                                                                                                                                                                               |
+
+3. Make the `SNAPSHOT_KEYS` key and paste the line it prints after `SNAPSHOT_KEYS=` in `.env`.
+
+   macOS and Linux:
+
+   ```bash
+   openssl rand -base64 32 | tr '+/' '-_'
+   ```
+
+   Windows, or if you have Python with `pip install cryptography`:
+
+   ```bash
+   python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+   ```
+
+4. In the Entra app registration, open **Authentication** and add `http://localhost:8080` as a _single-page application_ redirect URI. Without it, Microsoft refuses the sign-in.
+
+5. Start everything, and open <http://localhost:8080> when the terminal says the API is running:
 
    ```bash
    docker compose up --build
    ```
 
-3. Open <http://localhost:8080>.
+The first build takes a while, because it downloads the embedding model into the image. Stop with `Ctrl+C`, or with `docker compose down` if it runs in the background (`docker compose up -d`).
 
-The first build takes a while, because it downloads the embedding model into the image. The Entra IDs are built into the dashboard, so run `docker compose build` again if you change them.
+Good to know:
 
-The database is created from `DBNAME`, `DBUSER` and `DBPASSWORD` in `.env`, and the API creates its tables when it starts. It is only reachable from the other containers, not from your machine. The analysis results and HR's decisions are stored in it; uploaded data and the audit log live in Docker volumes. Nothing is stored in the images. `docker compose down` keeps all of it; `docker compose down -v` deletes it. Keep `SNAPSHOT_KEYS` safe: without it the stored snapshots cannot be read.
+- The database is created from `DBNAME`, `DBUSER` and `DBPASSWORD` the first time only. If you change them later, the old database keeps the old values and the API cannot connect. Delete the database and start over with `docker compose down -v` (this deletes the stored data).
+- The API creates its tables when it starts. The database is only reachable from the other containers, not from your machine.
+- The analysis results and HR's decisions are stored in the database; uploaded data and the audit log live in Docker volumes. Nothing is stored in the images. `docker compose down` keeps all of it; `docker compose down -v` deletes it.
+- Keep `SNAPSHOT_KEYS` safe, and never change it for a database that already has results: without the key, the stored snapshots cannot be read.
+- The Entra IDs are built into the dashboard, so run `docker compose build` again if you change them.
 
 ### Running without Docker
 
@@ -76,7 +114,7 @@ You need Python 3.10 or newer (CI tests 3.12 to 3.14), Node.js 22.12 or newer, a
    cd frontend && npm install
    ```
 
-3. Copy `.env.example` to `.env` and fill it in, as in step 1 of [Running with Docker](#running-with-docker). `DBHOST` is `localhost` here.
+3. Copy `.env.example` to `.env` and fill it in, as in steps 1 to 4 of [Running with Docker](#running-with-docker). `DBHOST` is `localhost` here, and the database name, user and password are the ones of the database you start in the next step.
 
 4. Start a database and create its tables, see [`backend/src/db`](backend/src/db/README.md).
 
