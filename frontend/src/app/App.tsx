@@ -12,6 +12,7 @@ import { ReviewView } from "../features/review/ReviewView";
 import { RunAnalysisView } from "../features/run/RunAnalysisView";
 import { SearchView } from "../features/search/SearchView";
 import { SummaryView } from "../features/summary/SummaryView";
+import type { CoverageBandFilter } from "../features/search/searchResults";
 import { useAnalysisRun } from "../hooks/useAnalysisRun";
 import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
 import { usePageFocus } from "../hooks/usePageFocus";
@@ -100,6 +101,8 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
   // Kept here so the sort survives leaving and re-entering the list; null = priority order.
   const [routineSort, setRoutineSort] = useState<SortState | null>(null);
+  // For initializing the search view with a coverage band filter from summary page
+  const [searchCoverageBandFilter, setSearchCoverageBandFilter] = useState<CoverageBandFilter | null>(null);
   const settings = useAnalysisSettings();
   const review = useRoutineReview();
   const isAdmin = user.role === "admin";
@@ -128,7 +131,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   useEffect(() => {
     // L'entrée actuelle (la vue de départ) devient la première "page" de l'app
     window.history.replaceState(startLocation, "");
-  
+
     const onPopState = (event: PopStateEvent) => {
       const location = event.state as Location | null;
       if (location?.view !== undefined) applyLocation(location);
@@ -233,6 +236,10 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               review={review}
               hideAbovePercent={hideAbovePercent}
               onOpenReview={() => { go({ view: "review" }); }}
+              onFilterByBand={(band) => {
+                setSearchCoverageBandFilter(band);
+                go({ view: "search" });
+              }}
             />
           ) : null}
 
@@ -242,6 +249,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               routines={routines}
               review={review}
               onOpenRoutine={openRoutine}
+              initialCoverageBandFilter={searchCoverageBandFilter ?? undefined}
             />
           ) : null}
 

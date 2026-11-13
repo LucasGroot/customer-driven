@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../../components/Button";
 import { FilterPill } from "../../components/FilterPill";
 import { PageIntro } from "../../components/PageIntro";
@@ -28,6 +28,7 @@ interface SearchViewProps {
   routines: RoutineStats[];
   review: RoutineReview;
   onOpenRoutine: (routineCode: RoutineCode) => void;
+  initialCoverageBandFilter?: CoverageBandFilter;
 }
 
 // PLACEMENT_FILTERS uses { key, label }, but SelectField expects { value, label }.
@@ -41,18 +42,30 @@ const COVERAGE_BAND_FILTER_OPTIONS = COVERAGE_BAND_FILTERS.map((option) => ({
   label: option.label,
 }));
 
-export function SearchView({ snapshot, routines, review, onOpenRoutine }: SearchViewProps) {
+export function SearchView({ snapshot, routines, review, onOpenRoutine, initialCoverageBandFilter }: SearchViewProps) {
   // Which list is shown: routines by default, or the questions.
   const [tab, setTab] = useState<SearchTab>("documents");
   const [query, setQuery] = useState("");
   // Placement filter (Alle / Knyttet til rutine / ...), only used on the questions tab.
   const [placementFilter, setPlacementFilter] = useState<PlacementFilter>("all");
   // Coverage band filter (Alle / Svak / Delvis / God / Uten henvendelser), only used on the documents tab.
-  const [coverageBandFilter, setCoverageBandFilter] = useState<CoverageBandFilter>("all");
+  const [coverageBandFilter, setCoverageBandFilter] = useState<CoverageBandFilter>(initialCoverageBandFilter ?? "all");
   // The "Sorter" dropdown: the base order of the list.
   const [sort, setSort] = useState<SortOrder>("coverage-asc");
   // A click on a column header. Applied on top of the dropdown order; null = no column sort.
   const [columnSort, setColumnSort] = useState<SortState | null>(null);
+  // Show highlight animation when filter is applied from summary page
+  const [showHighlight, setShowHighlight] = useState(initialCoverageBandFilter !== undefined && initialCoverageBandFilter !== null);
+
+  useEffect(() => {
+    if (showHighlight) {
+      // Remove highlight after animation completes (3s animation)
+      const timer = setTimeout(() => {
+        setShowHighlight(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showHighlight]);
 
   const { questions, documents } = snapshot;
   const questionResults = searchQuestions(questions, documents, {
@@ -121,12 +134,14 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine }: Search
               onChange={setPlacementFilter}
             />
           ) : (
-            <SelectField
-              label="Filter"
-              value={coverageBandFilter}
-              options={COVERAGE_BAND_FILTER_OPTIONS}
-              onChange={setCoverageBandFilter}
-            />
+            <div className={showHighlight ? styles.highlight : ""}>
+              <SelectField
+                label="Filter"
+                value={coverageBandFilter}
+                options={COVERAGE_BAND_FILTER_OPTIONS}
+                onChange={setCoverageBandFilter}
+              />
+            </div>
           )}
           <SelectField
             label="Sorter"

@@ -23,6 +23,23 @@
   align-items: center;
   gap: 16px;
   font-size: 13.5px;
+  padding: 8px;
+  margin: -8px;
+  border-radius: var(--radius-md);
+  transition: background-color 150ms ease;
+}
+
+.bandRow[role="button"] {
+  cursor: pointer;
+}
+
+.bandRow[role="button"]:hover {
+  background-color: var(--color-surface-muted);
+}
+
+.bandRow[role="button"]:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 0;
 }
 
 .bandLabel {
