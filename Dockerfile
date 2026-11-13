@@ -24,4 +24,5 @@ RUN useradd --create-home app \
 USER app
 
 EXPOSE 8000
-CMD ["uvicorn", "backend.api.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+# create_db can run on every start; it leaves existing tables and data alone
+CMD ["sh", "-c", "python -m backend.db.create_db && exec uvicorn backend.api.main:create_app --factory --host 0.0.0.0 --port 8000"]

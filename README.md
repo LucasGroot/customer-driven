@@ -67,7 +67,7 @@ The dashboard asks the API for its data, so the API has to be running.
 
 ### Running with Docker
 
-The API and the dashboard also run as containers, with no Python or Node.js on your machine. Fill in `.env` as in step 3 above, and add `http://localhost:8080` as a single-page application redirect URI in the Entra app registration. Then:
+The API, the dashboard and the PostgreSQL database also run as containers, with no Python, Node.js or PostgreSQL on your machine. Fill in `.env` as in step 3 above, including the database settings and `SNAPSHOT_KEYS`, and add `http://localhost:8080` as a single-page application redirect URI in the Entra app registration. Then:
 
 ```bash
 docker compose up --build
@@ -75,7 +75,7 @@ docker compose up --build
 
 Open <http://localhost:8080>. The first build takes a while, because it downloads the embedding model into the image. The Entra IDs are built into the dashboard, so run `docker compose build` again if you change them.
 
-Uploaded data, the analysis output and the audit log live in Docker volumes, never in the images. `docker compose down` keeps them; `docker compose down -v` deletes them.
+The database is created from `DBNAME`, `DBUSER` and `DBPASSWORD` in `.env`, and the API creates its tables when it starts. It is only reachable from the other containers, not from your machine. The analysis results and HR's decisions are stored in it; uploaded data and the audit log live in Docker volumes. Nothing is stored in the images. `docker compose down` keeps all of it; `docker compose down -v` deletes it. Keep `SNAPSHOT_KEYS` safe: without it the stored snapshots cannot be read.
 
 ### Updating the data
 
