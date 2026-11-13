@@ -147,7 +147,7 @@ export function SummaryView({
         <StatCard
           label="Til gjennomgang"
           value={String(pendingCount)}
-          note="henvendelser uten rutine"
+          note="henvendelser som trenger manuell gjennomgang"
           onClick={onOpenReview}
         />
         <StatCard
