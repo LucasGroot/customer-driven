@@ -4,43 +4,48 @@ interface Column {
   label: string;
   value: number;
   color: string;
+  onSelect: () => void;
 }
 
 interface ColumnChartProps {
-  /** Read out by screen readers together with every column's value. */
+  /** Names the group of columns for screen readers. */
   title: string;
   columns: Column[];
 }
 
-/** Columns scaled to the tallest one. Every value is printed on its column, so there is no y-axis. */
+/**
+ * Columns scaled to the tallest one. Every value is printed on its column, so there is no y-axis.
+ * Each column and its label form one button.
+ */
 export function ColumnChart({ title, columns }: ColumnChartProps) {
   const largestValue = Math.max(1, ...columns.map((column) => column.value));
-  const description = columns.map((column) => `${column.label}: ${String(column.value)}`).join(", ");
 
   return (
-    <div className={styles.chart} role="img" aria-label={`${title}. ${description}`}>
-      <div className={styles.plot}>
-        {columns.map((column) => {
-          const heightPercent = (column.value / largestValue) * 100;
-          return (
-            <div key={column.label} className={styles.slot}>
+    <div className={styles.chart} role="group" aria-label={title}>
+      {columns.map((column) => {
+        const heightPercent = (column.value / largestValue) * 100;
+        return (
+          <button
+            key={column.label}
+            type="button"
+            className={styles.columnButton}
+            aria-label={`${column.label}: ${String(column.value)}`}
+            onClick={column.onSelect}
+          >
+            <span className={styles.slot} aria-hidden="true">
               <span className={styles.value} style={{ bottom: `${String(heightPercent)}%` }}>
                 {column.value}
               </span>
               {column.value > 0 ? (
-                <div className={styles.column} style={{ height: `${String(heightPercent)}%`, background: column.color }} />
+                <span className={styles.column} style={{ height: `${String(heightPercent)}%`, background: column.color }} />
               ) : null}
-            </div>
-          );
-        })}
-      </div>
-      <div className={styles.categories}>
-        {columns.map((column) => (
-          <span key={column.label} className={styles.category}>
-            {column.label}
-          </span>
-        ))}
-      </div>
+            </span>
+            <span className={styles.category} aria-hidden="true">
+              {column.label}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }

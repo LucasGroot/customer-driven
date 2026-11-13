@@ -15,7 +15,7 @@ import {
 } from "../../domain/labels";
 import { coverageBand, type CoverageBand } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
-import type { AnalysisSnapshot } from "../../domain/types";
+import type { AnalysisSnapshot, RoutineStatus } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import styles from "./SummaryView.module.css";
 
@@ -27,6 +27,7 @@ interface SummaryViewProps {
   onOpenReview?: () => void;
   onFilterByBand?: (band: CoverageBand | "no-questions") => void;
   onOpenRoutineList?: () => void;
+  onOpenRoutineListByStatus?: (status: RoutineStatus) => void;
   onOpenQuestionSearch?: () => void;
 }
 
@@ -38,6 +39,7 @@ export function SummaryView({
   onOpenReview,
   onFilterByBand,
   onOpenRoutineList,
+  onOpenRoutineListByStatus,
   onOpenQuestionSearch,
 }: SummaryViewProps) {
   // The coverage bars show every routine, also those no question points to
@@ -125,8 +127,14 @@ export function SummaryView({
                 label: STATUS_LABEL[status],
                 value: count,
                 color: STATUS_COLOR[status],
+                onSelect: () => onOpenRoutineListByStatus?.(status),
               })),
-              { label: "Uten henvendelser", value: withoutQuestionsCount, color: "var(--color-text-dim)" },
+              {
+                label: "Uten henvendelser",
+                value: withoutQuestionsCount,
+                color: "var(--color-text-dim)",
+                onSelect: () => onFilterByBand?.("no-questions"),
+              },
             ]}
           />
         </Card>

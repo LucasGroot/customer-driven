@@ -246,6 +246,11 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
                 go({ view: "search" });
               }}
               onOpenRoutineList={() => { go({ view: "list" }); }}
+              onOpenRoutineListByStatus={(status) => {
+                setFilter(status);
+                setCoverageFilter([]);
+                go({ view: "list" });
+              }}
               onOpenQuestionSearch={() => {
                 setSearchCoverageBandFilter(null);
                 setSearchInitialTab("questions");
