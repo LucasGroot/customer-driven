@@ -23,6 +23,15 @@ describe("importErrorMessage", () => {
     expect(message).toBe("Excel-filen mangler kolonnene «Nummer», «Beskrivelse».");
   });
 
+  it("gives the limit when an upload is too large or holds too many routines", () => {
+    expect(importErrorMessage(413, { reason: "uploadTooLarge", maxMegabytes: 100 })).toBe(
+      "Filene er for store til sammen. Last opp høyst 100 MB om gangen.",
+    );
+    expect(importErrorMessage(413, { reason: "tooManyFiles", maxFiles: 300 })).toBe(
+      "Du har valgt for mange rutiner. Last opp høyst 300 om gangen.",
+    );
+  });
+
   it("explains a refusal for someone who is not an administrator", () => {
     expect(importErrorMessage(403, undefined)).toBe("Du har ikke tilgang til å laste opp data.");
   });

@@ -40,6 +40,11 @@ def import_data(
         raise HTTPException(status.HTTP_409_CONFLICT, {"reason": "analysisRunning"})
     if questions is None and not routines:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, {"reason": "noFiles"})
+    if routines is not None and len(routines) > uploads.MAX_ROUTINES_PER_UPLOAD:
+        raise HTTPException(
+            status.HTTP_413_CONTENT_TOO_LARGE,
+            {"reason": "tooManyFiles", "maxFiles": uploads.MAX_ROUTINES_PER_UPLOAD},
+        )
 
     questions_file = read_upload(questions) if questions is not None else None
     routine_files = [read_upload(upload) for upload in routines or []]
@@ -47,10 +52,11 @@ def import_data(
         if questions_file is not None:
             uploads.check_questions(questions_file)
         uploads.check_routines(routine_files)
+        new_routines, skipped_routines = uploads.split_new_routines(routine_files)
+        uploads.check_routine_storage(new_routines)
     except uploads.UploadRejectedError as error:
         raise HTTPException(error.status_code, error.detail) from None
 
-    new_routines, skipped_routines = uploads.split_new_routines(routine_files)
     if questions_file is not None:
         uploads.save_questions(questions_file)
     added_routines = uploads.save_routines(new_routines)

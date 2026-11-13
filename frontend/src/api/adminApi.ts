@@ -24,6 +24,7 @@ interface RefusalDetail {
   columns?: string[];
   expected?: string;
   maxMegabytes?: number;
+  maxFiles?: number;
 }
 
 const FILE_TYPE_LABEL: Record<string, string> = { xlsx: "Excel-fil (.xlsx)", pdf: "PDF-fil" };
@@ -38,6 +39,16 @@ export function importErrorMessage(status: number, detail: RefusalDetail | undef
       return `«${detail.file ?? ""}» er ikke en ${FILE_TYPE_LABEL[detail.expected ?? ""] ?? "gyldig fil"}.`;
     case "tooLarge":
       return `«${detail.file ?? ""}» er for stor. Største tillatte størrelse er ${String(detail.maxMegabytes)} MB.`;
+    case "uploadTooLarge":
+      return `Filene er for store til sammen. Last opp høyst ${String(detail.maxMegabytes)} MB om gangen.`;
+    case "tooManyFiles":
+      return `Du har valgt for mange rutiner. Last opp høyst ${String(detail.maxFiles)} om gangen.`;
+    case "unpackedTooLarge":
+      return `«${detail.file ?? ""}» blir for stor når den pakkes ut. Eksporter den på nytt fra ServiceNow.`;
+    case "storageFull":
+      return `Det er ikke plass til flere rutiner. Rutinene kan ta opp høyst ${String(detail.maxMegabytes)} MB.`;
+    case "lengthRequired":
+      return "Opplastingen manglet størrelsen sin. Prøv igjen i en vanlig nettleser.";
     case "invalidName":
       return `Filnavnet «${detail.file ?? ""}» kan ikke brukes. Gi filen et vanlig navn og prøv igjen.`;
     case "unreadable":
