@@ -65,7 +65,7 @@ jobs:
       - name: install dependencies
         run: |
           cd frontend && npm install
-          cd frontend && npm audix fix
+          npm audix fix
 
       # Runs test
       - name: Run tests
