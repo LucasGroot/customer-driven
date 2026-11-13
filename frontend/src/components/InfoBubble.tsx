@@ -1,4 +1,12 @@
-import { useContext, useEffect, useId, useRef, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type SyntheticEvent,
+} from "react";
 import { createPortal } from "react-dom";
 import type { AboutTopic } from "../domain/aboutTopics";
 import { OpenAboutContext } from "./AboutLink";
@@ -81,6 +89,19 @@ export function InfoBubble({ subject, text, topic }: InfoBubbleProps) {
     };
   }, [isOpen]);
 
+  /*
+   * The (i) often sits inside a clickable row, and React passes the bubble's events up to
+   * that row even though it is drawn elsewhere on the page. Clicks and the keys that act
+   * like clicks stay here, so opening or using the bubble never also triggers the row.
+   * Other keys still pass, as the Escape and Tab handling above listens on the window.
+   */
+  const keepClickInside = (event: SyntheticEvent) => {
+    event.stopPropagation();
+  };
+  const keepActivationKeysInside = (event: ReactKeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") event.stopPropagation();
+  };
+
   const toggle = () => {
     if (isOpen) {
       setPosition(null);
@@ -109,13 +130,19 @@ export function InfoBubble({ subject, text, topic }: InfoBubbleProps) {
         aria-label={`Mer om ${subject.toLowerCase()}`}
         aria-expanded={isOpen}
         aria-controls={isOpen ? bubbleId : undefined}
-        onClick={toggle}
+        onClick={(event) => {
+          keepClickInside(event);
+          toggle();
+        }}
+        onKeyDown={keepActivationKeysInside}
       >
         i
       </button>
       {position === null
         ? null
         : createPortal(
+            // The listeners only stop events from reaching a clickable row; they add no interaction
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
             <div
               ref={bubbleRef}
               id={bubbleId}
@@ -124,6 +151,8 @@ export function InfoBubble({ subject, text, topic }: InfoBubbleProps) {
               className={styles.bubble}
               style={{ top: position.top, left: position.left, width: BUBBLE_WIDTH }}
               tabIndex={-1}
+              onClick={keepClickInside}
+              onKeyDown={keepActivationKeysInside}
             >
               <p>{text}</p>
               {topic !== undefined && openAbout !== null ? (

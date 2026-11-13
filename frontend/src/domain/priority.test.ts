@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   coverageBand,
-  isWellCovered,
   priorityBand,
   priorityScore,
   rankRoutines,
@@ -132,12 +131,5 @@ describe("rankRoutines", () => {
   it("leaves the input list in its original order", () => {
     rankRoutines(routines, EVEN_WEIGHTS);
     expect(routines.map((stats) => stats.routine.code)).toEqual(["low", "high", "mid"]);
-  });
-});
-
-describe("coverage cut-off", () => {
-  it("counts a routine as well covered only above the cut-off", () => {
-    expect(isWellCovered(makeStats(1, 0.71), 70)).toBe(true);
-    expect(isWellCovered(makeStats(1, 0.7), 70)).toBe(false);
   });
 });

@@ -185,7 +185,7 @@ export function RoutineDetailView({
                 <span className={styles.factorLabel}>{factor.label}</span>
                 <span className={styles.factorWeight}>{factor.weightLabel}</span>
               </div>
-              <MeterBar value={factor.value} color="var(--color-accent)" thick />
+              <MeterBar value={factor.value} color="var(--color-accent)" size="thick" />
               <div className={styles.factorNote}>{factor.note}</div>
             </div>
           ))}
