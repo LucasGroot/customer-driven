@@ -183,7 +183,10 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
           questionCount={snapshot.questions.length}
           documentCount={snapshot.documents.length}
           user={user}
-          onNavigate={(next) => { go({ view: next }); }}
+          onNavigate={(next) => {
+            setSearchCoverageBandFilter(null);
+            go({ view: next });
+          }}
           onSignOut={onSignOut}
         />
 
