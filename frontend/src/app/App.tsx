@@ -103,6 +103,8 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   const [routineSort, setRoutineSort] = useState<SortState | null>(null);
   // For initializing the search view with a coverage band filter from summary page
   const [searchCoverageBandFilter, setSearchCoverageBandFilter] = useState<CoverageBandFilter | null>(null);
+  // For initializing the search view with a specific tab
+  const [searchInitialTab, setSearchInitialTab] = useState<"documents" | "questions" | null>(null);
   const settings = useAnalysisSettings();
   const review = useRoutineReview();
   const isAdmin = user.role === "admin";
@@ -185,6 +187,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
           user={user}
           onNavigate={(next) => {
             setSearchCoverageBandFilter(null);
+            setSearchInitialTab(null);
             go({ view: next });
           }}
           onSignOut={onSignOut}
@@ -243,6 +246,12 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
                 setSearchCoverageBandFilter(band);
                 go({ view: "search" });
               }}
+              onOpenRoutineList={() => { go({ view: "list" }); }}
+              onOpenQuestionSearch={() => {
+                setSearchCoverageBandFilter(null);
+                setSearchInitialTab("questions");
+                go({ view: "search" });
+              }}
             />
           ) : null}
 
@@ -252,7 +261,8 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               routines={routines}
               review={review}
               onOpenRoutine={openRoutine}
-              initialCoverageBandFilter={searchCoverageBandFilter ?? undefined}
+              initialCoverageBandFilter={searchCoverageBandFilter || undefined}
+              initialTab={searchInitialTab || undefined}
             />
           ) : null}
 

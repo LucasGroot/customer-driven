@@ -29,6 +29,7 @@ interface SearchViewProps {
   review: RoutineReview;
   onOpenRoutine: (routineCode: RoutineCode) => void;
   initialCoverageBandFilter?: CoverageBandFilter;
+  initialTab?: SearchTab;
 }
 
 // PLACEMENT_FILTERS uses { key, label }, but SelectField expects { value, label }.
@@ -42,9 +43,9 @@ const COVERAGE_BAND_FILTER_OPTIONS = COVERAGE_BAND_FILTERS.map((option) => ({
   label: option.label,
 }));
 
-export function SearchView({ snapshot, routines, review, onOpenRoutine, initialCoverageBandFilter }: SearchViewProps) {
+export function SearchView({ snapshot, routines, review, onOpenRoutine, initialCoverageBandFilter, initialTab }: SearchViewProps) {
   // Which list is shown: routines by default, or the questions.
-  const [tab, setTab] = useState<SearchTab>("documents");
+  const [tab, setTab] = useState<SearchTab>(initialTab ?? "documents");
   const [query, setQuery] = useState("");
   // Placement filter (Alle / Knyttet til rutine / ...), only used on the questions tab.
   const [placementFilter, setPlacementFilter] = useState<PlacementFilter>("all");

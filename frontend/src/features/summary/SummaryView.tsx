@@ -26,6 +26,8 @@ interface SummaryViewProps {
   hideAbovePercent: number;
   onOpenReview?: () => void;
   onFilterByBand?: (band: CoverageBand | "no-questions") => void;
+  onOpenRoutineList?: () => void;
+  onOpenQuestionSearch?: () => void;
 }
 
 export function SummaryView({
@@ -36,6 +38,8 @@ export function SummaryView({
   hideAbovePercent,
   onOpenReview,
   onFilterByBand,
+  onOpenRoutineList,
+  onOpenQuestionSearch,
 }: SummaryViewProps) {
   const total = routines.length || 1;
   // The coverage bars show every routine, also those no question points to
@@ -150,8 +154,14 @@ export function SummaryView({
           label="Rutiner med henvendelser"
           value={`${String(routines.length)} / ${String(snapshot.documents.length)}`}
           note={`${String(shownCount)} vises i listen`}
+          onClick={onOpenRoutineList}
         />
-        <StatCard label="Henvendelser" value={String(snapshot.questions.length)} note="analysert" />
+        <StatCard
+          label="Henvendelser"
+          value={String(snapshot.questions.length)}
+          note="analysert"
+          onClick={onOpenQuestionSearch}
+        />
       </StatGrid>
 
       <Card title="Datagrunnlag">
