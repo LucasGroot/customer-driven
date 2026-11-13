@@ -19,7 +19,6 @@ import type {
   RoutineDocument,
   RoutineStatus,
 } from "../../domain/types";
-import { routinePdfUrl } from "./routinePdf";
 import { groupRoutineQuestions } from "./routineClusters";
 
 type QuestionItem = RoutineStats["questions"][number];
@@ -120,7 +119,6 @@ export function RoutineDetailView({
   onBack,
 }: RoutineDetailViewProps) {
   const { routine } = stats;
-  const pdfUrl = routinePdfUrl(routine);
   const ranking = rankRoutines(routines, weights);
   const rank = ranking.find((entry) => entry.stats.routine.code === routine.code)?.rank;
   const factors = priorityFactors(stats, weights);
@@ -178,16 +176,6 @@ export function RoutineDetailView({
             <div className={styles.scoreNote}>knyttet til rutinen</div>
           </div>
         </div>
-          {pdfUrl !== null ? (
-            <div className={styles.pdfActions}>
-              <a className={styles.pdfLink} href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                Åpne PDF<span className="visuallyHidden"> (åpnes i ny fane)</span>
-              </a>
-              <a className={styles.pdfLink} href={pdfUrl} download>
-                Last ned PDF
-              </a>
-            </div>
-          ) : null}
         </div>
         
       </div>
