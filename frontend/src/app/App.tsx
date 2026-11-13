@@ -125,15 +125,15 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
 
   const go = (next: Partial<Location>) => {
     const target: Location = {
-        view,
-        returnView,
-        routineCode: selectedRoutineCode,
-        aboutTopic: null,
-        ...next,
-      };
-      window.history.pushState(target, "");
-      applyLocation(target);
+      view,
+      returnView,
+      routineCode: selectedRoutineCode,
+      aboutTopic: null,
+      ...next,
     };
+    window.history.pushState(target, "");
+    applyLocation(target);
+  };
 
   useEffect(() => {
     // L'entrée actuelle (la vue de départ) devient la première "page" de l'app
@@ -221,25 +221,31 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
                 setRoutineSort(null);
               }}
               onOpenRoutine={openRoutine}
-              onOpenReview={() => { go({ view: "review" }); }}
-              onOpenSettings={() => { go({ view: "run" }); }}
+              onOpenReview={() => {
+                go({ view: "review" });
+              }}
+              onOpenSettings={() => {
+                go({ view: "run" });
+              }}
             />
           ) : null}
 
-        {shownView === "detail" && selectedRoutine !== undefined ? (
-          <RoutineDetailView
-            key={selectedRoutine.routine.code}
-            stats={selectedRoutine}
-            routines={routines}
-            allRoutines={routinesByName}
-            routineClusters={snapshot.routineClusters}
-            ownerCandidates={ownerCandidates(snapshot.documentOwners, user.name)}
-            weights={settings.weights}
-            review={review}
-            backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
-            onBack={() => { window.history.back(); }}
-          />
-        ) : null}
+          {shownView === "detail" && selectedRoutine !== undefined ? (
+            <RoutineDetailView
+              key={selectedRoutine.routine.code}
+              stats={selectedRoutine}
+              routines={routines}
+              allRoutines={routinesByName}
+              routineClusters={snapshot.routineClusters}
+              ownerCandidates={ownerCandidates(snapshot.documentOwners, user.name)}
+              weights={settings.weights}
+              review={review}
+              backLabel={returnView === "search" ? "Tilbake til søket" : "Tilbake til listen"}
+              onBack={() => {
+                window.history.back();
+              }}
+            />
+          ) : null}
 
           {shownView === "review" ? <ReviewView snapshot={snapshot} review={review} /> : null}
 
@@ -249,12 +255,16 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               routines={routines}
               pendingCount={pendingCount}
               review={review}
-              onOpenReview={() => { go({ view: "review" }); }}
+              onOpenReview={() => {
+                go({ view: "review" });
+              }}
               onFilterByBand={(band) => {
                 setSearchCoverageBandFilter(band);
                 go({ view: "search" });
               }}
-              onOpenRoutineList={() => { go({ view: "list" }); }}
+              onOpenRoutineList={() => {
+                go({ view: "list" });
+              }}
               onOpenRoutineListByStatus={(status) => {
                 setFilter(status);
                 setCoverageFilter([]);

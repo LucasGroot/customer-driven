@@ -14,7 +14,6 @@ from backend.ai.similarity_metrics.cosine_similarity import cosine_similarity
 from backend.ai.similarity_metrics.shared_logic import load_corpus
 from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
 
-
 COMBINATIONS = [
     ["cosine"],
     ["tf-idf"],
@@ -26,9 +25,11 @@ COMBINATIONS = [
 TOP_NS = [3, 5, 10]
 
 
-def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
-         routines_path="data/raw/kvaliteket",
-         ground_truth_path="data/raw/ground_truth.csv"):
+def main(
+    questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
+    routines_path="data/raw/kvaliteket",
+    ground_truth_path="data/raw/ground_truth.csv",
+):
     """
     Scores the questions with each method once and prints the candidate
     coverage and candidate count of every combination at several top-N.

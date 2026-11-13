@@ -11,12 +11,11 @@ from backend.ai.evaluation.ground_truth_evaluation import (
     missing_routine_ids,
     routine_id_from_filename,
 )
-from backend.ai.similarity_metrics.shared_logic import load_corpus
 from backend.ai.similarity_metrics.bm25_similarity import bm25_similarity
-from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
 from backend.ai.similarity_metrics.cosine_similarity import cosine_similarity
 from backend.ai.similarity_metrics.euclidean_similarity import euclidean_similarity
-
+from backend.ai.similarity_metrics.shared_logic import load_corpus
+from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
 
 METHODS = {
     "tf-idf": tf_idf_similarity,
@@ -41,9 +40,11 @@ def print_data_warnings(corpus, ground_truth):
         print(f"WARNING: {len(missing_questions)} ground truth question(s) not found in the ServiceNow export")
 
 
-def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
-         routines_path="data/raw/kvaliteket",
-         ground_truth_path="data/raw/ground_truth.csv"):
+def main(
+    questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
+    routines_path="data/raw/kvaliteket",
+    ground_truth_path="data/raw/ground_truth.csv",
+):
     """
     Builds the corpus once, scores it with every method and prints the metrics side by side.
     """
@@ -51,10 +52,9 @@ def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
     ground_truth = load_ground_truth(ground_truth_path)
     print_data_warnings(corpus, ground_truth)
 
-    results = pd.DataFrame({
-        method_name: evaluate(method(corpus), ground_truth)
-        for method_name, method in METHODS.items()
-    }).T
+    results = pd.DataFrame(
+        {method_name: evaluate(method(corpus), ground_truth) for method_name, method in METHODS.items()}
+    ).T
 
     print()
     print(results.round(3).to_string())

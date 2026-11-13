@@ -127,10 +127,7 @@ describe("mostCommonBestMatch", () => {
 });
 
 describe("a restored question", () => {
-  const questions = [
-    makeQuestion({ id: "a", groupId: "r0" }),
-    makeQuestion({ id: "b", groupId: "r0" }),
-  ];
+  const questions = [makeQuestion({ id: "a", groupId: "r0" }), makeQuestion({ id: "b", groupId: "r0" })];
   const groups = [{ id: "r0", title: "Gruppe 0", headingQuestionId: "a" }];
 
   it("comes back to its group once the decision is undone", () => {

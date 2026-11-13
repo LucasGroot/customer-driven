@@ -112,8 +112,8 @@ export function OverviewView({
 
       {pendingCount > 0 ? (
         <p className={styles.hiddenNote}>
-          {pendingCount} {pendingCount === 1 ? "henvendelse passer" : "henvendelser passer"} ikke
-          til noen rutine og venter på gjennomgang.{" "}
+          {pendingCount} {pendingCount === 1 ? "henvendelse passer" : "henvendelser passer"} ikke til noen rutine og
+          venter på gjennomgang.{" "}
           <Button variant="link" onClick={onOpenReview}>
             Gå til gjennomgang
           </Button>
@@ -139,9 +139,9 @@ export function OverviewView({
       />
 
       <p className={styles.footnote}>
-        Rangeringen bygger på to ting: hvor mange henvendelser som er knyttet til rutinen, og hvor
-        dårlig rutinen treffer dem. Begge sammenlignes med de andre rutinene og teller like mye. Klikk
-        på en rutine for å se henvendelsene og regnestykket i klartekst.
+        Rangeringen bygger på to ting: hvor mange henvendelser som er knyttet til rutinen, og hvor dårlig rutinen
+        treffer dem. Begge sammenlignes med de andre rutinene og teller like mye. Klikk på en rutine for å se
+        henvendelsene og regnestykket i klartekst.
       </p>
     </section>
   );

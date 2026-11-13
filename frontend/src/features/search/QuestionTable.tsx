@@ -70,7 +70,6 @@ function placementReason(placement: Placement): string {
 export function QuestionTable({ results, sort, onSortChange, onOpenRoutine, onRestore }: QuestionTableProps) {
   const rows = sortQuestionResults(results, sort);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set());
-  
 
   const toggle = (id: string) => {
     setExpanded((current) => {

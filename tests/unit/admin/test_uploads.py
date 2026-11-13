@@ -55,7 +55,10 @@ def test_rejects_an_export_missing_columns():
 
 
 def test_rejects_an_export_with_the_same_number_twice():
-    assert rejection_reason(uploads.check_questions, excel_file([QUESTION_ROW, QUESTION_ROW])) == "duplicateQuestionNumbers"
+    assert (
+        rejection_reason(uploads.check_questions, excel_file([QUESTION_ROW, QUESTION_ROW]))
+        == "duplicateQuestionNumbers"
+    )
 
 
 def test_rejects_an_export_without_questions():
@@ -123,7 +126,10 @@ def test_adds_routines_next_to_the_existing_ones_with_a_lowercase_extension():
     saved = uploads.save_routines([pdf_file("1800-2-Ferie.PDF")])
 
     assert saved == ["1800-2-Ferie.pdf"]
-    assert sorted(path.name for path in uploads.ROUTINES_FOLDER.iterdir()) == ["1760-1-Vernerunde.pdf", "1800-2-Ferie.pdf"]
+    assert sorted(path.name for path in uploads.ROUTINES_FOLDER.iterdir()) == [
+        "1760-1-Vernerunde.pdf",
+        "1800-2-Ferie.pdf",
+    ]
 
 
 def test_replaces_the_previous_servicenow_export():

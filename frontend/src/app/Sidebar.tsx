@@ -93,9 +93,7 @@ export function Sidebar({
         </div>
 
         {isExample ? (
-          <p className={styles.footerNote}>
-            Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.
-          </p>
+          <p className={styles.footerNote}>Eksempeldata. Ingen ekte henvendelser eller rutiner er brukt.</p>
         ) : null}
 
         <div className={styles.footerSection}>
@@ -103,9 +101,7 @@ export function Sidebar({
           <div className={styles.footerValue} title={user.email}>
             {user.name}
           </div>
-          {user.role === "admin" ? (
-            <div className={styles.footerNote}>Administrator</div>
-          ) : null}
+          {user.role === "admin" ? <div className={styles.footerNote}>Administrator</div> : null}
           <Button variant="link" onClick={onSignOut}>
             Logg ut
           </Button>

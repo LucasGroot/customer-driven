@@ -66,10 +66,7 @@ export function DataTable({
         <caption className="visuallyHidden">{caption}</caption>
         <colgroup>
           {columns.map((column) => (
-            <col
-              key={column.label}
-              style={column.width === undefined ? undefined : { width: column.width }}
-            />
+            <col key={column.label} style={column.width === undefined ? undefined : { width: column.width }} />
           ))}
         </colgroup>
         <thead>

@@ -4,12 +4,7 @@
  * around it stays in English.
  */
 
-import {
-  GOOD_COVERAGE_FROM,
-  PARTIAL_COVERAGE_FROM,
-  type CoverageBand,
-  type PriorityBand,
-} from "./priority";
+import { GOOD_COVERAGE_FROM, PARTIAL_COVERAGE_FROM, type CoverageBand, type PriorityBand } from "./priority";
 import type { RoutineStatus } from "./types";
 
 export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {

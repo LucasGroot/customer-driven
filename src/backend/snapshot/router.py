@@ -8,7 +8,6 @@ from pathlib import Path
 
 from fastapi import APIRouter, Response
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 SNAPSHOT_PATH = REPOSITORY_ROOT / "data" / "processed" / "snapshot.json"
 SAMPLE_SNAPSHOT_PATH = Path(__file__).with_name("sample_snapshot.json")

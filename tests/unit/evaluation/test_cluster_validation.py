@@ -5,7 +5,12 @@ Tests the cluster validation metrics with made-up themes and routines.
 import numpy as np
 import pytest
 
-from backend.ai.evaluation.cluster_validation import NOISE_LABEL, routine_pair_agreement, routine_purity, summarize_themes
+from backend.ai.evaluation.cluster_validation import (
+    NOISE_LABEL,
+    routine_pair_agreement,
+    routine_purity,
+    summarize_themes,
+)
 
 
 def test_summary_counts_themes_and_noise():

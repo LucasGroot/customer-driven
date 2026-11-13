@@ -16,7 +16,8 @@ async function violations(): Promise<string[]> {
     rules: { "color-contrast": { enabled: false } },
   });
   return results.violations.map(
-    (violation) => `${violation.id}: ${violation.help} (${violation.nodes.map((node) => node.target.join(" ")).join(", ")})`,
+    (violation) =>
+      `${violation.id}: ${violation.help} (${violation.nodes.map((node) => node.target.join(" ")).join(", ")})`,
   );
 }
 

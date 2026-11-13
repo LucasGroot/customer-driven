@@ -46,11 +46,7 @@ export function scoreBreakdown(stats: RoutineStats, allRoutines: RoutineStats[])
   };
 }
 
-export function priorityScore(
-  stats: RoutineStats,
-  weights: PriorityWeights,
-  allRoutines: RoutineStats[],
-): number {
+export function priorityScore(stats: RoutineStats, weights: PriorityWeights, allRoutines: RoutineStats[]): number {
   const weightSum = weights.volume + weights.coverage || 1;
   const factor = scoreBreakdown(stats, allRoutines);
   const weighted = factor.volume * weights.volume + factor.coverage * weights.coverage;

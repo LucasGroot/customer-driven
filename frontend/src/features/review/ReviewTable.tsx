@@ -26,8 +26,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
   const { question, placement } = item;
   // Starts on the best match, since the analysis was usually close when HR keeps it
   const [chosenCode, setChosenCode] = useState<RoutineCode>(question.documentCode);
-  const nameOf = (code: RoutineCode) =>
-    routines.find((routine) => routine.code === code)?.name ?? "ukjent rutine";
+  const nameOf = (code: RoutineCode) => routines.find((routine) => routine.code === code)?.name ?? "ukjent rutine";
 
   return (
     <tr>
@@ -75,9 +74,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
         ) : (
           <div className={styles.actions}>
             <span className={styles.decision}>
-              {placement.kind === "discarded"
-                ? "Forkastet"
-                : `Knyttet til ${nameOf(placement.routineCode)}`}
+              {placement.kind === "discarded" ? "Forkastet" : `Knyttet til ${nameOf(placement.routineCode)}`}
             </span>
             <div className={styles.buttons}>
               <Button

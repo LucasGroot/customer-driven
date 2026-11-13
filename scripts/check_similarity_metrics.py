@@ -1,10 +1,10 @@
-from backend.ai.similarity_metrics.shared_logic import load_corpus
 from backend.ai.similarity_metrics.bm25_similarity import bm25_similarity
-from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
 from backend.ai.similarity_metrics.cosine_similarity import cosine_similarity
+from backend.ai.similarity_metrics.shared_logic import load_corpus
+from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
 
-def main(questions_path = "data/raw/serviceNow/serviceNow_questions.xlsx",
-         routines_path = "data/raw/kvaliteket"):
+
+def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx", routines_path="data/raw/kvaliteket"):
     """
     Reads the PDFs and builds the corpus once, then runs all three similarity
     methods on that same corpus, asserts each result has shape
@@ -24,8 +24,9 @@ def main(questions_path = "data/raw/serviceNow/serviceNow_questions.xlsx",
 
     for name, method in methods.items():
         scores = method(corpus)
-        assert scores.shape == (num_questions, num_routines), \
+        assert scores.shape == (num_questions, num_routines), (
             f"{name}: expected shape {(num_questions, num_routines)}, got {scores.shape}"
+        )
         empty = list(scores.columns[scores.isna().any()])
         if empty:
             print(f"{name}: NaN scores for {empty}")

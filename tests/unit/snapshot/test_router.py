@@ -3,7 +3,8 @@ from fastapi.testclient import TestClient
 
 from backend.snapshot import router as snapshot_router
 
-#TODO fix this after the merge with the database !
+
+# TODO fix this after the merge with the database !
 def make_client():
     app = FastAPI()
     app.include_router(snapshot_router.router)

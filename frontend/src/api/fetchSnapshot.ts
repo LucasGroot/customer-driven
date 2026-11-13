@@ -1,10 +1,7 @@
 import type { AnalysisSnapshot } from "../domain/types";
 
 /** The latest analysis run, as the backend serves it. Vite forwards /api to the backend in development. */
-export async function fetchSnapshot(
-  accessToken: string,
-  signal: AbortSignal,
-): Promise<AnalysisSnapshot> {
+export async function fetchSnapshot(accessToken: string, signal: AbortSignal): Promise<AnalysisSnapshot> {
   const response = await fetch("/api/snapshot", {
     signal,
     headers: { Authorization: `Bearer ${accessToken}` },

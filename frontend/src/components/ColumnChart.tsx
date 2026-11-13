@@ -37,7 +37,10 @@ export function ColumnChart({ title, columns }: ColumnChartProps) {
                 {column.value}
               </span>
               {column.value > 0 ? (
-                <span className={styles.column} style={{ height: `${String(heightPercent)}%`, background: column.color }} />
+                <span
+                  className={styles.column}
+                  style={{ height: `${String(heightPercent)}%`, background: column.color }}
+                />
               ) : null}
             </span>
             <span className={styles.category} aria-hidden="true">

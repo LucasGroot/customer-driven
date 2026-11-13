@@ -8,7 +8,6 @@ import pytest
 
 from backend.ai.evaluation.candidate_coverage import candidate_coverage, candidates_per_question
 
-
 ROUTINE_NAMES = ["1000-1 A.pdf", "2000-1 B.pdf", "3000-1 C.pdf"]
 QUESTION_IDS = ["INC001", "INC002"]
 

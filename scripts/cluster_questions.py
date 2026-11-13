@@ -18,7 +18,6 @@ from backend.ai.clustering.question_clustering import (
 )
 from backend.ai.similarity_metrics.shared_logic import SERVICE_COLUMN, extract_questions
 
-
 TOP_THEMES_SHOWN = 10
 
 
@@ -52,7 +51,9 @@ def print_largest_themes(questions, labels, central_rows):
     print(f"\nlargest themes (size | central question ID | {SERVICE_COLUMN}):")
     for label in np.argsort(theme_sizes)[::-1][:TOP_THEMES_SHOWN]:
         central_row = central_rows[int(label)]
-        print(f"  {theme_sizes[label]:3d} | {questions.index[central_row]} | {questions[SERVICE_COLUMN].iloc[central_row]}")
+        print(
+            f"  {theme_sizes[label]:3d} | {questions.index[central_row]} | {questions[SERVICE_COLUMN].iloc[central_row]}"
+        )
 
 
 def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx", model_name=CLUSTERING_MODEL_NAME):

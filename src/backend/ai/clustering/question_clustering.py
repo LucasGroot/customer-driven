@@ -6,7 +6,6 @@ inquiries can be counted and compared with the routines as one unit.
 import numpy as np
 from sklearn.cluster import HDBSCAN
 
-
 NOISE_LABEL = -1
 CLUSTERING_MODEL_NAME = "NbAiLab/borealis-embed-212m"
 DEFAULT_MIN_CLUSTER_SIZE = 3
