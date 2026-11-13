@@ -29,9 +29,7 @@ export function groupRoutineQuestions(
   const views = clusters
     .filter((cluster) => cluster.routineCode === routineCode)
     .flatMap((cluster) => {
-      const members = questions.filter(
-        ({ question, byHand }) => !byHand && question.routineClusterId === cluster.id,
-      );
+      const members = questions.filter(({ question, byHand }) => !byHand && question.routineClusterId === cluster.id);
       if (members.length === 0) return [];
       const totalCoverage = members.reduce((sum, { coverage }) => sum + coverage, 0);
       return [{ cluster, questions: members, meanCoverage: totalCoverage / members.length }];

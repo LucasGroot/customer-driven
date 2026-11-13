@@ -41,7 +41,8 @@
 }
 
 @keyframes attentionPulse {
-  0%, 100% {
+  0%,
+  100% {
     background-color: white;
   }
   50% {

@@ -68,16 +68,14 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
             <details className={styles.alone}>
               <summary className={styles.aloneSummary}>Enkeltstående henvendelser · {alone.length}</summary>
               <p className={styles.note}>
-                Henvendelser som ikke ligner noen av de andre. De haster mindre enn gruppene, der
-                flere spør om det samme.
+                Henvendelser som ikke ligner noen av de andre. De haster mindre enn gruppene, der flere spør om det
+                samme.
               </p>
               <ReviewTable items={alone} routines={routinesByName} review={review} emptyMessage="" />
             </details>
           ) : null}
 
-          {groups.length === 0 && alone.length === 0 ? (
-            <p className={styles.note}>{EMPTY_MESSAGE.pending}</p>
-          ) : null}
+          {groups.length === 0 && alone.length === 0 ? <p className={styles.note}>{EMPTY_MESSAGE.pending}</p> : null}
         </>
       ) : (
         <>
@@ -96,12 +94,7 @@ export function ReviewView({ snapshot, review }: ReviewViewProps) {
               </Button>
             </div>
           ) : null}
-          <ReviewTable
-            items={visible}
-            routines={routinesByName}
-            review={review}
-            emptyMessage={EMPTY_MESSAGE[filter]}
-          />
+          <ReviewTable items={visible} routines={routinesByName} review={review} emptyMessage={EMPTY_MESSAGE[filter]} />
         </>
       )}
     </section>

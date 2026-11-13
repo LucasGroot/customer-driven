@@ -35,11 +35,9 @@ export const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
   { value: "alphabetical", label: "Alfabetisk" },
 ];
 
-
 const PLACEMENT_ORDER: Placement["kind"][] = ["routine", "pending", "discarded"];
 
 type Compare<T> = (a: T, b: T, factor: 1 | -1) => number;
-
 
 function normalize(text: string): string {
   return text.toLocaleLowerCase("nb-NO").trim();
@@ -86,10 +84,7 @@ export function searchQuestions(
     }))
     .filter((result) => {
       if (filter !== "all" && result.placement.kind !== filter) return false;
-      return matchesQuery(
-        [result.question.text, result.question.category, result.document?.name ?? ""],
-        query,
-      );
+      return matchesQuery([result.question.text, result.question.category, result.document?.name ?? ""], query);
     })
     .sort((a, b) =>
       sort === "alphabetical"
@@ -140,7 +135,6 @@ export function searchDocuments(
     );
 }
 
-
 function compareNullable(a: number | null, b: number | null, factor: 1 | -1): number {
   if (a === null || b === null) return (a === null ? 1 : 0) - (b === null ? 1 : 0);
   return factor * (a - b);
@@ -158,11 +152,9 @@ export function sortQuestionResults(results: QuestionResult[], sort: SortState |
   return sortBy(results, sort, {
     text: (a, b, f) => f * a.question.text.localeCompare(b.question.text, "nb-NO"),
     category: (a, b, f) => f * a.question.category.localeCompare(b.question.category, "nb-NO"),
-    routine: (a, b, f) =>
-      f * (a.document?.name ?? "").localeCompare(b.document?.name ?? "", "nb-NO"),
+    routine: (a, b, f) => f * (a.document?.name ?? "").localeCompare(b.document?.name ?? "", "nb-NO"),
     coverage: (a, b, f) => compareNullable(a.question.coverage, b.question.coverage, f),
-    status: (a, b, f) =>
-      f * (PLACEMENT_ORDER.indexOf(a.placement.kind) - PLACEMENT_ORDER.indexOf(b.placement.kind)),
+    status: (a, b, f) => f * (PLACEMENT_ORDER.indexOf(a.placement.kind) - PLACEMENT_ORDER.indexOf(b.placement.kind)),
   });
 }
 

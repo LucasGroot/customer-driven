@@ -6,8 +6,9 @@ one run at a time: a second one would replace the snapshot the first writes.
 
 import logging
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Literal
+from typing import Literal
 
 from backend.admin import uploads
 from backend.api.audit_log import AuditLog, file_fingerprint

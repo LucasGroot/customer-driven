@@ -2,6 +2,7 @@ import os
 
 import pdfplumber
 
+
 def read_words(pdf_path):
     """Reads a PDF and returns all words, as well as their font info and whether they sit inside a table."""
     words = []
@@ -15,6 +16,7 @@ def read_words(pdf_path):
                 )
                 words.append(word)
     return words
+
 
 def read_all_pdfs(folder_path):
     """Reads every PDF in folder_path, returning one {source_pdf, words} entry per file."""

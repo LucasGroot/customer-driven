@@ -3,8 +3,8 @@ Validates Microsoft Entra ID access tokens and turns them into a user.
 """
 
 import ssl
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 import certifi
 import jwt

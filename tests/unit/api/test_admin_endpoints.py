@@ -103,7 +103,10 @@ def test_adds_the_new_routines_and_skips_those_already_uploaded(client, admin):
         "routinesAdded": ["1800-2-Ferie.pdf"],
         "routinesSkipped": ["1760-1-Vernerunde.pdf"],
     }
-    assert sorted(path.name for path in uploads.ROUTINES_FOLDER.iterdir()) == ["1760-1-Vernerunde.pdf", "1800-2-Ferie.pdf"]
+    assert sorted(path.name for path in uploads.ROUTINES_FOLDER.iterdir()) == [
+        "1760-1-Vernerunde.pdf",
+        "1800-2-Ferie.pdf",
+    ]
 
 
 def test_saves_nothing_when_one_routine_is_broken(client, admin):

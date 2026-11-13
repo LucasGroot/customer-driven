@@ -9,7 +9,6 @@ import os
 from backend.ai.clustering.title_cache import cache_key, read_title_cache, save_title
 from backend.ai.llm.ask_llm import ask_llm
 
-
 MAX_QUESTIONS_IN_PROMPT = 8
 MAX_QUESTION_CHARACTERS = 300
 MAX_TITLE_CHARACTERS = 80
@@ -29,8 +28,7 @@ def build_title_prompt(question_texts, routine_name=None):
     questions all belong to that routine, so the title has to tell them apart within it.
     """
     listed_questions = "\n".join(
-        f"- {' '.join(text.split())[:MAX_QUESTION_CHARACTERS]}"
-        for text in question_texts[:MAX_QUESTIONS_IN_PROMPT]
+        f"- {' '.join(text.split())[:MAX_QUESTION_CHARACTERS]}" for text in question_texts[:MAX_QUESTIONS_IN_PROMPT]
     )
     context = ""
     if routine_name is not None:

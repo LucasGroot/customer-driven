@@ -82,18 +82,14 @@ describe("searchQuestions", () => {
   });
 
   it("follows HR's decisions", () => {
-    const decisionOf = (id: string): ReviewDecision | undefined =>
-      id === "c" ? { kind: "discarded" } : undefined;
+    const decisionOf = (id: string): ReviewDecision | undefined => (id === "c" ? { kind: "discarded" } : undefined);
     const results = searchQuestions(QUESTIONS, DOCUMENTS, { ...base, decisionOf });
     expect(results.find((result) => result.question.id === "c")?.placement.kind).toBe("discarded");
   });
 
   it("filters on where the question ended up", () => {
     expect(ids(searchQuestions(QUESTIONS, DOCUMENTS, { ...base, filter: "pending" }))).toEqual(["c"]);
-    expect(ids(searchQuestions(QUESTIONS, DOCUMENTS, { ...base, filter: "routine" }))).toEqual([
-      "a",
-      "b",
-    ]);
+    expect(ids(searchQuestions(QUESTIONS, DOCUMENTS, { ...base, filter: "routine" }))).toEqual(["a", "b"]);
   });
 
   it("finds questions by the name of their best document", () => {

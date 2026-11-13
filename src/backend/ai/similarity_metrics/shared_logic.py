@@ -14,10 +14,9 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from backend.ai.chunking.fixed_chunking import DEFAULT_CHUNK_SIZE
 from backend.ai.chunking.customized_chunking import chunk_by_layout
+from backend.ai.chunking.fixed_chunking import DEFAULT_CHUNK_SIZE
 from backend.ai.pdf_reader import read_all_pdfs
-
 
 _TOKEN_RE = re.compile(r"\w+")
 
@@ -97,25 +96,19 @@ def load_corpus(questions_path, routines_path, chunker=chunk_by_layout):
 
     routine_chunks = extract_all_chunk_embeddings(routines_path, chunker=chunker)
     routine_names = [r["filename"] for r in routine_chunks]
-    texts_per_routine = [
-        [c["text"] for c in r["chunks"] if c["text"].strip()]
-        for r in routine_chunks
-    ]
+    texts_per_routine = [[c["text"] for c in r["chunks"] if c["text"].strip()] for r in routine_chunks]
     chunk_counts = [len(texts) for texts in texts_per_routine]
     chunk_texts = [text for texts in texts_per_routine for text in texts]
 
     if not chunk_texts:
         raise ValueError(f"No non-empty chunks found in {routines_path}")
 
-    empty_routines = [
-        name for name, count in zip(routine_names, chunk_counts) if count == 0
-    ]
+    empty_routines = [name for name, count in zip(routine_names, chunk_counts) if count == 0]
 
     if empty_routines:
         print(f"WARNING: no usable text extracted from {len(empty_routines)} document(s):")
         for name in empty_routines:
             print(f"  - {name}")
-
 
     return Corpus(questions, routine_names, chunk_counts, chunk_texts)
 
@@ -137,7 +130,7 @@ def top_k_per_routine(chunk_scores, corpus, k):
     start = 0
     for i, count in enumerate(corpus.chunk_counts):
         if count > 0:
-            routine_scores = chunk_scores[:, start:start + count]
+            routine_scores = chunk_scores[:, start : start + count]
             scores[:, i] = np.sort(routine_scores, axis=1)[:, -k:].mean(axis=1)
         start += count
 

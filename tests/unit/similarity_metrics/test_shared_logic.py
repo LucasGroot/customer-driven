@@ -11,16 +11,21 @@ from backend.ai.similarity_metrics.shared_logic import Corpus, extract_questions
 
 
 def write_questions(path, rows):
-    pd.DataFrame(rows, columns=["Nummer", "Kort beskrivelse", "Tjenestetilbud", "Beskrivelse"]).to_excel(path, index=False)
+    pd.DataFrame(rows, columns=["Nummer", "Kort beskrivelse", "Tjenestetilbud", "Beskrivelse"]).to_excel(
+        path, index=False
+    )
     return path
 
 
 def test_extract_questions_combines_fields_and_keeps_metadata(tmp_path):
-    path = write_questions(tmp_path / "questions.xlsx", [
-        ["INC001", "Ferie", "HR", "Hvor mange dager?"],
-        ["INC002", None, "HMS", "Avvik"],
-        ["INC003", None, "HR", None],
-    ])
+    path = write_questions(
+        tmp_path / "questions.xlsx",
+        [
+            ["INC001", "Ferie", "HR", "Hvor mange dager?"],
+            ["INC002", None, "HMS", "Avvik"],
+            ["INC003", None, "HR", None],
+        ],
+    )
 
     questions = extract_questions(path)
 
@@ -32,10 +37,13 @@ def test_extract_questions_combines_fields_and_keeps_metadata(tmp_path):
 
 
 def test_extract_questions_rejects_duplicate_ids(tmp_path):
-    path = write_questions(tmp_path / "questions.xlsx", [
-        ["INC001", "Ferie", "HR", None],
-        ["INC001", "Avvik", "HMS", None],
-    ])
+    path = write_questions(
+        tmp_path / "questions.xlsx",
+        [
+            ["INC001", "Ferie", "HR", None],
+            ["INC001", "Avvik", "HMS", None],
+        ],
+    )
 
     with pytest.raises(ValueError, match="Duplicate"):
         extract_questions(path)

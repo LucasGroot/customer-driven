@@ -43,7 +43,14 @@ const COVERAGE_BAND_FILTER_OPTIONS = COVERAGE_BAND_FILTERS.map((option) => ({
   label: option.label,
 }));
 
-export function SearchView({ snapshot, routines, review, onOpenRoutine, initialCoverageBandFilter, initialTab }: SearchViewProps) {
+export function SearchView({
+  snapshot,
+  routines,
+  review,
+  onOpenRoutine,
+  initialCoverageBandFilter,
+  initialTab,
+}: SearchViewProps) {
   // Which list is shown: routines by default, or the questions.
   const [tab, setTab] = useState<SearchTab>(initialTab ?? "documents");
   const [query, setQuery] = useState("");
@@ -56,7 +63,7 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine, initialC
   // A click on a column header. Applied on top of the dropdown order; null = no column sort.
   const [columnSort, setColumnSort] = useState<SortState | null>(null);
   // Show highlight animation when filter is applied from summary page
-  const [showHighlight, setShowHighlight] = useState(initialCoverageBandFilter !== undefined && initialCoverageBandFilter !== null);
+  const [showHighlight, setShowHighlight] = useState(initialCoverageBandFilter !== undefined);
 
   useEffect(() => {
     if (showHighlight) {
@@ -64,7 +71,9 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine, initialC
       const timer = setTimeout(() => {
         setShowHighlight(false);
       }, 3000);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+      };
     }
   }, [showHighlight]);
 
@@ -117,11 +126,7 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine, initialC
         <div className={styles.search}>
           <SearchField
             label={tab === "questions" ? "Søk i henvendelser" : "Søk i rutiner"}
-            placeholder={
-              tab === "questions"
-                ? "Søk i henvendelser, kategorier og rutiner"
-                : "Søk på rutinenavn"
-            }
+            placeholder={tab === "questions" ? "Søk i henvendelser, kategorier og rutiner" : "Søk på rutinenavn"}
             value={query}
             onChange={setQuery}
           />

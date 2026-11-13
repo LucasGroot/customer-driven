@@ -8,9 +8,7 @@ import { fetchSnapshot } from "../api/fetchSnapshot";
 import type { AnalysisSnapshot } from "../domain/types";
 
 export type SnapshotState =
-  | { status: "loading" }
-  | { status: "error" }
-  | { status: "ready"; snapshot: AnalysisSnapshot };
+  { status: "loading" } | { status: "error" } | { status: "ready"; snapshot: AnalysisSnapshot };
 
 export function useSnapshot(accessToken: string, version: number): SnapshotState {
   const [state, setState] = useState<SnapshotState>({ status: "loading" });

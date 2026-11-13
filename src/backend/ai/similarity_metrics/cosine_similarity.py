@@ -1,11 +1,9 @@
 from sentence_transformers import SentenceTransformer
 
-from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, top_k_per_routine, _check_k
+from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, _check_k, top_k_per_routine
 
 
-def cosine_similarity(corpus,
-                       model_name=SIMILARITY_MODEL_NAME,
-                       k=3):
+def cosine_similarity(corpus, model_name=SIMILARITY_MODEL_NAME, k=3):
     """
     Scores each question against each routine using embedding cosine similarity.
     Each chunk is embedded and scored individually, then a routine's score is

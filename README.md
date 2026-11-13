@@ -108,7 +108,18 @@ Without a snapshot the API serves the bundled sample, and the dashboard says "Ek
 .venv/bin/python -m pytest   # backend
 cd frontend && npx vitest run   # frontend, once
 cd frontend && npm test         # frontend, in watch mode (press q to quit)
+```
+
 Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data, behind Microsoft sign-in.
+
+### Linting and formatting
+
+```bash
+.venv/bin/ruff check --fix . && .venv/bin/ruff format .   # backend: fix and format, from the project root
+cd frontend && npm run lint:fix                           # frontend: fix and format
+```
+
+CI fails if either finds something to fix. In VS Code, install the recommended extensions (Ruff, ESLint and Prettier) to have files fixed and formatted on save.
 
 ## How to install
 

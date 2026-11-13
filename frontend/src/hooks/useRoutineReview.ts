@@ -96,9 +96,7 @@ export function useRoutineReview(): RoutineReview {
   );
 
   const undoDecisions = useCallback((questionIds: QuestionId[]) => {
-    setDecisions((current) =>
-      Object.fromEntries(Object.entries(current).filter(([id]) => !questionIds.includes(id))),
-    );
+    setDecisions((current) => Object.fromEntries(Object.entries(current).filter(([id]) => !questionIds.includes(id))));
     const note = describeChange(questionIds.length, "lagt tilbake");
     setSavedNote(note);
     setQuestionNote(note);
@@ -115,8 +113,7 @@ export function useRoutineReview(): RoutineReview {
 
   /** A routine is under treatment exactly when someone owns it, so the two can never disagree. */
   const statusOf = useCallback(
-    (routineCode: RoutineCode): RoutineStatus =>
-      owners[routineCode] === undefined ? "unprocessed" : "in-progress",
+    (routineCode: RoutineCode): RoutineStatus => (owners[routineCode] === undefined ? "unprocessed" : "in-progress"),
     [owners],
   );
 

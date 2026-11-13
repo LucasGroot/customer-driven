@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import prettier from "eslint-config-prettier";
 import globals from "globals";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -40,4 +41,6 @@ export default tseslint.config(
       ],
     },
   },
+  // Last, so it turns off every rule above that would fight Prettier over formatting
+  prettier,
 );

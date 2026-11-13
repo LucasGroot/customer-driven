@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  coverageBand,
-  priorityBand,
-  priorityScore,
-  rankRoutines,
-  scoreBreakdown,
-} from "./priority";
+import { coverageBand, priorityBand, priorityScore, rankRoutines, scoreBreakdown } from "./priority";
 import type { RoutineStats } from "./routines";
 import type { PriorityWeights } from "./types";
 
@@ -62,9 +56,7 @@ describe("priorityScore", () => {
   });
 
   it("weights each factor by its share of the total weight", () => {
-    expect(priorityScore(BUSY_BUT_POORLY_COVERED, ONLY_VOLUME, THREE_ROUTINES)).toBe(
-      Math.round((5 / 6) * 100),
-    );
+    expect(priorityScore(BUSY_BUT_POORLY_COVERED, ONLY_VOLUME, THREE_ROUTINES)).toBe(Math.round((5 / 6) * 100));
     expect(priorityScore(MIDDLE, ONLY_COVERAGE, THREE_ROUTINES)).toBe(50);
   });
 

@@ -11,15 +11,7 @@ interface SliderRowProps {
   onChange: (value: number) => void;
 }
 
-export function SliderRow({
-  label,
-  value,
-  min,
-  max,
-  step,
-  displayValue,
-  onChange,
-}: SliderRowProps) {
+export function SliderRow({ label, value, min, max, step, displayValue, onChange }: SliderRowProps) {
   const sliderId = useId();
   return (
     <div className={styles.row}>

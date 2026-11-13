@@ -4,11 +4,7 @@
  */
 
 import type { AboutTopic } from "../../domain/aboutTopics";
-import {
-  DEFAULT_WEIGHTS,
-  GOOD_COVERAGE_FROM,
-  PARTIAL_COVERAGE_FROM,
-} from "../../domain/priority";
+import { DEFAULT_WEIGHTS, GOOD_COVERAGE_FROM, PARTIAL_COVERAGE_FROM } from "../../domain/priority";
 import type { AboutIconName } from "./AboutIcon";
 
 const partialFrom = Math.round(PARTIAL_COVERAGE_FROM * 100);

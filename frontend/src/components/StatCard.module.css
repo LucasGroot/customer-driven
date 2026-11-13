@@ -30,7 +30,9 @@
 
 .card[role="button"] {
   cursor: pointer;
-  transition: background-color 150ms ease, border-color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
 }
 
 .card[role="button"]:hover {

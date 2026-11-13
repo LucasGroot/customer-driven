@@ -13,11 +13,7 @@ import { useEffect, useRef, type RefObject } from "react";
  * `pageKey` changes whenever another page is shown. `keepFocus` is for a page
  * that moves focus itself, like "Om analysen" opened at one question.
  */
-export function usePageFocus(
-  mainRef: RefObject<HTMLElement | null>,
-  pageKey: string,
-  keepFocus: boolean,
-) {
+export function usePageFocus(mainRef: RefObject<HTMLElement | null>, pageKey: string, keepFocus: boolean) {
   const shownKey = useRef(pageKey);
 
   useEffect(() => {

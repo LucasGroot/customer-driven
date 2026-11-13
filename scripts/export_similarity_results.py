@@ -8,11 +8,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from backend.ai.similarity_metrics.shared_logic import SERVICE_COLUMN, load_corpus
 from backend.ai.similarity_metrics.bm25_similarity import bm25_similarity
-from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
 from backend.ai.similarity_metrics.cosine_similarity import cosine_similarity
-
+from backend.ai.similarity_metrics.shared_logic import SERVICE_COLUMN, load_corpus
+from backend.ai.similarity_metrics.tfidf_similarity import tf_idf_similarity
 
 METHODS = {
     "tf-idf": tf_idf_similarity,
@@ -76,10 +75,12 @@ def print_summary(comparison, output_path):
     print(agreement_per_service.round(2))
 
 
-def main(questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
-         routines_path="data/raw/kvaliteket",
-         output_path="data/processed/similarity_results.xlsx",
-         top_n=3):
+def main(
+    questions_path="data/raw/serviceNow/serviceNow_questions.xlsx",
+    routines_path="data/raw/kvaliteket",
+    output_path="data/processed/similarity_results.xlsx",
+    top_n=3,
+):
     """
     Builds the corpus once, scores it with every method and writes one sheet
     per method plus a sheet comparing each method's top-1 routine.

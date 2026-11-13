@@ -12,13 +12,7 @@ import { priorityFactors } from "./priorityFactors";
 import styles from "./RoutineDetailView.module.css";
 import { useState } from "react";
 import { RoutineSelect } from "../review/RoutineSelect";
-import type {
-  PriorityWeights,
-  RoutineCluster,
-  RoutineCode,
-  RoutineDocument,
-  RoutineStatus,
-} from "../../domain/types";
+import type { PriorityWeights, RoutineCluster, RoutineCode, RoutineDocument, RoutineStatus } from "../../domain/types";
 import { groupRoutineQuestions } from "./routineClusters";
 
 type QuestionItem = RoutineStats["questions"][number];
@@ -92,7 +86,6 @@ function QuestionRow({ item: { question, byHand, coverage }, otherRoutines, revi
   );
 }
 
-
 interface RoutineDetailViewProps {
   stats: RoutineStats;
   /** Every routine that has questions. The rank is this routine's place among them. */
@@ -159,22 +152,21 @@ export function RoutineDetailView({
           </h1>
           <p className={styles.summary}>{routine.uploadedLabel}</p>
         </div>
-        
+
         <div className={styles.headerSide}>
           <div className={styles.scorePanel}>
-          <div className={styles.scoreBlock}>
-            <div className={styles.scoreLabel}>Prioritet</div>
-            <div className={styles.scoreValue}>{rank}</div>
-            <div className={styles.scoreNote}>av {ranking.length} rutiner</div>
-          </div>
-          <div className={styles.scoreBlock}>
-            <div className={styles.scoreLabel}>Henvendelser</div>
-            <div className={styles.scoreValue}>{stats.questionCount}</div>
-            <div className={styles.scoreNote}>knyttet til rutinen</div>
+            <div className={styles.scoreBlock}>
+              <div className={styles.scoreLabel}>Prioritet</div>
+              <div className={styles.scoreValue}>{rank}</div>
+              <div className={styles.scoreNote}>av {ranking.length} rutiner</div>
+            </div>
+            <div className={styles.scoreBlock}>
+              <div className={styles.scoreLabel}>Henvendelser</div>
+              <div className={styles.scoreValue}>{stats.questionCount}</div>
+              <div className={styles.scoreNote}>knyttet til rutinen</div>
+            </div>
           </div>
         </div>
-        </div>
-        
       </div>
 
       <Card title="Hvorfor dette havner høyt">
@@ -261,8 +253,6 @@ export function RoutineDetailView({
           <QuestionRow key={item.question.id} item={item} otherRoutines={otherRoutines} review={review} />
         ))}
       </Card>
-
-      
     </section>
   );
 }

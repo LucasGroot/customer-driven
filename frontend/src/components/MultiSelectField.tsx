@@ -45,9 +45,7 @@ export function MultiSelectField<Value extends string>({
   }, [isOpen]);
 
   const toggleValue = (value: Value) => {
-    const next = selected.includes(value)
-      ? selected.filter((current) => current !== value)
-      : [...selected, value];
+    const next = selected.includes(value) ? selected.filter((current) => current !== value) : [...selected, value];
     // Kept in option order, so the button text does not depend on click order
     onChange(options.map((option) => option.value).filter((optionValue) => next.includes(optionValue)));
   };

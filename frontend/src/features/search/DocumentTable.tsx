@@ -56,7 +56,6 @@ export function DocumentTable({ results, sort, onSortChange, onOpenRoutine, stat
       onSortChange={onSortChange}
     >
       {rows.map(({ document, questionCount, meanCoverage }) => {
-      
         // A routine without any question has no detail page to open.
         const canOpen = questionCount > 0;
         return (
