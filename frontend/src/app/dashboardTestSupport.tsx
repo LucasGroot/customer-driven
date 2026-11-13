@@ -14,7 +14,7 @@ import { App } from "./App";
 
 // The same sample the API serves when there is no real analysis. Read from disk,
 // since Vite refuses imports from outside frontend/, which keeps data/ out of reach.
-const samplePath = join(import.meta.dirname, "../../../src/backend/snapshot/sample_snapshot.json");
+const samplePath = join(import.meta.dirname, "../../../backend/src/snapshot/sample_snapshot.json");
 const sampleSnapshot: unknown = JSON.parse(readFileSync(samplePath, "utf8"));
 
 export const ADMIN: CurrentUser = { name: "Test Testesen", email: "test@example.com", role: "admin" };

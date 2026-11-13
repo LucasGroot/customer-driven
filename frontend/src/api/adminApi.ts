@@ -71,7 +71,7 @@ export function importErrorMessage(status: number, detail: RefusalDetail | undef
 
 export class ImportError extends Error {}
 
-// The backend's limits (MAX_* in src/backend/admin/uploads.py); change both together
+// The backend's limits (MAX_* in backend/src/admin/uploads.py); change both together
 const MEGABYTE = 1024 * 1024;
 const MAX_FILE_MEGABYTES = 20;
 const MAX_UPLOAD_MEGABYTES = 100;

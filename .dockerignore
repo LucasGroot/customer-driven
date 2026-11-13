@@ -15,8 +15,9 @@ logs
 venv
 node_modules
 frontend
-tests
+backend/tests
+backend/scripts
 docs
-visualizations
+backend/notebooks
 **/__pycache__
 .pytest_cache

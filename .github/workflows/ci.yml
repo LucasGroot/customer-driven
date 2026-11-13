@@ -34,27 +34,31 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
+          cache-dependency-path: backend/requirements*.txt
 
       # Installs dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt
+          pip install -r backend/requirements-dev.txt
 
       # Install repo as module
       - name: Install repo as module
         run: |
-          pip install -e .
+          pip install -e backend
 
       # Fails on lint errors, and on code not formatted with Ruff (ruff check --fix . && ruff format . fixes both)
       - name: Lint
+        working-directory: backend
         run: ruff check .
 
       - name: Check formatting
+        working-directory: backend
         run: ruff format --check .
 
       # Runs tests
       - name: Run tests
+        working-directory: backend
         run: python -m pytest
   
   build_front:

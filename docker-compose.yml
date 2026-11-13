@@ -14,7 +14,9 @@ services:
       retries: 10
 
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     env_file: .env
     environment:
       # Reaches the database by its service name, whatever DBHOST says in .env
