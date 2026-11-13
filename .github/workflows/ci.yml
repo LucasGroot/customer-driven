@@ -50,7 +50,7 @@ jobs:
       - name: Run tests
         run: python -m pytest
 
-  # Runs the dashboard's tests, including the accessibility checks
+  # Type checks the dashboard and runs its tests, including the accessibility checks
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -68,6 +68,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
 
       - name: Run frontend tests
         run: npx vitest run

@@ -1,25 +1,14 @@
 // @vitest-environment jsdom
-/// <reference types="node" />
 /**
  * Opens every page of the dashboard on the bundled sample of invented data and
  * checks it with axe against WCAG 2.1 AA. Contrast is left out here, as jsdom
  * draws nothing to measure; tokens.test.ts checks the colours instead.
  */
 
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, screen } from "@testing-library/react";
 import axe from "axe-core";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { CurrentUser } from "../auth/currentUser";
-import { App } from "./App";
-
-// The same sample the API serves when there is no real analysis. Read from disk,
-// since Vite refuses imports from outside frontend/, which keeps data/ out of reach.
-const samplePath = join(import.meta.dirname, "../../../src/backend/snapshot/sample_snapshot.json");
-const sampleSnapshot: unknown = JSON.parse(readFileSync(samplePath, "utf8"));
-
-const ADMIN: CurrentUser = { name: "Test Testesen", email: "test@example.com", role: "admin" };
+import { PAGES, firstRoutineButton, openDashboard, openPage, resetPage, stubApi } from "./dashboardTestSupport";
 
 async function violations(): Promise<string[]> {
   const results = await axe.run(document, {
@@ -31,32 +20,9 @@ async function violations(): Promise<string[]> {
   );
 }
 
-async function openDashboard() {
-  render(<App user={ADMIN} accessToken="token" onSignOut={() => {}} />);
-  await screen.findByRole("heading", { level: 1, name: "Oversikt" });
-}
-
-function openPage(label: string) {
-  const menu = screen.getByRole("navigation", { name: "Hovedmeny" });
-  // The menu entries with a count carry it in their name, so match the start only
-  fireEvent.click(within(menu).getByRole("button", { name: new RegExp(`^${label}`) }));
-}
-
 beforeEach(() => {
-  window.history.replaceState(null, "");
-  // As in index.html, which the test page does not load
-  document.documentElement.lang = "nb";
-  document.title = "Kunnskapsgap";
-  vi.stubGlobal(
-    "fetch",
-    vi.fn((url: string) =>
-      Promise.resolve(
-        url === "/api/snapshot"
-          ? Response.json(sampleSnapshot)
-          : Response.json({ state: "idle", completedSteps: 0 }),
-      ),
-    ),
-  );
+  resetPage();
+  stubApi();
 });
 
 afterEach(() => {
@@ -65,15 +31,7 @@ afterEach(() => {
 });
 
 describe("every page meets WCAG 2.1 AA", () => {
-  it.each([
-    ["Oversikt", "Oversikt"],
-    ["Prioriterte rutiner", "Rutiner som bør oppdateres først"],
-    ["Henvendelser til manuell gjennomgang", "Henvendelser til manuell gjennomgang"],
-    ["Kjør analyse", "Kjør analyse"],
-    ["Søk", "Søk"],
-    ["Importer data", "Last opp data"],
-    ["Om analysen", "Om analysen"],
-  ])("%s", async (menuLabel, heading) => {
+  it.each(PAGES)("%s", async (menuLabel, heading) => {
     await openDashboard();
     openPage(menuLabel);
 
@@ -84,10 +42,7 @@ describe("every page meets WCAG 2.1 AA", () => {
   it("a routine's own page", async () => {
     await openDashboard();
     openPage("Prioriterte rutiner");
-    const table = screen.getByRole("table");
-    const firstRoutine = within(table).getAllByRole("button").find((button) => button.closest("tbody") !== null);
-    if (firstRoutine === undefined) throw new Error("The sample has no routines in the list");
-    fireEvent.click(firstRoutine);
+    fireEvent.click(firstRoutineButton());
 
     expect(screen.getByRole("button", { name: /Tilbake til listen/ })).toBeDefined();
     expect(await violations()).toEqual([]);
