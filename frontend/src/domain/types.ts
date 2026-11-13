@@ -19,6 +19,12 @@ export interface RoutineDocument {
   uploadedLabel: string;
 }
 
+/** How well one routine matched a question, 0-1. */
+export interface RoutineCandidate {
+  documentCode: RoutineCode;
+  score: number;
+}
+
 /** One ServiceNow question and the routine that matched it best. */
 export interface AskedQuestion {
   id: QuestionId;
@@ -35,6 +41,8 @@ export interface AskedQuestion {
   needsReview: boolean;
   /** The group of similar questions it belongs to. Left out for a question that stands alone. */
   groupId?: GroupId;
+  /** The best matching routines, best first. Left out of a snapshot made before they were stored. */
+  candidates?: RoutineCandidate[];
   /** The cluster within its best routine it belongs to. Left out for a question in none, and for one that needs review. */
   routineClusterId?: RoutineClusterId;
 }

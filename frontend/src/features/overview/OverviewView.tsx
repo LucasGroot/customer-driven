@@ -127,9 +127,9 @@ export function OverviewView({
       />
 
       <p className={styles.footnote}>
-        Prioritet 0–100 bygger på to ting: hvor mange henvendelser som er knyttet til rutinen, og hvor
-        dårlig rutinen treffer dem. Klikk på en rutine for å se henvendelsene og regnestykket i
-        klartekst.
+        Rangeringen bygger på to ting: hvor mange henvendelser som er knyttet til rutinen, og hvor
+        dårlig rutinen treffer dem. Begge sammenlignes med de andre rutinene og teller like mye. Klikk
+        på en rutine for å se henvendelsene og regnestykket i klartekst.
       </p>
     </section>
   );

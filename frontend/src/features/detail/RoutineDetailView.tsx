@@ -6,7 +6,7 @@ import { MeterBar } from "../../components/MeterBar";
 import { SelectField } from "../../components/SelectField";
 import { STATUS_LABEL, STATUS_OPTIONS } from "../../domain/labels";
 import { rankRoutines } from "../../domain/priority";
-import type { RoutineStats } from "../../domain/routines";
+import { suggestedRoutineCodes, type RoutineStats } from "../../domain/routines";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { priorityFactors } from "./priorityFactors";
 import styles from "./RoutineDetailView.module.css";
@@ -19,7 +19,6 @@ import type {
   RoutineDocument,
   RoutineStatus,
 } from "../../domain/types";
-import { routinePdfUrl } from "./routinePdf";
 import { groupRoutineQuestions } from "./routineClusters";
 
 type QuestionItem = RoutineStats["questions"][number];
@@ -35,7 +34,7 @@ function formatQuestionCount(count: number): string {
   return `${String(count)} ${count === 1 ? "henvendelse" : "henvendelser"}`;
 }
 
-function QuestionRow({ item: { question, byHand }, otherRoutines, review }: QuestionRowProps) {
+function QuestionRow({ item: { question, byHand, coverage }, otherRoutines, review }: QuestionRowProps) {
   // Empty until HR picks a routine, so nothing moves by accident.
   const [targetCode, setTargetCode] = useState<RoutineCode>("");
 
@@ -48,11 +47,12 @@ function QuestionRow({ item: { question, byHand }, otherRoutines, review }: Ques
           {byHand ? " · knyttet til rutinen manuelt" : ""}
         </div>
       </div>
-      <CoverageMeter coverage={question.coverage} />
+      <CoverageMeter coverage={coverage} />
       <div className={styles.moveActions}>
         <RoutineSelect
           value={targetCode}
           routines={otherRoutines}
+          suggested={suggestedRoutineCodes(question)}
           placeholder="Flytt til rutine …"
           label={`Flytt henvendelse ${question.reference} til rutine`}
           onChange={setTargetCode}
@@ -119,12 +119,11 @@ export function RoutineDetailView({
   onBack,
 }: RoutineDetailViewProps) {
   const { routine } = stats;
-  const pdfUrl = routinePdfUrl(routine);
   const ranking = rankRoutines(routines, weights);
   const rank = ranking.find((entry) => entry.stats.routine.code === routine.code)?.rank;
-  const factors = priorityFactors(stats, weights);
+  const factors = priorityFactors(stats, weights, routines);
   const currentStatus = review.statusOf(routine.code);
-  const lowestScoreFirst = (a: QuestionItem, b: QuestionItem) => a.question.coverage - b.question.coverage;
+  const lowestScoreFirst = (a: QuestionItem, b: QuestionItem) => a.coverage - b.coverage;
   const { clusters, other } = groupRoutineQuestions(stats.questions, routineClusters, routine.code);
   const owner = review.ownerOf(routine.code);
   const isInProgress = currentStatus === "in-progress";
@@ -174,16 +173,6 @@ export function RoutineDetailView({
             <div className={styles.scoreNote}>knyttet til rutinen</div>
           </div>
         </div>
-          {pdfUrl !== null ? (
-            <div className={styles.pdfActions}>
-              <a className={styles.pdfLink} href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                Åpne PDF<span className="visuallyHidden"> (åpnes i ny fane)</span>
-              </a>
-              <a className={styles.pdfLink} href={pdfUrl} download>
-                Last ned PDF
-              </a>
-            </div>
-          ) : null}
         </div>
         
       </div>
