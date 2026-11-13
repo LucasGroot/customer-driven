@@ -1,12 +1,18 @@
+"""
+Scores questions against routines with the negated Euclidean distance between
+sentence embeddings.
+"""
+
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, _check_k, top_k_per_routine
+from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, check_k, top_k_per_routine
 
 
 def euclidean_similarity(corpus, model_name=SIMILARITY_MODEL_NAME, k=3):
     """
-    Scores each question against each routine using chosen llm embedding similarity.
+    Scores each question against each routine using the negated Euclidean distance between embeddings,
+    so a higher score means a closer match.
     Each chunk is embedded and scored individually, then a routine's score is
     the mean of its k highest chunk similarities. Routines with fewer than k
     chunks average over all the chunks they have.
@@ -14,7 +20,7 @@ def euclidean_similarity(corpus, model_name=SIMILARITY_MODEL_NAME, k=3):
     questions x routines.
     """
 
-    _check_k(k)
+    check_k(k)
 
     model = SentenceTransformer(model_name)
 

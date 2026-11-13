@@ -1,3 +1,7 @@
+"""
+Reads the words of PDF files, with their fonts and whether they sit inside a table.
+"""
+
 import os
 
 import pdfplumber

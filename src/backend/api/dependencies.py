@@ -62,8 +62,6 @@ def require_admin(request: Request, user: Annotated[CurrentUser, Depends(get_cur
     attempt is written to the audit log.
     """
     if user.role != "admin":
-        request.app.state.audit_log.record(
-            "access.denied", user.email, method=request.method, path=request.url.path
-        )
+        request.app.state.audit_log.record("access.denied", user.email, method=request.method, path=request.url.path)
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Admin only")
     return user

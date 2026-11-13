@@ -1,3 +1,9 @@
+"""
+Finds the bold headings in a document's words and groups the words into the
+sections under them.
+"""
+
+
 def is_bold(fontname):
     return "bold" in fontname.lower()
 

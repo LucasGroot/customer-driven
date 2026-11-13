@@ -1,7 +1,11 @@
+"""
+Scores questions against routines with BM25.
+"""
+
 import numpy as np
 from rank_bm25 import BM25Okapi
 
-from backend.ai.similarity_metrics.shared_logic import _check_k, tokenize, top_k_per_routine
+from backend.ai.similarity_metrics.shared_logic import check_k, tokenize, top_k_per_routine
 
 
 def bm25_similarity(corpus, k=3):
@@ -14,7 +18,7 @@ def bm25_similarity(corpus, k=3):
     questions x routines.
     """
 
-    _check_k(k)
+    check_k(k)
 
     bm25 = BM25Okapi([tokenize(text) for text in corpus.chunk_texts])
     chunk_scores = np.vstack([bm25.get_scores(tokenize(q)) for q in corpus.questions["text"]])

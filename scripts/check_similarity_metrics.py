@@ -1,3 +1,8 @@
+"""
+Sanity check that runs the tf-idf, BM25 and cosine similarity methods on one
+corpus and prints the top match per question for each.
+"""
+
 from backend.ai.similarity_metrics.bm25_similarity import bm25_similarity
 from backend.ai.similarity_metrics.cosine_similarity import cosine_similarity
 from backend.ai.similarity_metrics.shared_logic import load_corpus

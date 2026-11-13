@@ -1,3 +1,7 @@
+"""
+Reads the API settings from the environment.
+"""
+
 import os
 from dataclasses import dataclass
 

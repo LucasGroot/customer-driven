@@ -113,7 +113,7 @@ def load_corpus(questions_path, routines_path, chunker=chunk_by_layout):
     return Corpus(questions, routine_names, chunk_counts, chunk_texts)
 
 
-def _check_k(k):
+def check_k(k):
     if k < 1:
         raise ValueError("k must be at least 1")
 

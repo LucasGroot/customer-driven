@@ -1,3 +1,7 @@
+"""
+Chunks a document into consecutive pieces of a fixed number of words.
+"""
+
 DEFAULT_CHUNK_SIZE = 80  # Considering an embedding model's 128-token (~96-word) truncation limit
 
 

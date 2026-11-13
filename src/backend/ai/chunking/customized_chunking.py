@@ -1,3 +1,8 @@
+"""
+Chunks a document along its headings, splitting sections that are too long
+into evenly sized parts.
+"""
+
 from math import ceil
 
 from backend.ai.chunking.fixed_chunking import DEFAULT_CHUNK_SIZE, chunk_by_fixed_size

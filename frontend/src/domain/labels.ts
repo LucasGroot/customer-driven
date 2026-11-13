@@ -4,14 +4,8 @@
  * around it stays in English.
  */
 
-import { GOOD_COVERAGE_FROM, PARTIAL_COVERAGE_FROM, type CoverageBand, type PriorityBand } from "./priority";
+import { GOOD_COVERAGE_FROM, PARTIAL_COVERAGE_FROM, type CoverageBand } from "./priority";
 import type { RoutineStatus } from "./types";
-
-export const PRIORITY_BAND_LABEL: Record<PriorityBand, string> = {
-  high: "Høy prioritet",
-  medium: "Middels prioritet",
-  low: "Lav prioritet",
-};
 
 export const COVERAGE_BAND_LABEL: Record<CoverageBand, string> = {
   weak: "Svak dekning",

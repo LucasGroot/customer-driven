@@ -1,6 +1,10 @@
+"""
+Scores questions against routines with the cosine similarity of sentence embeddings.
+"""
+
 from sentence_transformers import SentenceTransformer
 
-from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, _check_k, top_k_per_routine
+from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, check_k, top_k_per_routine
 
 
 def cosine_similarity(corpus, model_name=SIMILARITY_MODEL_NAME, k=3):
@@ -13,7 +17,7 @@ def cosine_similarity(corpus, model_name=SIMILARITY_MODEL_NAME, k=3):
     questions x routines.
     """
 
-    _check_k(k)
+    check_k(k)
 
     model = SentenceTransformer(model_name)
     question_embeddings = model.encode(corpus.questions["text"].tolist(), normalize_embeddings=True)
