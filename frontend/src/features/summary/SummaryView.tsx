@@ -12,7 +12,7 @@ import {
   STATUS_LABEL,
   STATUS_OPTIONS,
 } from "../../domain/labels";
-import { coverageBand, isWellCovered, type CoverageBand } from "../../domain/priority";
+import { coverageBand, type CoverageBand } from "../../domain/priority";
 import type { RoutineStats } from "../../domain/routines";
 import type { AnalysisSnapshot } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
@@ -23,7 +23,6 @@ interface SummaryViewProps {
   routines: RoutineStats[];
   pendingCount: number;
   review: RoutineReview;
-  hideAbovePercent: number;
   onOpenReview?: () => void;
   onFilterByBand?: (band: CoverageBand | "no-questions") => void;
   onOpenRoutineList?: () => void;
@@ -35,7 +34,6 @@ export function SummaryView({
   routines,
   pendingCount,
   review,
-  hideAbovePercent,
   onOpenReview,
   onFilterByBand,
   onOpenRoutineList,
@@ -45,7 +43,6 @@ export function SummaryView({
   // The coverage bars show every routine, also those no question points to
   const routineCount = snapshot.documents.length || 1;
   const withoutQuestionsCount = snapshot.documents.length - routines.length;
-  const shownCount = routines.filter((stats) => !isWellCovered(stats, hideAbovePercent)).length;
   const coverageCounts = COVERAGE_BANDS.map((band) => ({
     band,
     count: routines.filter((stats) => coverageBand(stats.meanCoverage) === band).length,
@@ -156,7 +153,7 @@ export function SummaryView({
         <StatCard
           label="Rutiner med henvendelser"
           value={`${String(routines.length)} / ${String(snapshot.documents.length)}`}
-          note={`${String(shownCount)} vises i listen`}
+          note="vises i listen"
           onClick={onOpenRoutineList}
         />
         <StatCard

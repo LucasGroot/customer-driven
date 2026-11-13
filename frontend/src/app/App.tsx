@@ -18,7 +18,6 @@ import { useAnalysisSettings } from "../hooks/useAnalysisSettings";
 import { usePageFocus } from "../hooks/usePageFocus";
 import { useRoutineReview } from "../hooks/useRoutineReview";
 import { useSnapshot } from "../hooks/useSnapshot";
-import { DEFAULT_HIDE_ABOVE_PERCENT, isWellCovered } from "../domain/priority";
 import { ownerCandidates } from "../domain/owners";
 import { countPendingQuestions, routinesWithQuestions } from "../domain/routines";
 import type { AnalysisSnapshot, RoutineCode } from "../domain/types";
@@ -98,7 +97,6 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   const [selectedRoutineCode, setSelectedRoutineCode] = useState<RoutineCode | null>(startLocation.routineCode);
   const [aboutTopic, setAboutTopic] = useState<AboutTopic | null>(startLocation.aboutTopic);
   const [filter, setFilter] = useState<RoutineFilter>("all");
-  const [hideAbovePercent, setHideAbovePercent] = useState(DEFAULT_HIDE_ABOVE_PERCENT);
   // Kept here so the sort survives leaving and re-entering the list; null = priority order.
   const [routineSort, setRoutineSort] = useState<SortState | null>(null);
   // For initializing the search view with a coverage band filter from summary page
@@ -178,7 +176,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
       <div className={styles.layout}>
         <Sidebar
           currentView={shownView === "detail" ? returnView : shownView}
-          routineCount={routines.filter((stats) => !isWellCovered(stats, hideAbovePercent)).length}
+          routineCount={routines.length}
           reviewCount={pendingCount}
           lastRunLabel={run.hasFinished ? "I dag, nettopp" : snapshot.lastRunLabel}
           isExample={snapshot.isExample}
@@ -202,8 +200,6 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               review={review}
               filter={filter}
               onFilterChange={setFilter}
-              hideAbovePercent={hideAbovePercent}
-              onHideAboveChange={setHideAbovePercent}
               sort={routineSort}
               onSortChange={(sortKey) => {
                 setRoutineSort((current) => nextSort(current, sortKey));
@@ -240,7 +236,6 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
               routines={routines}
               pendingCount={pendingCount}
               review={review}
-              hideAbovePercent={hideAbovePercent}
               onOpenReview={() => { go({ view: "review" }); }}
               onFilterByBand={(band) => {
                 setSearchCoverageBandFilter(band);

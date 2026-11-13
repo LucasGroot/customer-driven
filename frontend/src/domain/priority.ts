@@ -85,18 +85,6 @@ export function coverageBand(coverage: number): CoverageBand {
   return "good";
 }
 
-/**
- * Routines that answer their questions better than this are left out of the list by default.
- * It starts at 100 so nothing is hidden: real scores lie close together, so any lower cut-off
- * hides most routines until the scale has been calibrated.
- */
-export const DEFAULT_HIDE_ABOVE_PERCENT = 100;
-
-/** Whether a routine already answers its questions better than the cut-off. */
-export function isWellCovered(stats: RoutineStats, hideAbovePercent: number): boolean {
-  return stats.meanCoverage * 100 > hideAbovePercent;
-}
-
 export interface ScoredRoutine {
   stats: RoutineStats;
   score: number;
