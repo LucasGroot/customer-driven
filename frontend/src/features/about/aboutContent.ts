@@ -80,7 +80,7 @@ export const FAQ_SECTIONS: Section[] = [
         topic: "bands",
         question: "Hva betyr Svak, Delvis og God dekning?",
         answer: [
-          `Dekning under ${String(partialFrom)} % regnes som Svak, ${String(partialFrom)}–${String(goodFrom - 1)} % som Delvis og ${String(goodFrom)} % eller høyere som God. Grensene er satt ut fra hvordan resultatene fordeler seg i dag. Har du innspill til grensene, kan du kontakte oss på admin@kvaliteket.no.`,
+          `Dekning under ${String(partialFrom)} % regnes som Svak, ${String(partialFrom)}–${String(goodFrom - 1)} % som Delvis og ${String(goodFrom)} % eller høyere som God. Grensene deler henvendelsene som er knyttet til en rutine i tre omtrent like store grupper, så nivåene sier hvor en henvendelse ligger i forhold til de andre, ikke om rutinen svarer fullt ut. Har du innspill til grensene, kan du kontakte oss på admin@kvaliteket.no.`,
         ],
       },
     ],
@@ -123,7 +123,7 @@ export const FAQ_SECTIONS: Section[] = [
         topic: "manual-review",
         question: "Hvorfor må noen henvendelser gjennomgås manuelt?",
         answer: [
-          `Hvis den beste rutinen passer dårligere enn ${String(MANUAL_REVIEW_BELOW_PERCENT)} % (litt over tilfeldig gjetning), regner ikke systemet henvendelsen som koblet til noen rutine. Den havner da under «Henvendelser til manuell gjennomgang». Henvendelser som handler om det samme samles i grupper. En stor gruppe betyr at flere lurer på det samme uten at en rutine svarer godt nok. Der kan du knytte henvendelsene til en rutine eller forkaste dem.`,
+          `Hvis den beste rutinen passer dårligere enn ${String(MANUAL_REVIEW_BELOW_PERCENT)} %, regner ikke systemet henvendelsen som koblet til noen rutine. Den havner da under «Henvendelser til manuell gjennomgang». Grensen er valgt ved å teste ulike verdier mot et lite utvalg henvendelser der vi på forhånd visste om det fantes en rutine. Den fungerer som et filter som begrenser hvor mange henvendelser som må gjennomgås, men den fanger ikke alle kunnskapshull. Henvendelser som handler om det samme samles i grupper. En stor gruppe betyr at flere lurer på det samme uten at en rutine svarer godt nok. Der kan du knytte henvendelsene til en rutine eller forkaste dem.`,
         ],
       },
       {

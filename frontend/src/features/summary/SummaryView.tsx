@@ -84,6 +84,9 @@ export function SummaryView({
               <span className={styles.count}>{withoutQuestionsCount}</span>
             </div>
           </div>
+          <p className={styles.disclaimer}>
+            Dekningen viser hvor godt henvendelsene samsvarer med rutinene, ikke om de faktisk er besvart.
+          </p>
         </Card>
 
         <Card title="Status på rutinene">
