@@ -69,8 +69,8 @@ jobs:
 
       # Checks types
       - name: Type check
-        run: npx tsc --noEmit
+        run: cd frontend && npx tsc --noEmit
 
       # Runs tests
       - name: Run tests
-        run: npx vitest run
+        run: cd frontend && npx vitest run
