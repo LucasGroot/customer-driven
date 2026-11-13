@@ -66,7 +66,7 @@ jobs:
         run: |
           cd frontend
           npm install
-          npm audit fix
+          npm audit fix --force
 
       # Runs test
       - name: Run tests
