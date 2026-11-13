@@ -29,10 +29,12 @@ Four parts work together: an analysis that scores the data, a PostgreSQL databas
 
 ### Before you start: signing in
 
-The dashboard only opens after Microsoft sign-in. There is no way to create an account or give yourself a role, neither in the dashboard nor in this repository. **You get what you need from the group:**
+The dashboard only opens after Microsoft sign-in. There is no way to create an account or give yourself a role, neither in the dashboard nor in this repository. If you are supposed to test the application, you should receive the following: 
 
 - the tenant ID and client ID for `.env`, and
 - a username and a first-time password. Microsoft asks you to choose your own password the first time you sign in.
+
+You will need Microsoft Authenticator to authenticate yourself. 
 
 The account has a role in the app: `Bruker` sees the dashboard, and `Admin` can also upload data and run the analysis. Only the administrator of the Entra tenant can create accounts and change roles, see [entra-app-registration.md](docs/entra-app-registration.md).
 
@@ -77,9 +79,8 @@ The API, the dashboard and the PostgreSQL database run as containers, with no Py
    python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
    ```
 
-4. The app registration needs `http://localhost:8080` as a _single-page application_ redirect URI, under **Authentication**. Without it, Microsoft refuses the sign-in. This is already done for the test setup you get from the group. Otherwise, only an owner of the app registration can add it.
 
-5. Start everything, and open <http://localhost:8080> when the terminal says the API is running:
+4. Start everything, and open <http://localhost:8080> when the terminal says the API is running:
 
    ```bash
    docker compose up --build
