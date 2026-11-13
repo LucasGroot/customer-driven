@@ -70,6 +70,26 @@ def test_rejects_a_file_over_the_size_limit(monkeypatch):
     assert rejection_reason(uploads.check_routines, [pdf_file("1760-1-Vernerunde.pdf")]) == "tooLarge"
 
 
+def test_rejects_an_export_that_unpacks_past_the_limit(monkeypatch):
+    monkeypatch.setattr(uploads, "MAX_UNPACKED_BYTES", 1000)
+
+    assert rejection_reason(uploads.check_questions, excel_file([QUESTION_ROW])) == "unpackedTooLarge"
+
+
+def test_rejects_new_routines_that_would_fill_the_routines_folder(monkeypatch):
+    uploads.save_routines([pdf_file("1760-1-Vernerunde.pdf")])
+    stored_bytes = (uploads.ROUTINES_FOLDER / "1760-1-Vernerunde.pdf").stat().st_size
+    monkeypatch.setattr(uploads, "MAX_STORED_ROUTINES_BYTES", stored_bytes + 10)
+
+    assert rejection_reason(uploads.check_routine_storage, [pdf_file("1800-2-Ferie.pdf")]) == "storageFull"
+
+
+def test_accepts_new_routines_that_fit_in_the_routines_folder():
+    uploads.save_routines([pdf_file("1760-1-Vernerunde.pdf")])
+
+    uploads.check_routine_storage([pdf_file("1800-2-Ferie.pdf")])
+
+
 @pytest.mark.parametrize("name", ["../1760-1-Vernerunde.pdf", "mappe/1760-1-Vernerunde.pdf", ".skjult.pdf"])
 def test_rejects_routine_names_that_could_leave_the_folder(name):
     assert rejection_reason(uploads.check_routines, [pdf_file(name)]) == "invalidName"

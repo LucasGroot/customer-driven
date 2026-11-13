@@ -47,6 +47,7 @@ function color(name: string): string {
 // Every background that text sits on, including the light blue menu
 const BACKGROUNDS = [
   "--color-canvas",
+  "--color-blue-50",
   "--color-surface",
   "--color-surface-muted",
   "--color-surface-quote",
@@ -75,6 +76,40 @@ const BADGES = ["accent", "warning", "success", "neutral"];
 // The edges that show where a field or button is
 const EDGES = ["--color-border-input", "--color-accent-border", "--color-danger-border"];
 
+// Colours that are not text, not the edge of a control and not a background for text,
+// so WCAG asks nothing of their contrast. Each one says why.
+const NOT_CHECKED: Record<string, string> = {
+  "--color-blue-200": "line between parts of the menu",
+  "--color-blue-300": "line between parts of the menu",
+  "--color-border": "outline of cards and tables; the content is readable and operable without it",
+  "--color-border-soft": "line between rows inside a card",
+  "--color-border-row": "line between table rows",
+  "--color-accent-rule": "line beside quoted text",
+  "--color-accent-chart-idle": "not used by any component",
+  "--color-text-disabled": "only for controls that are switched off, which WCAG exempts",
+};
+
+const HOVER_BACKGROUNDS = ["--color-accent-surface-hover", "--color-danger-surface-hover"];
+
+const CHECKED = new Set([
+  ...BACKGROUNDS,
+  ...TEXT_COLORS,
+  ...EDGES,
+  ...HOVER_BACKGROUNDS,
+  "--color-accent-hover",
+  ...BADGES.flatMap((tone) => [`--color-badge-${tone}-fg`, `--color-badge-${tone}-bg`]),
+]);
+
+describe("every colour is accounted for", () => {
+  it.each([...colors.keys()])("%s is checked above or exempt for a stated reason", (name) => {
+    expect(CHECKED.has(name) || name in NOT_CHECKED).toBe(true);
+  });
+
+  it("keeps no exemption for a colour that no longer exists", () => {
+    for (const name of Object.keys(NOT_CHECKED)) expect(colors.has(name)).toBe(true);
+  });
+});
+
 describe("colour contrast (WCAG 2.1 AA)", () => {
   it.each(TEXT_COLORS.flatMap((text) => BACKGROUNDS.map((background) => [text, background])))(
     "%s is readable on %s",
@@ -91,6 +126,11 @@ describe("colour contrast (WCAG 2.1 AA)", () => {
   it("white text is readable on primary buttons and selected filters", () => {
     expect(contrast(color("--color-surface"), color("--color-accent"))).toBeGreaterThanOrEqual(4.5);
     expect(contrast(color("--color-surface"), color("--color-accent-hover"))).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("text stays readable when a secondary or a danger button is hovered", () => {
+    expect(contrast(color("--color-accent"), color("--color-accent-surface-hover"))).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(color("--color-band-high"), color("--color-danger-surface-hover"))).toBeGreaterThanOrEqual(4.5);
   });
 
   it.each(EDGES.flatMap((edge) => ["--color-canvas", "--color-surface"].map((background) => [edge, background])))(

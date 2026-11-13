@@ -1,9 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import fs from "node:fs";
-import path from "node:path";
-import type { IncomingMessage, ServerResponse } from "node:http";
-import type { Plugin } from "vite";
 
 /*
  * Security headers, applied to the dev and preview servers so that a header the
