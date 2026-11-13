@@ -76,7 +76,7 @@ jobs:
 
       # Checks types
       - name: Type check
-        run: cd frontend && npx tsc --noEmit
+        run: cd frontend && npx tsc -b
 
       # Fails on lint errors, and on code not formatted with Prettier (npm run lint:fix fixes both)
       - name: Lint

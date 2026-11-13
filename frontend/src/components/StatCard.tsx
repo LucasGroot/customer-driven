@@ -4,7 +4,7 @@ interface StatCardProps {
   label: string;
   value: string;
   note: string;
-  onClick?: () => void;
+  onClick?: (() => void) | undefined;
 }
 
 export function StatCard({ label, value, note, onClick }: StatCardProps) {
