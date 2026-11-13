@@ -6,23 +6,29 @@
 
 .columns {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   gap: 16px;
   align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .bands {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
 .bandRow {
   display: grid;
-  grid-template-columns: minmax(130px, 1fr) minmax(80px, 1.4fr) 32px;
+  grid-template-columns: minmax(200px, 1fr) minmax(80px, 1.3fr) 36px;
   align-items: center;
-  gap: 16px;
-  font-size: 13.5px;
+  gap: 20px;
+  font-size: 14.5px;
   padding: 8px;
   margin: -8px;
   border-radius: var(--radius-md);
@@ -49,46 +55,16 @@
 }
 
 .disclaimer {
-  margin-top: 16px;
+  margin-top: 22px;
   font-size: 13px;
   color: var(--color-text-soft);
 }
 
 .count {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
   text-align: right;
-}
-
-.stack {
-  display: flex;
-  height: 12px;
-  border-radius: var(--radius-pill);
-  overflow: hidden;
-  background: var(--color-track);
-  margin-top: auto;
-}
-
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  list-style: none;
-  font-size: 13px;
-  margin-bottom: auto;
-}
-
-.legendItem {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  flex: none;
 }
 
 .source {

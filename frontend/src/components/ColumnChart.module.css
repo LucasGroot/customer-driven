@@ -1,0 +1,48 @@
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Room for the value printed above the tallest column */
+  padding-top: 22px;
+}
+
+.plot {
+  display: flex;
+  height: 180px;
+  border-bottom: 1px solid var(--color-border-input);
+}
+
+.slot {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.column {
+  width: min(56px, 45%);
+  border-radius: 4px 4px 0 0;
+}
+
+.value {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-bottom: 6px;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.categories {
+  display: flex;
+}
+
+.category {
+  flex: 1;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--color-text-body);
+}

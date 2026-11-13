@@ -1,4 +1,5 @@
 import { Card } from "../../components/Card";
+import { ColumnChart } from "../../components/ColumnChart";
 import { InfoBubble } from "../../components/InfoBubble";
 import { MeterBar } from "../../components/MeterBar";
 import { PageIntro } from "../../components/PageIntro";
@@ -39,7 +40,6 @@ export function SummaryView({
   onOpenRoutineList,
   onOpenQuestionSearch,
 }: SummaryViewProps) {
-  const total = routines.length || 1;
   // The coverage bars show every routine, also those no question points to
   const routineCount = snapshot.documents.length || 1;
   const withoutQuestionsCount = snapshot.documents.length - routines.length;
@@ -84,7 +84,7 @@ export function SummaryView({
                     topic="bands"
                   />
                 </span>
-                <MeterBar value={count / routineCount} color={COVERAGE_BAND_COLOR[band]} />
+                <MeterBar value={count / routineCount} color={COVERAGE_BAND_COLOR[band]} size="large" />
                 <span className={styles.count}>{count}</span>
               </div>
             ))}
@@ -108,7 +108,7 @@ export function SummaryView({
                   topic="suggested-routine"
                 />
               </span>
-              <MeterBar value={withoutQuestionsCount / routineCount} color="var(--color-text-dim)" />
+              <MeterBar value={withoutQuestionsCount / routineCount} color="var(--color-text-dim)" size="large" />
               <span className={styles.count}>{withoutQuestionsCount}</span>
             </div>
           </div>
@@ -118,28 +118,17 @@ export function SummaryView({
         </Card>
 
         <Card title="Status på rutinene">
-          <div className={styles.stack} aria-hidden="true">
-            {statusCounts.map(({ status, count }) =>
-              count === 0 ? null : (
-                <div
-                  key={status}
-                  style={{ width: `${String((count / total) * 100)}%`, background: STATUS_COLOR[status] }}
-                />
-              ),
-            )}
-          </div>
-          <ul className={styles.legend}>
-            {statusCounts.map(({ status, count }) => (
-              <li key={status} className={styles.legendItem}>
-                <span
-                  className={styles.swatch}
-                  style={{ background: STATUS_COLOR[status] }}
-                  aria-hidden="true"
-                />
-                {STATUS_LABEL[status]} · {count}
-              </li>
-            ))}
-          </ul>
+          <ColumnChart
+            title="Status på rutinene"
+            columns={[
+              ...statusCounts.map(({ status, count }) => ({
+                label: STATUS_LABEL[status],
+                value: count,
+                color: STATUS_COLOR[status],
+              })),
+              { label: "Uten henvendelser", value: withoutQuestionsCount, color: "var(--color-text-dim)" },
+            ]}
+          />
         </Card>
       </div>
 
