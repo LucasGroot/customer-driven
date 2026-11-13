@@ -16,7 +16,7 @@ from backend.snapshot.router import SNAPSHOT_PATH
 
 logger = logging.getLogger(__name__)
 
-# The same five steps the run page lists (RUN_STEPS in frontend/src/hooks/useAnalysisRun.ts)
+# The same five steps the run page lists (RUN_STEPS in src/frontend/src/hooks/useAnalysisRun.ts)
 ANALYSIS_STEP_COUNT = 5
 
 RunState = Literal["idle", "running", "finished", "failed"]

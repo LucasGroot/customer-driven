@@ -1,6 +1,6 @@
 """
 The shape of one analysis run as the dashboard reads it. These models mirror
-frontend/src/domain/types.ts, so a field added there has to be added here too.
+src/frontend/src/domain/types.ts, so a field added there has to be added here too.
 """
 
 from pydantic import BaseModel, ConfigDict

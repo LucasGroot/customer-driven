@@ -25,7 +25,7 @@ What the AI agent (and new team members) need to know about the project is kept 
 - **Git/GitHub** for version control and code review (PRs).
 - **Terminal + Python environment** for the backend (pdfplumber, sentence-transformers, pandas, numpy).
 - **Claude Code / MCP tools** for editing files, searching, and running scripts — the agent should never be given access to push to `main` or delete data without a team member's approval.
-- No frontend framework has been chosen yet (`frontend/` is empty) — once one is, this point and CLAUDE.md are updated.
+- No frontend framework has been chosen yet (`src/frontend/` is empty) — once one is, this point and CLAUDE.md are updated.
 
 ## 4. Skills / instructions
 

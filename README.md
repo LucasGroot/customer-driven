@@ -17,7 +17,7 @@ Identify which topics and questions raised through ServiceNow have the lowest se
 3. [`src/backend/ai/embedding_extract.py`](src/backend/ai/embedding_extract.py) generates embeddings for both routine chunks and ServiceNow questions using a multilingual sentence-transformer model, and caches them to `embeddings/*.pkl`.
 4. [`src/backend/ai/compute_similarity.py`](src/backend/ai/compute_similarity.py) computes cosine similarity between every question and every routine chunk, and ranks questions by their summed top-k similarity — the lowest-scoring questions are the least represented in the current routines — and renders the result as an HTML report.
 
-5. [`frontend/`](frontend/) presents the result as a dashboard: the gaps ranked by priority, why each one ranks where it does, and what HR decided to do about it.
+5. [`src/frontend/`](src/frontend/) presents the result as a dashboard: the gaps ranked by priority, why each one ranks where it does, and what HR decided to do about it.
 
 ## Status
 
@@ -40,7 +40,7 @@ Three parts work together: a script that analyses the data, a small API that ser
 2. Install the frontend dependencies (Node.js 22.12 or newer):
 
    ```bash
-   cd frontend && npm install
+   cd src/frontend && npm install
    ```
 
 3. Copy `.env.example` to `.env` and fill in the IDs from the Microsoft Entra app registration (see [Entra app registration](#entra-app-registration-for-customer-only) below).
@@ -60,7 +60,7 @@ If your virtual environment is called `venv`, use `venv/bin/python` instead.
 Then the dashboard, and open <http://localhost:5173>:
 
 ```bash
-cd frontend && npm run dev
+cd src/frontend && npm run dev
 ```
 
 The dashboard asks the API for its data, so the API has to be running.
@@ -106,8 +106,8 @@ Without a snapshot the API serves the bundled sample, and the dashboard says "Ek
 
 ```bash
 .venv/bin/python -m pytest   # backend
-cd frontend && npx vitest run   # frontend, once
-cd frontend && npm test         # frontend, in watch mode (press q to quit)
+cd src/frontend && npx vitest run   # frontend, once
+cd src/frontend && npm test      # frontend, in watch mode (press q to quit)
 ```
 
 Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ranking) is functional. The frontend is a working UI prototype running on mock data, behind Microsoft sign-in.
@@ -116,7 +116,7 @@ Backend NLP pipeline (PDF parsing → chunking → embeddings → similarity ran
 
 ```bash
 .venv/bin/ruff check --fix . && .venv/bin/ruff format .   # backend: fix and format, from the project root
-cd frontend && npm run lint:fix                           # frontend: fix and format
+cd src/frontend && npm run lint:fix                       # frontend: fix and format
 ```
 
 CI fails if either finds something to fix. In VS Code, install the recommended extensions (Ruff, ESLint and Prettier) to have files fixed and formatted on save.
@@ -171,7 +171,7 @@ Run the tests with `python -m pytest tests/unit/api`.
 
 ### Running the frontend
 
-Requires Node.js 22.12 or newer. From `frontend/`
+Requires Node.js 22.12 or newer. From `src/frontend/`
 
 ```bash
 npm install     # once, and again after dependencies change
@@ -202,15 +202,22 @@ npx vitest run  # run the tests once, e.g. before committing
 |   |   |-- ci.yml
 |-- assets
 |-- docs
+|-- scripts
 |-- src
 |   |-- backend
+|   |   |-- admin
+|   |   |-- ai
+|   |   |   |-- chunking
+|   |   |   |-- clustering
+|   |   |   |-- evaluation
+|   |   |   |-- llm
+|   |   |   |-- similarity_metrics
+|   |   |   |-- pdf_reader.py
 |   |   |-- api
-|   |   |-- chunking
-|   |   |   |-- customized_chunking.py
-|   |   |   |-- fixed_chunking.py
-|   |   |   |-- heading_section.py
-|   |   |-- pdf_reader.py
+|   |   |-- snapshot
 |   |-- frontend
+|   |   |-- public
+|   |   |-- src
 |-- tests
 |   |-- visualization
 |   |   |-- customized_chunking.ipynb

@@ -29,7 +29,7 @@ Template (see [.gitmessage](.gitmessage) for the full version with all comments)
 
 ## Linting and formatting
 
-The frontend uses ESLint for code quality and Prettier for formatting. From `frontend/`:
+The frontend uses ESLint for code quality and Prettier for formatting. From `src/frontend/`:
 
 | command | does |
 |---|---|

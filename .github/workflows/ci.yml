@@ -68,23 +68,23 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: src/frontend/package-lock.json
         
       # Installs dependancies
       - name: install dependencies
-        run: cd frontend && npm ci
+        run: cd src/frontend && npm ci
 
       # Checks types
       - name: Type check
-        run: cd frontend && npx tsc --noEmit
+        run: cd src/frontend && npx tsc --noEmit
 
       # Fails on lint errors, and on code not formatted with Prettier (npm run lint:fix fixes both)
       - name: Lint
-        run: cd frontend && npm run lint
+        run: cd src/frontend && npm run lint
 
       - name: Check formatting
-        run: cd frontend && npm run format:check
+        run: cd src/frontend && npm run format:check
 
       # Runs tests
       - name: Run tests
-        run: cd frontend && npx vitest run
+        run: cd src/frontend && npx vitest run

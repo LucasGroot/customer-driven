@@ -31,7 +31,7 @@
       "source.organizeImports.ruff": "explicit"
     }
   },
-  // Prettier only formats files that have a config, i.e. those under frontend/
+  // Prettier only formats files that have a config, i.e. those under src/frontend/
   "prettier.requireConfig": true,
-  "eslint.workingDirectories": ["frontend"]
+  "eslint.workingDirectories": ["src/frontend"]
 }
