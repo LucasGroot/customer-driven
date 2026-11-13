@@ -10,10 +10,10 @@
 
 :root {
   /* Light blue ramp for the page background and the menu states */
-  --color-blue-50: #e5f2ff;
-  --color-blue-100: #cce6ff;
-  --color-blue-200: #b2d9ff;
-  --color-blue-300: #99ccff;
+  --color-blue-50: #ccebf9;
+  --color-blue-100: #e6eff6;
+  --color-blue-200: #66c2ec;
+  --color-blue-300: #33ade5;
 
   --color-canvas: var(--color-blue-50);
   --color-surface: #ffffff;
@@ -27,7 +27,7 @@
   --color-border-input: #7c8178;
   --color-track: #edebe4;
 
-  --color-text: #1d2321;
+  --color-text: #001221;
   --color-text-strong: #2b302a;
   --color-text-body: #3f443d;
   --color-text-muted: #4c514a;
@@ -40,12 +40,12 @@
   /* Only for controls that are switched off, which WCAG exempts from contrast */
   --color-text-disabled: #a8aba3;
 
-  --color-accent: #1f4e79;
-  --color-accent-hover: #16385a;
+  --color-accent: #004886;
+  --color-accent-hover: #003664;
   --color-accent-surface: #eef2f7;
   --color-accent-surface-hover: #f1f5f9;
   /* The edge of secondary buttons and filters, so it must reach 3:1 */
-  --color-accent-border: #6b8cad;
+  --color-accent-border: #669cca;
   --color-accent-rule: #dce6ef;
   --color-accent-chart-idle: #c9d6e3;
 

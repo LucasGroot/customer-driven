@@ -16,8 +16,12 @@ interface PriorityFactor {
   note: string;
 }
 
-export function priorityFactors(stats: RoutineStats, weights: PriorityWeights): PriorityFactor[] {
-  const factor = scoreBreakdown(stats);
+export function priorityFactors(
+  stats: RoutineStats,
+  weights: PriorityWeights,
+  allRoutines: RoutineStats[],
+): PriorityFactor[] {
+  const factor = scoreBreakdown(stats, allRoutines);
   return [
     {
       label: "Hvor mange spør",

@@ -5,6 +5,8 @@ interface RoutineSelectProps {
   value: RoutineCode;
   /** Every routine, alphabetically. */
   routines: RoutineDocument[];
+  /** The routines that matched best, best first. Listed above the others when given. */
+  suggested?: RoutineCode[];
   /** When set, an unselectable first option shown while `value` is "". */
   placeholder?: string;
   /**
@@ -15,7 +17,17 @@ interface RoutineSelectProps {
   onChange: (routineCode: RoutineCode) => void;
 }
 
-export function RoutineSelect({ value, routines, placeholder, label, onChange }: RoutineSelectProps) {
+export function RoutineSelect({ value, routines, suggested = [], placeholder, label, onChange }: RoutineSelectProps) {
+  const routineByCode = new Map(routines.map((routine) => [routine.code, routine]));
+  const suggestedRoutines = suggested.flatMap((code) => routineByCode.get(code) ?? []);
+  const others = routines.filter((routine) => !suggestedRoutines.includes(routine));
+  const options = (list: RoutineDocument[]) =>
+    list.map((routine) => (
+      <option key={routine.code} value={routine.code}>
+        {routine.name}
+      </option>
+    ));
+
   return (
     <select
       className={styles.select}
@@ -30,11 +42,14 @@ export function RoutineSelect({ value, routines, placeholder, label, onChange }:
           {placeholder}
         </option>
       ) : null}
-      {routines.map((routine) => (
-        <option key={routine.code} value={routine.code}>
-          {routine.name}
-        </option>
-      ))}
+      {suggestedRoutines.length > 0 ? (
+        <>
+          <optgroup label="Foreslåtte rutiner">{options(suggestedRoutines)}</optgroup>
+          <optgroup label="Alle rutiner">{options(others)}</optgroup>
+        </>
+      ) : (
+        options(routines)
+      )}
     </select>
   );
 }

@@ -14,6 +14,7 @@ from backend.snapshot.models import (
     AskedQuestion,
     DataSource,
     ReviewGroup,
+    RoutineCandidate,
     RoutineCluster,
     RoutineDocument,
 )
@@ -21,6 +22,8 @@ from backend.snapshot.models import (
 
 ROUTINE_FILENAME_PATTERN = re.compile(r"^(\d{4}-\d+)-(.+)$")
 MAX_QUESTION_CHARACTERS = 500
+# On the ground truth the right routine is among the top 10 for 94 % of the questions
+CANDIDATES_PER_QUESTION = 10
 NO_OWNER = "Ikke tildelt"
 UNKNOWN_CATEGORY = "Ukjent"
 NORWEGIAN_MONTHS = [
@@ -131,6 +134,20 @@ def index_routine_clusters(routine_clusters):
     return clusters, cluster_of_question
 
 
+def best_candidates(question_scores):
+    """
+    Returns the routines that score highest for one question, best first, so
+    the dashboard has the score of a routine HR picks instead of the best one.
+    """
+
+    best = question_scores.nlargest(CANDIDATES_PER_QUESTION)
+
+    return [
+        RoutineCandidate(document_code=split_routine_filename(filename)[0], score=round(float(score), 3))
+        for filename, score in best.items()
+    ]
+
+
 def build_snapshot(questions, scores, last_run, questions_uploaded, routines_uploaded,
                    review_groups=(), routine_clusters=None):
     """
@@ -152,6 +169,7 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
     categories = questions[SERVICE_COLUMN].fillna(UNKNOWN_CATEGORY)
     # The export has no creation date for a ticket, so every ticket gets the day it was uploaded
     uploaded = format_short_norwegian_date(questions_uploaded)
+    candidates = {str(question_id): best_candidates(row) for question_id, row in scores.iterrows()}
     groups, group_of_question = index_review_groups(review_groups)
     clusters, cluster_of_question = index_routine_clusters(routine_clusters or {})
 
@@ -166,6 +184,7 @@ def build_snapshot(questions, scores, last_run, questions_uploaded, routines_upl
             needs_review=bool(flagged),
             group_id=group_of_question.get(str(question_id)),
             routine_cluster_id=cluster_of_question.get(str(question_id)),
+            candidates=candidates[str(question_id)],
         )
         for question_id, text, category, filename, coverage, flagged in zip(
             questions.index, questions["text"], categories, best_filename, best_score, needs_review

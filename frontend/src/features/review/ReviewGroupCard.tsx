@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
+import { suggestedRoutineCodes } from "../../domain/routines";
 import type { RoutineCode, RoutineDocument } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import { mostCommonBestMatch, type ReviewGroupView } from "./reviewQuestions";
@@ -35,6 +36,7 @@ export function ReviewGroupCard({ view, routines, review }: ReviewGroupCardProps
           <RoutineSelect
             value={chosenCode}
             routines={routines}
+            suggested={suggestedRoutineCodes(heading)}
             label={`Rutine for gruppen «${group.title}»`}
             onChange={setChosenCode}
           />

@@ -25,7 +25,7 @@ def center_embeddings(question_embeddings):
     return centered / np.linalg.norm(centered, axis=1, keepdims=True)
 
 
-def cluster_questions(question_embeddings, min_cluster_size=DEFAULT_MIN_CLUSTER_SIZE):
+def cluster_questions(question_embeddings, min_cluster_size=DEFAULT_MIN_CLUSTER_SIZE, cluster_selection_method="leaf"):
     """
     Clusters all questions together and returns one label per question.
     Questions that belong to no theme get NOISE_LABEL.
@@ -33,11 +33,11 @@ def cluster_questions(question_embeddings, min_cluster_size=DEFAULT_MIN_CLUSTER_
 
     embeddings = center_embeddings(question_embeddings)
 
-    # "leaf" keeps themes small and coherent; the default merged unrelated questions into one large theme
+    # "leaf" keeps themes small and coherent; the default "eom" merged unrelated questions into one large theme
     return HDBSCAN(
         min_cluster_size=min_cluster_size,
         min_samples=1,
-        cluster_selection_method="leaf",
+        cluster_selection_method=cluster_selection_method,
     ).fit_predict(embeddings)
 
 
