@@ -1,9 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import fs from "node:fs";
-import path from "node:path";
-import type { IncomingMessage, ServerResponse } from "node:http";
-import type { Plugin } from "vite";
 
 /*
  * Security headers, applied to the dev and preview servers so that a header the
@@ -44,35 +40,3 @@ export default defineConfig({
   preview: { headers: securityHeaders, proxy: apiProxy },
   build: { sourcemap: false },
 });
-
-function servePdfs(): Plugin {
-  const dataDir = path.resolve(__dirname, "../data");
-
-  const handler = (req: IncomingMessage, res: ServerResponse) => {
-    let file = "";
-    try {
-      // basename() blocks any attempt to leave the data folder (../ and the like)
-      file = path.basename(decodeURIComponent((req.url ?? "").split("?")[0]));
-    } catch {
-      /* malformed URL: handled as not found below */
-    }
-    const fullPath = path.join(dataDir, file);
-    if (file === "" || path.extname(file).toLowerCase() !== ".pdf" || !fs.existsSync(fullPath)) {
-      res.statusCode = 404;
-      res.end("PDF not found");
-      return;
-    }
-    res.setHeader("Content-Type", "application/pdf");
-    fs.createReadStream(fullPath).pipe(res);
-  };
-
-  return {
-    name: "serve-routine-pdfs",
-    configureServer(server) {
-      server.middlewares.use("/pdf", handler);
-    },
-    configurePreviewServer(server) {
-      server.middlewares.use("/pdf", handler);
-    },
-  };
-}

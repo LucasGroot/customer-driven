@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { countPendingQuestions, placementOf, routinesWithQuestions } from "./routines";
+import {
+  countPendingQuestions,
+  coverageOnRoutine,
+  placementOf,
+  routinesWithQuestions,
+  suggestedRoutineCodes,
+} from "./routines";
 import type { AnalysisSnapshot, AskedQuestion, ReviewDecision } from "./types";
 
 function makeQuestion(overrides: Partial<AskedQuestion> = {}): AskedQuestion {
@@ -102,6 +108,26 @@ describe("routinesWithQuestions", () => {
     expect(routineC?.meanCoverage).toBeCloseTo(0.1);
   });
 
+  it("counts a question mapped by hand with its score on the routine HR chose", () => {
+    const withCandidates = makeQuestion({
+      id: "5",
+      documentCode: "A",
+      coverage: 0.1,
+      needsReview: true,
+      candidates: [
+        { documentCode: "A", score: 0.1 },
+        { documentCode: "C", score: 0.45 },
+      ],
+    });
+    const routines = routinesWithQuestions(
+      makeSnapshot([withCandidates]),
+      decisionsFrom({ "5": { kind: "mapped", routineCode: "C" } }),
+    );
+
+    expect(routines[0]?.questions[0]?.coverage).toBeCloseTo(0.45);
+    expect(routines[0]?.meanCoverage).toBeCloseTo(0.45);
+  });
+
   it("drops discarded questions from the routine they matched", () => {
     const routines = routinesWithQuestions(
       makeSnapshot(questions),
@@ -125,5 +151,42 @@ describe("countPendingQuestions", () => {
   it("stops counting a question once HR has decided", () => {
     const decisionOf = decisionsFrom({ "2": { kind: "discarded" } });
     expect(countPendingQuestions(snapshot, decisionOf)).toBe(1);
+  });
+});
+
+describe("coverageOnRoutine", () => {
+  const question = makeQuestion({
+    coverage: 0.6,
+    candidates: [
+      { documentCode: "A", score: 0.6 },
+      { documentCode: "B", score: 0.5 },
+    ],
+  });
+
+  it("gives the score the snapshot stored for that routine", () => {
+    expect(coverageOnRoutine(question, "B")).toBe(0.5);
+  });
+
+  it("falls back on the best score for a routine that is not a candidate", () => {
+    expect(coverageOnRoutine(question, "C")).toBe(0.6);
+  });
+
+  it("falls back on the best score in a snapshot without candidates", () => {
+    expect(coverageOnRoutine(makeQuestion({ coverage: 0.3 }), "B")).toBe(0.3);
+  });
+});
+
+describe("suggestedRoutineCodes", () => {
+  it("lists the best candidates first and no more than five", () => {
+    const candidates = ["A", "B", "C", "D", "E", "F", "G"].map((documentCode, index) => ({
+      documentCode,
+      score: 0.9 - index * 0.1,
+    }));
+
+    expect(suggestedRoutineCodes(makeQuestion({ candidates }))).toEqual(["A", "B", "C", "D", "E"]);
+  });
+
+  it("suggests nothing for a snapshot without candidates", () => {
+    expect(suggestedRoutineCodes(makeQuestion())).toEqual([]);
   });
 });

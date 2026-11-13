@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "../../components/Button";
 import { CoverageMeter } from "../../components/CoverageMeter";
 import { DataTable, type DataTableColumn } from "../../components/DataTable";
+import { suggestedRoutineCodes } from "../../domain/routines";
 import type { RoutineCode, RoutineDocument } from "../../domain/types";
 import type { RoutineReview } from "../../hooks/useRoutineReview";
 import type { ReviewItem } from "./reviewQuestions";
@@ -48,6 +49,7 @@ function ReviewRow({ item, routines, review }: ReviewRowProps) {
             <RoutineSelect
               value={chosenCode}
               routines={routines}
+              suggested={suggestedRoutineCodes(question)}
               label={`Rutine for henvendelse ${question.reference}`}
               onChange={setChosenCode}
             />
