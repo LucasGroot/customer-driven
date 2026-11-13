@@ -30,3 +30,6 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Audit log of uploads and analysis runs; holds user names (personal data)
+logs/
