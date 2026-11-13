@@ -17,6 +17,7 @@ from backend.ai.similarity_metrics.shared_logic import SIMILARITY_MODEL_NAME, lo
 from backend.snapshot.build_snapshot import build_snapshot, questions_needing_review, split_routine_filename
 from backend.snapshot.models import snapshot_to_json_dict
 from backend.snapshot.question_groups import group_similar_questions, title_groups
+from backend.db.snapshot_store import save_snapshot
 
 
 def modified_date(path):
@@ -37,7 +38,7 @@ def titled_groups_of(question_ids, embeddings, question_texts, routine_name=None
     return title_groups(groups, question_texts, routine_name)
 
 
-def run_analysis(questions_path, routines_path, output_path, report_progress=lambda completed_steps: None):
+def run_analysis(questions_path, routines_path, report_progress=lambda completed_steps: None):
     """
     Scores every question against the routines, groups the questions that need
     review and the questions of each routine by what they are about, titles the
@@ -82,11 +83,7 @@ def run_analysis(questions_path, routines_path, output_path, report_progress=lam
     )
 
     # The API reads the file on every request, so it must never see a half-written one
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    temporary_path = output_path.with_suffix(".tmp")
-    temporary_path.write_text(json.dumps(snapshot_to_json_dict(snapshot), ensure_ascii=False), encoding="utf-8")
-    os.replace(temporary_path, output_path)
+    save_snapshot(snapshot_to_json_dict(snapshot))
     report_progress(5)
 
     return snapshot

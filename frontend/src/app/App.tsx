@@ -111,7 +111,7 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
   // For initializing the search view with a specific tab
   const [searchInitialTab, setSearchInitialTab] = useState<"documents" | "questions" | null>(null);
   const settings = useAnalysisSettings();
-  const review = useRoutineReview();
+  const review = useRoutineReview(accessToken);
   const isAdmin = user.role === "admin";
   const run = useAnalysisRun(accessToken, isAdmin, onSnapshotReplaced);
   const mainRef = useRef<HTMLElement>(null);

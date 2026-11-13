@@ -12,7 +12,6 @@ from typing import Literal
 
 from backend.admin import uploads
 from backend.api.audit_log import AuditLog, file_fingerprint
-from backend.snapshot.router import SNAPSHOT_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +30,12 @@ class AnalysisStatus:
 
 def analyse_uploaded_files(report_progress):
     """
-    Runs the analysis on the uploaded files and replaces the served snapshot.
+    Runs the analysis on the uploaded files and add the served snapshot.
     """
     # Imported here so the API starts without loading the embedding model's libraries
     from backend.snapshot.run_analysis import run_analysis
-
-    run_analysis(uploads.QUESTIONS_PATH, uploads.ROUTINES_FOLDER, SNAPSHOT_PATH, report_progress)
-
+    
+    run_analysis(uploads.QUESTIONS_PATH, uploads.ROUTINES_FOLDER, report_progress)
 
 def input_fingerprints():
     """

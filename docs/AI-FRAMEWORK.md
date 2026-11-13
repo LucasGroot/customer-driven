@@ -23,7 +23,7 @@ What the AI agent (and new team members) need to know about the project is kept 
 ## 3. Tools
 
 - **Git/GitHub** for version control and code review (PRs).
-- **Terminal + Python environment** for the backend (pdfplumber, sentence-transformers, pandas, numpy).
+- **Terminal + Python environment** for the src (pdfplumber, sentence-transformers, pandas, numpy).
 - **Claude Code / MCP tools** for editing files, searching, and running scripts — the agent should never be given access to push to `main` or delete data without a team member's approval.
 - No frontend framework has been chosen yet (`frontend/` is empty) — once one is, this point and CLAUDE.md are updated.
 
@@ -32,7 +32,7 @@ What the AI agent (and new team members) need to know about the project is kept 
 These are the "house rules" the agent (and we ourselves) work by, kept in AGENTS.md:
 
 - Code, including all comments, docstrings, and identifiers, is in English — regardless of what language a request comes in, since the team includes international colleagues.
-- Comments explain *why*, not *what* (as already done in e.g. [chunker.py](backend/ai/chunker.py)) — don't let the AI agent pad the code with redundant docstrings.
+- Comments explain *why*, not *what* (as already done in e.g. [chunker.py](src/ai/chunker.py)) — don't let the AI agent pad the code with redundant docstrings.
 - Don't add abstractions, error handling, or functionality beyond what the task actually requires.
 - Commits are small and explain *why*, not just *what*.
 - Any AI-generated code must be read and understood by whoever commits it — you own the code you ship, regardless of whether a human or an agent wrote the first draft.

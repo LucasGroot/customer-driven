@@ -7,6 +7,8 @@ __pycache__
 *.egg-info/
 *.csv
 data/processed/*.json
+data/raw/kvaliteket/
+src/node_modules/
 
 # uploaded data and analysis output, including half-written temporary files
 data/raw/**

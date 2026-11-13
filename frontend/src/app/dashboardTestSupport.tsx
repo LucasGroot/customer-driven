@@ -44,7 +44,9 @@ export function stubApi(answer: Answer = () => undefined) {
         answer(url, init) ??
           (url === "/api/snapshot"
             ? Response.json(sampleSnapshot)
-            : Response.json({ state: "idle", completedSteps: 0 })),
+            : url === "/api/review"
+              ? Response.json({ owners: {}, decisions: {} })
+              : Response.json({ state: "idle", completedSteps: 0 })),
       ),
     ),
   );

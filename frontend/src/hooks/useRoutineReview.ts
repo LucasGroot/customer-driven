@@ -1,11 +1,5 @@
-/**
- * HR's own annotations on top of an analysis run: who is working on each
- * routine (which is also its status), and what was decided about each question
- * the analysis could not place. Kept in memory only - persisting this needs the backend, and nothing
- * here belongs in browser storage.
- */
-
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { fetchReview, saveDecisions, saveOwner, saveUndo } from "../api/review";
 import { formatSavedAt } from "../domain/labels";
 import type { DecisionOf } from "../domain/routines";
 import type { QuestionId, ReviewDecision, RoutineCode, RoutineStatus } from "../domain/types";
@@ -19,6 +13,8 @@ export interface RoutineReview {
   savedNote: string | null;
   /** The latest change to a question only, shown on the review page where an owner means nothing. */
   questionNote: string | null;
+  /** Set when the backend could not store a change or could not be read. */
+  saveError: string | null;
   /** Sets the routine to Under behandling, with this owner. */
   startProcessing: (routineCode: RoutineCode, owner: string) => void;
   /** Sets the routine back to Ubehandlet, which has no owner. */
@@ -40,32 +36,86 @@ function describeChange(count: number, what: string): string {
   return `${questions} ${what}. ${formatSavedAt(new Date())}`;
 }
 
-export function useRoutineReview(): RoutineReview {
+export function useRoutineReview(accessToken: string): RoutineReview {
   const [owners, setOwners] = useState<Record<RoutineCode, string>>({});
   const [decisions, setDecisions] = useState<Record<QuestionId, ReviewDecision>>({});
   const [savedNote, setSavedNote] = useState<string | null>(null);
   const [questionNote, setQuestionNote] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const startProcessing = useCallback((routineCode: RoutineCode, owner: string) => {
-    setOwners((current) => ({ ...current, [routineCode]: owner }));
-    setSavedNote(`Tildelt ${owner}`);
-  }, []);
+  /** Replaces the local state with what the backend has stored. */
+  const reload = useCallback(
+    (signal?: AbortSignal) => {
+      if (!accessToken) return; // wait until the token is available
+      fetchReview(accessToken, signal).then(
+        (review) => {
+          setOwners(review.owners);
+          setDecisions(review.decisions);
+        },
+        () => {
+          if (!signal?.aborted) setSaveError("Kunne ikke hente lagrede vurderinger.");
+        },
+      );
+    },
+    [accessToken],
+  );
 
-  const markUnprocessed = useCallback((routineCode: RoutineCode) => {
-    setOwners((current) => Object.fromEntries(Object.entries(current).filter(([code]) => code !== routineCode)));
-    setSavedNote(`Satt til Ubehandlet. ${formatSavedAt(new Date())}`);
-  }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    reload(controller.signal);
+    return () => {
+      controller.abort();
+    };
+  }, [reload]);
 
-  const decide = useCallback((questionIds: QuestionId[], decision: ReviewDecision) => {
-    setDecisions((current) => ({
-      ...current,
-      ...Object.fromEntries(questionIds.map((questionId) => [questionId, decision])),
-    }));
-    const what = decision.kind === "discarded" ? "forkastet" : "knyttet til rutine";
-    const note = describeChange(questionIds.length, what);
-    setSavedNote(note);
-    setQuestionNote(note);
-  }, []);
+  /**
+   * Shows the note once the backend has stored the change; on failure, goes back to the stored state.
+   * A change to a question also sets questionNote.
+   */
+  const save = useCallback(
+    (request: Promise<void>, note: string, aboutQuestions = false) => {
+      request.then(
+        () => {
+          setSaveError(null);
+          setSavedNote(note);
+          if (aboutQuestions) setQuestionNote(note);
+        },
+        () => {
+          setSaveError("Kunne ikke lagre endringen. Siste lagrede versjon vises.");
+          reload();
+        },
+      );
+    },
+    [reload],
+  );
+
+  const startProcessing = useCallback(
+    (routineCode: RoutineCode, owner: string) => {
+      setOwners((current) => ({ ...current, [routineCode]: owner }));
+      save(saveOwner(accessToken, routineCode, owner), `Tildelt ${owner}`);
+    },
+    [accessToken, save],
+  );
+
+  const markUnprocessed = useCallback(
+    (routineCode: RoutineCode) => {
+      setOwners((current) => Object.fromEntries(Object.entries(current).filter(([code]) => code !== routineCode)));
+      save(saveOwner(accessToken, routineCode, null), `Satt til Ubehandlet. ${formatSavedAt(new Date())}`);
+    },
+    [accessToken, save],
+  );
+
+  const decide = useCallback(
+    (questionIds: QuestionId[], decision: ReviewDecision) => {
+      setDecisions((current) => ({
+        ...current,
+        ...Object.fromEntries(questionIds.map((questionId) => [questionId, decision])),
+      }));
+      const what = decision.kind === "discarded" ? "forkastet" : "knyttet til rutine";
+      save(saveDecisions(accessToken, questionIds, decision), describeChange(questionIds.length, what), true);
+    },
+    [accessToken, save],
+  );
 
   const discardMany = useCallback(
     (questionIds: QuestionId[]) => {
@@ -95,12 +145,15 @@ export function useRoutineReview(): RoutineReview {
     [mapManyTo],
   );
 
-  const undoDecisions = useCallback((questionIds: QuestionId[]) => {
-    setDecisions((current) => Object.fromEntries(Object.entries(current).filter(([id]) => !questionIds.includes(id))));
-    const note = describeChange(questionIds.length, "lagt tilbake");
-    setSavedNote(note);
-    setQuestionNote(note);
-  }, []);
+  const undoDecisions = useCallback(
+    (questionIds: QuestionId[]) => {
+      setDecisions((current) =>
+        Object.fromEntries(Object.entries(current).filter(([id]) => !questionIds.includes(id))),
+      );
+      save(saveUndo(accessToken, questionIds), describeChange(questionIds.length, "lagt tilbake"), true);
+    },
+    [accessToken, save],
+  );
 
   const undoDecision = useCallback(
     (questionId: QuestionId) => {
@@ -128,6 +181,7 @@ export function useRoutineReview(): RoutineReview {
     decisionOf,
     savedNote,
     questionNote,
+    saveError,
     startProcessing,
     markUnprocessed,
     discard,

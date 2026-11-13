@@ -16,6 +16,7 @@ from backend.api.audit_log import AuditLog
 from backend.api.auth import CurrentUser
 from backend.api.config import Settings
 from backend.api.dependencies import get_current_user, get_key_resolver, get_settings, require_admin
+from backend.review.router import router as review_router
 from backend.snapshot.router import router as snapshot_router
 
 # Tests override the key resolver through this module
@@ -52,5 +53,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # The snapshot used to be served without login by backend.snapshot.dev_app;
     # here every snapshot route requires a valid Microsoft token.
     app.include_router(snapshot_router, dependencies=[Depends(get_current_user)])
+
+    # HR's decisions: any signed-in user, like the snapshot
+    app.include_router(review_router, dependencies=[Depends(get_current_user)])
 
     return app
