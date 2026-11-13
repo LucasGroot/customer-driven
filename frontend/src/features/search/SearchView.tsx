@@ -56,7 +56,7 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine, initialC
   // A click on a column header. Applied on top of the dropdown order; null = no column sort.
   const [columnSort, setColumnSort] = useState<SortState | null>(null);
   // Show highlight animation when filter is applied from summary page
-  const [showHighlight, setShowHighlight] = useState(initialCoverageBandFilter !== undefined && initialCoverageBandFilter !== null);
+  const [showHighlight, setShowHighlight] = useState(initialCoverageBandFilter !== undefined);
 
   useEffect(() => {
     if (showHighlight) {
@@ -64,7 +64,9 @@ export function SearchView({ snapshot, routines, review, onOpenRoutine, initialC
       const timer = setTimeout(() => {
         setShowHighlight(false);
       }, 3000);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+      };
     }
   }, [showHighlight]);
 

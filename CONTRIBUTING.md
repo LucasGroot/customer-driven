@@ -27,6 +27,29 @@ Template (see [.gitmessage](.gitmessage) for the full version with all comments)
 | `build` | build process or dependency changes |
 | `wip` | work in progress |
 
+## Linting and formatting
+
+The frontend uses ESLint for code quality and Prettier for formatting. From `frontend/`:
+
+| command | does |
+|---|---|
+| `npm run lint` | reports lint errors |
+| `npm run lint:fix` | fixes what ESLint can, then formats everything with Prettier |
+| `npm run format` | formats everything with Prettier |
+| `npm run format:check` | reports unformatted files, as CI does |
+
+The Python code uses Ruff for both. From the project root, with the virtual environment active:
+
+| command | does |
+|---|---|
+| `ruff check .` | reports lint errors |
+| `ruff check --fix . && ruff format .` | fixes what Ruff can, then formats everything |
+| `ruff format --check .` | reports unformatted files, as CI does |
+
+In VS Code, install the recommended extensions (Prettier, ESLint and Ruff, suggested when you open
+the project). Files are then formatted and lint-fixed on every save, using the shared settings in
+`.vscode/settings.json`.
+
 ## Branch naming
 
 Based on [conventionalbranch.org](https://conventionalbranch.org/):

@@ -107,7 +107,7 @@ def check_questions(file):
     # Parsing an uploaded file can fail in many ways; any of them means it is unusable
     try:
         columns = pd.read_excel(BytesIO(file.content), nrows=0).columns
-    except Exception:
+    except Exception:  # noqa: BLE001
         raise UploadRejectedError("unreadable", file=file.name) from None
 
     missing = [column for column in REQUIRED_QUESTION_COLUMNS if column not in columns]

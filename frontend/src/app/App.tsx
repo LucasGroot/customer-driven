@@ -147,7 +147,8 @@ function Dashboard({ snapshot, user, accessToken, onSignOut, onSnapshotReplaced 
     return () => {
       window.removeEventListener("popstate", onPopState);
     };
-  }, []);
+    // startLocation never changes, so this still runs once
+  }, [startLocation]);
 
   const routines = routinesWithQuestions(snapshot, review.decisionOf);
   const routinesByName = [...snapshot.documents].sort((a, b) => a.name.localeCompare(b.name, "nb-NO"));
