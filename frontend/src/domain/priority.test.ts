@@ -74,11 +74,18 @@ describe("priorityBand", () => {
 });
 
 describe("coverageBand", () => {
-  it("calls coverage under 0.56 weak, under 0.61 partial and the rest good", () => {
-    expect(coverageBand(0.55)).toBe("weak");
-    expect(coverageBand(0.56)).toBe("partial");
-    expect(coverageBand(0.60)).toBe("partial");
-    expect(coverageBand(0.61)).toBe("good");
+  it("calls coverage under 59 % weak, under 63 % partial and the rest good", () => {
+    expect(coverageBand(0.58)).toBe("weak");
+    expect(coverageBand(0.59)).toBe("partial");
+    expect(coverageBand(0.62)).toBe("partial");
+    expect(coverageBand(0.63)).toBe("good");
+  });
+
+  it("gives every shown percentage one level, whatever lies behind the rounding", () => {
+    expect(coverageBand(0.584)).toBe("weak");
+    expect(coverageBand(0.586)).toBe("partial");
+    expect(coverageBand(0.624)).toBe("partial");
+    expect(coverageBand(0.626)).toBe("good");
   });
 });
 

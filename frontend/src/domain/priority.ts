@@ -49,16 +49,19 @@ export type CoverageBand = "weak" | "partial" | "good";
 
 /**
  * Coverage below this is weak; from here up to GOOD_COVERAGE_FROM it is partial. These are the
- * limits that split the questions into thirds with the current embedding model, so the levels
- * describe a question's place among the others, not whether a routine answers it. Set again
- * whenever the model changes.
+ * limits that split the questions placed on a routine into thirds with the current embedding
+ * model (questions under the manual review limit never reach a routine, so they are left out).
+ * The levels describe where a coverage stands among the others, not whether a routine answers
+ * a question. Set again whenever the model changes.
  */
-export const PARTIAL_COVERAGE_FROM = 0.56;
-export const GOOD_COVERAGE_FROM = 0.61;
+export const PARTIAL_COVERAGE_FROM = 0.59;
+export const GOOD_COVERAGE_FROM = 0.63;
 
+/** Compares whole percent, the way coverage is shown, so one percentage never gets two levels. */
 export function coverageBand(coverage: number): CoverageBand {
-  if (coverage < PARTIAL_COVERAGE_FROM) return "weak";
-  if (coverage < GOOD_COVERAGE_FROM) return "partial";
+  const percent = Math.round(coverage * 100);
+  if (percent < Math.round(PARTIAL_COVERAGE_FROM * 100)) return "weak";
+  if (percent < Math.round(GOOD_COVERAGE_FROM * 100)) return "partial";
   return "good";
 }
 

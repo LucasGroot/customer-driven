@@ -31,6 +31,12 @@
   gap: 8px;
 }
 
+.disclaimer {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--color-text-soft);
+}
+
 .count {
   font-family: var(--font-mono);
   font-size: 13px;
