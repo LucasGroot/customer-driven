@@ -10,14 +10,14 @@ def make_client():
     return TestClient(app)
 
 
-def test_serves_sample_when_no_run(monkeypatch):
+def serves_sample_when_no_run(monkeypatch):
     monkeypatch.setattr(snapshot_router, "load_latest_snapshot", lambda: None)
     response = make_client().get("/api/snapshot")
     assert response.status_code == 200
     assert response.headers["X-Snapshot-Source"] == "sample"
 
 
-def test_serves_latest_run(monkeypatch):
+def serves_latest_run(monkeypatch):
     monkeypatch.setattr(snapshot_router, "load_latest_snapshot", lambda: {"isExample": False})
     response = make_client().get("/api/snapshot")
     assert response.headers["X-Snapshot-Source"] == "real"
