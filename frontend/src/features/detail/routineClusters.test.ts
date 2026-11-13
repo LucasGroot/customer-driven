@@ -16,6 +16,7 @@ function placed(overrides: Partial<AskedQuestion>, byHand = false): PlacedQuesti
       ...overrides,
     },
     byHand,
+    coverage: overrides.coverage ?? 0.5,
   };
 }
 
