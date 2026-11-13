@@ -9,7 +9,7 @@ import type { AboutIconName } from "./AboutIcon";
 
 const partialFrom = Math.round(PARTIAL_COVERAGE_FROM * 100);
 const goodFrom = Math.round(GOOD_COVERAGE_FROM * 100);
-// Keep in step with MIN_RELEVANCE in src/backend/snapshot/build_snapshot.py
+// Keep in step with MIN_RELEVANCE in backend/src/snapshot/build_snapshot.py
 const MANUAL_REVIEW_BELOW_PERCENT = 55;
 
 export const ABOUT_INTRO =

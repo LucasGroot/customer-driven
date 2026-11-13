@@ -53,14 +53,6 @@ export function priorityScore(stats: RoutineStats, weights: PriorityWeights, all
   return Math.round((weighted / weightSum) * 100);
 }
 
-export type PriorityBand = "high" | "medium" | "low";
-
-export function priorityBand(score: number): PriorityBand {
-  if (score >= 70) return "high";
-  if (score >= 50) return "medium";
-  return "low";
-}
-
 export type CoverageBand = "weak" | "partial" | "good";
 
 /**
@@ -84,7 +76,6 @@ export function coverageBand(coverage: number): CoverageBand {
 export interface ScoredRoutine {
   stats: RoutineStats;
   score: number;
-  band: PriorityBand;
   /** 1 is the routine to work on first. Set by the full ranking, so filtering a list does not renumber it. */
   rank: number;
 }
@@ -94,7 +85,7 @@ export function rankRoutines(routines: RoutineStats[], weights: PriorityWeights)
   return routines
     .map((stats) => {
       const score = priorityScore(stats, weights, routines);
-      return { stats, score, band: priorityBand(score) };
+      return { stats, score };
     })
     .sort((a, b) => b.score - a.score)
     .map((entry, index) => ({ ...entry, rank: index + 1 }));

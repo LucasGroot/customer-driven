@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { coverageBand, priorityBand, priorityScore, rankRoutines, scoreBreakdown } from "./priority";
+import { coverageBand, priorityScore, rankRoutines, scoreBreakdown } from "./priority";
 import type { RoutineStats } from "./routines";
 import type { PriorityWeights } from "./types";
 
@@ -71,15 +71,6 @@ describe("priorityScore", () => {
   });
 });
 
-describe("priorityBand", () => {
-  it("puts 70 and above in high, 50-69 in medium and the rest in low", () => {
-    expect(priorityBand(70)).toBe("high");
-    expect(priorityBand(69)).toBe("medium");
-    expect(priorityBand(50)).toBe("medium");
-    expect(priorityBand(49)).toBe("low");
-  });
-});
-
 describe("coverageBand", () => {
   it("calls coverage under 59 % weak, under 63 % partial and the rest good", () => {
     expect(coverageBand(0.58)).toBe("weak");
@@ -99,10 +90,9 @@ describe("coverageBand", () => {
 describe("rankRoutines", () => {
   const routines = [makeStats(2, 0.8, "low"), makeStats(10, 0.1, "high"), makeStats(5, 0.4, "mid")];
 
-  it("puts the highest score first and attaches its band", () => {
+  it("puts the highest score first", () => {
     const ranked = rankRoutines(routines, EVEN_WEIGHTS);
     expect(ranked.map((entry) => entry.stats.routine.code)).toEqual(["high", "mid", "low"]);
-    expect(ranked[0]?.band).toBe("high");
   });
 
   it("numbers the routines from 1, where 1 has the highest score", () => {

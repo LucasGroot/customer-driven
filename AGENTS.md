@@ -6,9 +6,11 @@ Read [AI-FRAMEWORK.md](docs/AI-FRAMEWORK.md) first — it's the team's policy on
 
 Trondheim kommune (HR department) gets a high volume of repetitive HR/HMS support questions through ServiceNow. This project finds which questions have the lowest semantic match to the organization's formal routines in its quality system ("Kvaliteket"), to surface "knowledge gaps" — routines that are missing or unclear.
 
-Pipeline: `backend/ai/pdf_reader.py` extracts words+fonts from Kvaliteket PDFs → `chunker.py` splits them into sections by bold headings → `embedding_extract.py` embeds both routine chunks and ServiceNow questions (`NbAiLab/borealis-embed-212m`, cached to `embeddings/*.pkl`) → `compute_similarity.py` ranks questions by summed top-k cosine similarity to routines (lowest = least covered) and renders `visualizations/uncovered_questions.html`.
+Pipeline: `backend/src/ai/pdf_reader.py` extracts words+fonts from Kvaliteket PDFs → `ai/chunking` splits them into chunks along bold headings → `ai/similarity_metrics` embeds chunks and ServiceNow questions (`NbAiLab/borealis-embed-212m`) and scores every question against every routine (a routine's score is the mean of its top-k chunk cosine similarities) → `snapshot/build_snapshot.py` places each question on its best routine and flags weak matches (`MIN_RELEVANCE`) for manual review → `ai/clustering` groups similar questions and titles the groups through an LLM → the snapshot is stored encrypted in PostgreSQL (`db/snapshot_store.py`; there is no `snapshot.json` any more) and served by the FastAPI backend, which also stores HR's decisions (`review/`).
 
-`frontend/` is a React + TypeScript + Vite dashboard (Norwegian UI, English code) showing the ranked gaps. 
+`frontend/` is a React + TypeScript + Vite dashboard (Norwegian UI, English code) showing the ranked gaps. The whole app (API, dashboard, database) runs with `docker compose up --build`.
+
+The main folders have a README that says what they hold and links to their neighbours; start at the [project README](README.md#project-structure). When you change what a folder does, update its README.
 
 Two frontend decisions that are easy to undo by accident:
 - Fonts are self-hosted in `frontend/public/fonts` — don't swap them for a Google Fonts link. Beyond the tighter CSP, as it avoids sending visitor IPs to Google, which a municipality should not do.
@@ -19,6 +21,13 @@ Two frontend decisions that are easy to undo by accident:
 - `*.pdf`, `*.xlsx`, `*.zip`, `*.pkl` are gitignored on purpose (real HR ticket text, routine documents, embeddings derived from them). Never remove them from `.gitignore`, never commit them, never paste their contents into a chat or send them to an external API.
 - If you need to reason about data content, use file structure/counts/anonymized samples, not raw free-text fields.
 - The embedding model is multilingual (Norwegian included) by design — don't suggest swapping to an English-only model.
+
+## Testing
+
+- New functionality comes with tests. This is not optional, and not up to whoever happens to prompt the agent: backend tests go in `backend/tests/unit/<area>`, frontend tests next to the code as `*.test.ts(x)`. Calculations that decide what users see (priority, coverage levels, thresholds) always get tests.
+- Before you call a task done, run what CI runs: in `backend/` `python -m pytest`, `ruff check .` and `ruff format --check .`, and in `frontend/` `npx tsc -b`, `npm run lint`, `npm run format:check` and `npx vitest run`. See [CONTRIBUTING.md](CONTRIBUTING.md).
+- Use `tsc -b`, not `tsc --noEmit`: the root `tsconfig.json` only has project references, so `--noEmit` checks nothing.
+- The database tests empty their tables and refuse to run unless `DBNAME` contains `test`. Never point them at a real database.
 
 ## Conventions
 
