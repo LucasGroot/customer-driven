@@ -24,6 +24,22 @@ jobs:
         python-version: ["3.12", "3.13", "3.14"]
         # exclude si besoin
 
+    # The database tests need a PostgreSQL. Its name has to contain "test", or they refuse to run
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: kunnskapsgap_test
+          POSTGRES_USER: kunnskapsgap
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kunnskapsgap -d kunnskapsgap_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -59,6 +75,11 @@ jobs:
       # Runs tests
       - name: Run tests
         working-directory: backend
+        env:
+          DBNAME: kunnskapsgap_test
+          DBUSER: kunnskapsgap
+          DBPASSWORD: test
+          DBHOST: localhost
         run: python -m pytest
   
   build_front:
