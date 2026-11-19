@@ -13,7 +13,7 @@ interface RunAnalysisViewProps {
 }
 
 function describeRun(run: AnalysisRun): string {
-  if (run.isRunning) return "Analysen tar noen minutter. Du kan bruke resten av dashbordet imens.";
+  if (run.isRunning) return "Analysen tar opptil ca. 15 minutter. Du kan bruke resten av dashbordet imens.";
   if (run.hasFinished) return "Ferdig. Listen er oppdatert.";
   if (run.hasFailed) return "Analysen feilet. Sjekk filene under «Importer data», og prøv igjen.";
   return "Bruker filene som sist ble lastet opp under «Importer data».";

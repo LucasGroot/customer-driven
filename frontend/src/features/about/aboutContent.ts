@@ -146,7 +146,7 @@ export const FAQ_SECTIONS: Section[] = [
         topic: "rerun",
         question: "Hva skjer når analysen kjøres på nytt?",
         answer: [
-          "Analysen bruker filene som sist ble lastet opp og erstatter forrige resultat. Den tar noen minutter, og du kan bruke resten av dashbordet imens.",
+          "Analysen bruker filene som sist ble lastet opp og erstatter forrige resultat. Den tar opptil ca. 15 minutter, og du kan bruke resten av dashbordet imens.",
         ],
       },
       {
