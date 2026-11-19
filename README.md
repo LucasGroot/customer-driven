@@ -4,11 +4,11 @@ Data-driven knowledge management in HR using NLP — a TDT4290 (Customer Driven 
 
 ## Background
 
-Mid-level managers at Trondheim kommune often feel insecure about interpreting and applying HR guidelines. This leads to a high volume of repetitive support questions directed to HR via ServiceNow, which hinders efficient local decision-making and turns HR into a reactive support function.
+Mid-level managers at Trondheim kommune often feel unsure about interpreting and applying HR guidelines. This leads to a high volume of repetitive support questions directed to HR via ServiceNow, which hinders efficient local decision-making and turns HR into a reactive support function.
 
 ## Goal
 
-Identify which topics and questions raised through ServiceNow have the lowest semantic match with the organization's formal HR routines and guidelines in its quality management system ("Kvaliteket"). Surfacing this mismatch pinpoints concrete "knowledge gaps" in real time, so HR can prioritize updates to the routines that are actually causing confusion — closing the gap between theory (guidelines) and practice (what employees ask about) instead of just answering the same tickets over and over.
+Identify which themes and inquiries raised through ServiceNow have the lowest semantic match with the organization's formal HR routines and guidelines in its quality management system ("Kvaliteket"). Surfacing this mismatch pinpoints concrete "knowledge gaps", so HR can prioritize updates to the specific routines, which closes the gap between theory (guidelines) and practice (what employees ask about), and potentially will hinder HR reciving inquries about the same themes over and over.
 
 ## How it works
 
@@ -64,9 +64,7 @@ The API, the dashboard and the PostgreSQL database run as containers, with no Py
    python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
    ```
 
-4. In the Entra app registration, open **Authentication** and add `http://localhost:8080` as a _single-page application_ redirect URI. Without it, Microsoft refuses the sign-in.
-
-5. Start everything, and open <http://localhost:8080> when the terminal says the API is running:
+4. Start everything, and open <http://localhost:8080> when the terminal says the API is running:
 
    ```bash
    docker compose up --build
@@ -139,7 +137,20 @@ You need Python 3.10 or newer (CI tests 3.12 to 3.14), Node.js 22.12 or newer, a
 
 The dashboard asks the API for its data, so the API has to be running.
 
-### The data
+
+## Signing in
+
+1. Download the **Microsoft Authenticator** app on your phone if you do not already have it.
+
+2. Open our application and sign in using the provided username and temporary password.
+
+3. If prompted to change your password, choose a new one.
+
+4. **Follow the on-screen instructions** to set up Microsoft Authenticator and complete the authentication process.
+
+5. Once authentication is successful, you should be redirected to the dashboard.
+
+## The data
 
 The real data is confidential HR data from Trondheim kommune, so **it is not in this repository and has not been uploaded to GitHub**. Whoever runs the application on real data has to get the files from the customer and be allowed to handle them. There are two files to get:
 
@@ -148,7 +159,7 @@ The real data is confidential HR data from Trondheim kommune, so **it is not in 
 
 An admin uploads them on the dashboard's "Importer data" page, see [Updating the data](#updating-the-data). You can also put them in place by hand: the export at `data/raw/serviceNow/serviceNow_questions.xlsx` and the PDFs in `data/raw/kvaliteket/`. Never commit them or paste them into a chat, see [`data/`](data/README.md).
 
-#### Running without the real data
+### Running without the real data
 
 - **Sample data.** If nothing has been uploaded, the API serves a bundled sample of invented data, and the dashboard says "Eksempeldata" in the sidebar. The dashboard works on it, so this is enough for developing the frontend. It does not run an analysis, so it cannot test the backend.
 - **Your own test files.** To run the whole analysis, make small files with invented content and upload them as an admin:
@@ -187,7 +198,7 @@ The questions that need review are grouped by what they are about, so HR can dec
 - An uploaded routine cannot be replaced or removed from the dashboard yet. Delete the old PDF from `data/raw/kvaliteket/` by hand first.
 - The API remembers how far a run has come only while it is running. Restarting it during a run loses the run; start it again.
 
-### Tests
+## Tests
 
 ```bash
 (cd backend && python -m pytest) # backend, with the virtual environment active
@@ -197,7 +208,7 @@ cd frontend && npm test         # frontend, in watch mode (press q to quit)
 
 The database tests need a database whose name contains `test`, see [`backend/tests/`](backend/tests/README.md).
 
-### Linting and formatting
+## Linting and formatting
 
 ```bash
 (cd backend && ruff check --fix . && ruff format .)   # backend: fix and format
