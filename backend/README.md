@@ -45,4 +45,4 @@ Run these from `backend/` with the virtual environment active. The data and the 
 | `ruff check .` and `ruff format --check .` | Lint and format check, as CI runs them |
 | `ruff check --fix . && ruff format .` | Fixes what Ruff can and formats the rest |
 
-The API is started from the project root, see [Running without Docker](../README.md#running-without-docker).
+The API is started from the project root, see [Running locally](../README.md#running-locally).

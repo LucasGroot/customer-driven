@@ -95,7 +95,7 @@ Good to know:
 - Keep `SNAPSHOT_KEYS` safe, and never change it for a database that already has results: without the key, the stored snapshots cannot be read.
 - The Entra IDs are built into the dashboard, so run `docker compose build` again if you change them.
 
-### Running without Docker
+### Running locally
 
 You need Python 3.10 or newer (CI tests 3.12 to 3.14), Node.js 22.12 or newer, and a PostgreSQL database.
 
